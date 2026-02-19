@@ -3,171 +3,174 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Past Papers & Exam Tracker</title>
+<title>Exam Tracker & Past Papers</title>
 <style>
-    body {
-        margin: 0;
-        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        background-color: #0d0d0d;
-        color: #fff;
-    }
-    header {
-        background-color: #0a1f44;
-        padding: 20px;
-        display: flex;
-        align-items: center;
-    }
-    header img {
-        height: 50px;
-        margin-right: 20px;
-    }
-    header h1 {
-        font-size: 1.8rem;
-        color: #1db0ff;
-    }
-    main {
-        padding: 20px;
-    }
-    .section {
-        margin-bottom: 40px;
-    }
-    h2 {
-        color: #1db0ff;
-        margin-bottom: 15px;
-    }
-    .exam-calendar {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-        gap: 20px;
-    }
-    .exam-card {
-        background-color: #142c5e;
-        padding: 15px;
-        border-radius: 10px;
-        transition: transform 0.2s;
-        text-align: center;
-    }
-    .exam-card:hover {
-        transform: scale(1.05);
-    }
-    .exam-card h3 {
-        margin: 0 0 10px 0;
-        font-size: 1.2rem;
-        color: #1db0ff;
-    }
-    .exam-card p {
-        margin: 5px 0;
-        font-size: 1rem;
-    }
-    .past-papers {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 10px;
-    }
-    .past-papers select, .past-papers input, .past-papers button {
-        padding: 10px;
-        font-size: 1rem;
-        border-radius: 5px;
-        border: none;
-        margin-right: 10px;
-    }
-    .past-papers button {
-        background-color: #1db0ff;
-        color: #fff;
-        cursor: pointer;
-    }
-    .past-papers button:hover {
-        background-color: #0a7ac4;
-    }
+  body {
+    font-family: Arial, sans-serif;
+    background-color: #f0f6ff;
+    color: #0a1f44;
+    margin: 0;
+    padding: 0;
+  }
+  header {
+    background-color: #a3c0f9;
+    padding: 20px;
+    text-align: center;
+  }
+  header h1 {
+    margin: 0;
+    font-size: 2em;
+  }
+  section {
+    padding: 15px 20px;
+  }
+  h2 {
+    color: #073b8c;
+  }
+  .past-papers, .exam-calendar {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+  .paper-card, .exam-card {
+    background-color: #e2ecff;
+    padding: 10px 12px;
+    border-radius: 6px;
+    flex: 1 1 150px;
+    min-width: 150px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  }
+  .paper-card a, .exam-card a {
+    color: #0a1f44;
+    text-decoration: none;
+    font-weight: bold;
+  }
+  .paper-card a:hover, .exam-card a:hover {
+    text-decoration: underline;
+  }
+  .day-counter {
+    font-size: 0.85em;
+    margin-top: 4px;
+    color: #073b8c;
+  }
+  footer {
+    background-color: #a3c0f9;
+    padding: 20px;
+    text-align: center;
+  }
+  table.calendar {
+    width: 100%;
+    border-collapse: collapse;
+    table-layout: fixed;
+  }
+  table.calendar th, table.calendar td {
+    border: 1px solid #073b8c;
+    text-align: center;
+    padding: 5px;
+    width: 14.28%;
+  }
+  table.calendar th {
+    background-color: #d0e3ff;
+  }
+  .exam-day {
+    background-color: #073b8c;
+    color: white;
+    border-radius: 50%;
+    display: inline-block;
+    width: 24px;
+    height: 24px;
+    line-height: 24px;
+  }
 </style>
 </head>
 <body>
 
 <header>
-    <img src="https://via.placeholder.com/50x50.png?text=Logo" alt="Logo">
-    <h1>Exam & Past Paper Hub</h1>
+  <h1>Exam Tracker & Past Papers</h1>
 </header>
 
-<main>
-
-<div class="section">
-    <h2>Exam Calendar</h2>
-    <div class="exam-calendar" id="exam-calendar">
-        <!-- Exam cards will be inserted here by JS -->
+<section>
+  <h2>Past Papers</h2>
+  <div class="past-papers">
+    <!-- Example for one paper, replicate for all -->
+    <div class="paper-card">
+      <a href="https://www.cambridgeinternational.org/Images/123456-9702-42-o-n-24.pdf" target="_blank">9702/42/O/N/24</a>
+      <div>Oct/Nov 2024</div>
     </div>
-</div>
-
-<div class="section">
-    <h2>Past Papers Search</h2>
-    <div class="past-papers">
-        <select id="subject">
-            <option value="9702">9702 - IGCSE</option>
-            <!-- Add more subjects here -->
-        </select>
-        <select id="paper">
-            <option value="42">42</option>
-            <option value="41">41</option>
-        </select>
-        <select id="session">
-            <option value="M">Feb/Mar</option>
-            <option value="S">May/June</option>
-            <option value="W">Oct/Nov</option>
-        </select>
-        <select id="year">
-            <option value="24">2024</option>
-            <option value="23">2023</option>
-            <option value="22">2022</option>
-            <option value="21">2021</option>
-            <option value="20">2020</option>
-            <option value="19">2019</option>
-            <option value="18">2018</option>
-        </select>
-        <button onclick="searchPaper()">Search</button>
+    <div class="paper-card">
+      <a href="https://www.cambridgeinternational.org/Images/654321-9702-42-m-24.pdf" target="_blank">9702/42/M/24</a>
+      <div>Feb/Mar 2024</div>
     </div>
-</div>
+    <!-- Add more papers as needed, keeping same format as senior -->
+  </div>
+</section>
 
-</main>
+<section>
+  <h2>Exam Calendar</h2>
+  <div class="exam-calendar" id="examCalendar">
+    <!-- Exam cards will be inserted here by JS -->
+  </div>
+</section>
+
+<footer>
+  <h2>Mini Calendar - Full Year</h2>
+  <div id="miniCalendar"></div>
+</footer>
 
 <script>
-// ===== Exam Data =====
+// --- Exam Data ---
 const exams = [
-    {date: '2026-04-27', subject: 'EGP P1'},
-    {date: '2026-05-04', subject: 'EGP P2'},
-    {date: '2026-05-06', subject: 'Mechanics/Maths P4'},
-    {date: '2026-05-07', subject: 'Chemistry P4'},
-    {date: '2026-05-11', subject: 'Physics P4'},
-    {date: '2026-05-15', subject: 'Maths P3'},
-    {date: '2026-05-18', subject: 'Chemistry P5'},
-    {date: '2026-05-19', subject: 'Computer P3'},
-    {date: '2026-05-20', subject: 'Physics P5'},
-    {date: '2026-05-21', subject: 'Computer P4'}
+  {date: '2026-04-27', name: 'EGP P1'},
+  {date: '2026-05-04', name: 'EGP P2'},
+  {date: '2026-05-06', name: 'Mechanics/Maths P4'},
+  {date: '2026-05-07', name: 'Chemistry P4'},
+  {date: '2026-05-11', name: 'Physics P4'},
+  {date: '2026-05-15', name: 'Maths P3'},
+  {date: '2026-05-18', name: 'Chemistry P5'},
+  {date: '2026-05-19', name: 'Computer P3'},
+  {date: '2026-05-20', name: 'Physics P5'},
+  {date: '2026-05-21', name: 'Computer P4'},
 ];
 
-function updateExamCalendar() {
-    const container = document.getElementById('exam-calendar');
-    container.innerHTML = '';
-    const today = new Date();
-    exams.forEach(exam => {
-        const examDate = new Date(exam.date);
-        const diffTime = examDate - today;
-        const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-        const card = document.createElement('div');
-        card.className = 'exam-card';
-        card.innerHTML = `<h3>${exam.subject}</h3><p>${exam.date}</p><p>${diffDays} day(s) left</p>`;
-        container.appendChild(card);
-    });
-}
-updateExamCalendar();
+// --- Insert Exam Cards ---
+const examContainer = document.getElementById('examCalendar');
+const today = new Date();
 
-// ===== Past Paper Search =====
-function searchPaper() {
-    const subj = document.getElementById('subject').value;
-    const paper = document.getElementById('paper').value;
-    const session = document.getElementById('session').value;
-    const year = document.getElementById('year').value;
-    const url = `https://www.youtube.com/results?search_query=${subj}/${paper}/${session}/${year}`;
-    window.open(url, '_blank');
+exams.forEach(exam => {
+  const examDate = new Date(exam.date);
+  const diffDays = Math.ceil((examDate - today)/(1000*60*60*24));
+  const card = document.createElement('div');
+  card.className = 'exam-card';
+  card.innerHTML = `<strong>${exam.name}</strong><br>${exam.date}<div class="day-counter">${diffDays} day(s) remaining</div>`;
+  examContainer.appendChild(card);
+});
+
+// --- Mini Calendar Generation ---
+function generateMiniCalendar() {
+  const container = document.getElementById('miniCalendar');
+  const year = today.getFullYear();
+  const monthNames = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  
+  for (let m=0; m<12; m++) {
+    const firstDay = new Date(year, m, 1).getDay();
+    const daysInMonth = new Date(year, m+1, 0).getDate();
+    let table = `<table class="calendar"><tr><th colspan="7">${monthNames[m]} ${year}</th></tr><tr>`;
+    const weekDays = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+    weekDays.forEach(day => table += `<th>${day}</th>`); 
+    table += `</tr><tr>`;
+    for (let i=0;i<firstDay;i++) table += `<td></td>`;
+    for (let day=1, wd=firstDay; day<=daysInMonth; day++, wd++) {
+      const dayStr = `${year}-${String(m+1).padStart(2,'0')}-${String(day).padStart(2,'0')}`;
+      const isExam = exams.some(e => e.date === dayStr);
+      table += `<td>${isExam?`<span class="exam-day">${day}</span>`:day}</td>`;
+      if (wd%7===6) table += `</tr><tr>`;
+    }
+    table += `</tr></table><br>`;
+    container.innerHTML += table;
+  }
 }
+
+generateMiniCalendar();
 </script>
 
 </body>
