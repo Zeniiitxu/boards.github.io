@@ -3,215 +3,171 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Past Papers & Exam Tracker</title>
-<link rel="icon" href="LOGO.png" type="image/png">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-
+<title>Arpan's Exam Hub</title>
 <style>
-/* Basic Reset */
-* {margin:0; padding:0; box-sizing:border-box;}
-body {font-family: 'Segoe UI', sans-serif; background-color:#f0f4f8; color:#fff; min-height:100vh; padding:20px;}
-
-/* Netflix-like container */
-.container {max-width:1400px; margin:auto; display:flex; flex-direction:column; gap:40px;}
-
-/* Header */
-.header {display:flex; justify-content:space-between; align-items:center;}
-.header h1 {color:#1f3c88;}
-.theme-toggle {cursor:pointer; font-size:20px;}
-
-/* Form Card */
-.form-card {background:#1f3c88; border-radius:12px; padding:30px; display:flex; flex-wrap:wrap; gap:20px; box-shadow:0 5px 20px rgba(0,0,0,0.2);}
-.form-card .form-group {flex:1 1 180px; display:flex; flex-direction:column;}
-.form-card label {margin-bottom:8px; font-weight:bold; color:#fff;}
-.form-card select, .form-card input {padding:10px; border:none; border-radius:6px; font-size:14px;}
-.form-card select {cursor:pointer;}
-.form-card button {padding:10px 24px; border:none; border-radius:6px; cursor:pointer; font-weight:bold; transition:0.2s;}
-
-/* Buttons */
-#submitButton {background:#27ae60; color:#fff;}
-#submitButton:hover {background:#1e8449; transform:translateY(-2px);}
-.youtube-button {background:#FF0000; color:#fff; display:flex; align-items:center; gap:8px;}
-.youtube-button:hover {background:#cc0000; transform:translateY(-2px);}
-
-/* History Table */
-.history-card {background:#2c3e50; padding:20px; border-radius:12px; overflow-x:auto;}
-.history-card table {width:100%; border-collapse:collapse;}
-.history-card th, .history-card td {padding:12px; text-align:left; color:#fff;}
-.history-card tr:nth-child(even) {background:rgba(255,255,255,0.05);}
-.delete-item {color:#e74c3c; cursor:pointer;}
-
-/* Exam Tracker */
-.tracker {display:flex; flex-wrap:wrap; gap:20px;}
-.exam-card {flex:1 1 200px; background:#34495e; padding:20px; border-radius:12px; transition:0.2s; cursor:pointer;}
-.exam-card:hover {transform:translateY(-5px); background:#3d5a80;}
-.exam-card h3 {margin-bottom:10px; font-size:16px;}
-.exam-card p {font-size:14px; opacity:0.8;}
-
-/* Responsive */
-@media(max-width:900px) { .form-card {flex-direction:column;} .exam-card{flex:1 1 100%;} }
+    /* --- Reset & Base --- */
+    * {margin:0;padding:0;box-sizing:border-box;font-family: 'Segoe UI', sans-serif;}
+    body {background-color: #0d0d0d;color:#fff;}
+    a {color:#1db954;text-decoration:none;}
+    a:hover {text-decoration:underline;}
+    .container {max-width:1200px;margin:auto;padding:20px;}
+    
+    /* --- Header --- */
+    header {display:flex;justify-content:space-between;align-items:center;margin-bottom:30px;}
+    .logo {font-size:2rem;font-weight:bold;color:#00bfff;}
+    nav select,input[type="text"],button {margin-left:10px;padding:8px 12px;border-radius:5px;border:none;}
+    nav select {background:#222;color:#fff;}
+    button {background:#1db954;color:#000;font-weight:bold;cursor:pointer;}
+    button:hover {background:#17a34a;}
+    
+    /* --- Sections --- */
+    section {margin-bottom:40px;}
+    h2 {margin-bottom:15px;color:#00bfff;border-bottom:1px solid #00bfff;padding-bottom:5px;}
+    
+    /* --- Exam Tracker --- */
+    .exam-tracker {display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:15px;}
+    .exam-card {background:#111;padding:15px;border-radius:10px;transition:0.3s;cursor:pointer;}
+    .exam-card.upcoming {border-left:5px solid #00bfff;}
+    .exam-card.past {border-left:5px solid #555;color:#777;}
+    .exam-card:hover {transform:scale(1.03);}
+    .exam-date {font-size:0.9rem;color:#aaa;}
+    
+    /* --- Links Section --- */
+    .links {display:flex;flex-wrap:wrap;gap:15px;}
+    .link-card {background:#111;padding:15px;border-radius:10px;width:200px;text-align:center;transition:0.3s;}
+    .link-card:hover {transform:scale(1.05);}
+    
+    /* --- Search --- */
+    .search-bar {display:flex;gap:10px;margin-bottom:20px;}
+    input[type="text"] {flex:1;}
+    
+    /* --- Footer --- */
+    footer {text-align:center;color:#555;margin-top:50px;font-size:0.9rem;}
 </style>
 </head>
 <body>
-
 <div class="container">
-  <div class="header">
-    <h1>Past Papers & Exam Tracker</h1>
-    <div class="theme-toggle" id="themeToggle">🌙</div>
-  </div>
-
-  <!-- Form Card -->
-  <div class="form-card">
-    <div class="form-group">
-      <label for="subjectCode">Subject</label>
-      <select id="subjectCode">
-        <option value="9702">🍏 Physics</option>
-        <option value="9701">🧪 Chemistry</option>
-        <option value="9618">💻 Computer Science</option>
-        <option value="9608">💻 Computer (before 2021)</option>
-        <option value="9709">📐 Mathematics</option>
-        <option value="8021">📖 English General Paper</option>
-      </select>
-    </div>
-
-    <div class="form-group">
-      <label for="component">Component</label>
-      <input type="text" id="component" placeholder="Enter component">
-    </div>
-
-    <div class="form-group">
-      <label for="session">Session</label>
-      <select id="session">
-        <option value="m">Feb/March</option>
-        <option value="s">May/June</option>
-        <option value="w">Oct/Nov</option>
-      </select>
-    </div>
-
-    <div class="form-group">
-      <label for="year">Year</label>
-      <select id="year"></select>
-    </div>
-
-    <div class="form-group">
-      <label for="paperType">Paper Type</label>
-      <select id="paperType">
-        <option value="qp">Question Paper</option>
-        <option value="ms">Marking Scheme</option>
-        <option value="in">Insert</option>
-        <option value="sf">Source File</option>
-      </select>
-    </div>
-
-    <div class="form-group" style="display:flex; gap:10px; align-items:center;">
-      <button class="youtube-button" onclick="searchYoutube()"><i class="fa-brands fa-youtube"></i> YouTube</button>
-      <button id="submitButton" onclick="openPastPaper()">Open Paper</button>
-    </div>
-  </div>
-
-  <!-- History -->
-  <div class="history-card">
-    <h2>Search History</h2>
-    <table>
-      <thead>
-        <tr><th>Subject</th><th>Component</th><th>Session</th><th>Year</th><th>Type</th><th>Delete</th></tr>
-      </thead>
-      <tbody id="historyTableBody">
-        <tr><td colspan="6" style="text-align:center;">No history yet</td></tr>
-      </tbody>
-    </table>
-  </div>
-
-  <!-- Exam Tracker -->
-  <div class="tracker" id="examTracker">
-    <!-- Exam cards will populate here -->
-  </div>
+    <!-- Header -->
+    <header>
+        <div class="logo">🌀 Arpan's Exam Hub</div>
+        <nav>
+            <select id="sessionSelect">
+                <option value="m">Feb/Mar</option>
+                <option value="s">May/June</option>
+                <option value="w">Oct/Nov</option>
+            </select>
+            <select id="yearSelect"></select>
+            <select id="paperSelect"></select>
+            <button id="goLink">Go</button>
+            <input type="text" id="ytSearch" placeholder="9702/42/o/n/24">
+            <button id="ytGo">YT</button>
+        </nav>
+    </header>
+    
+    <!-- Exam Tracker -->
+    <section>
+        <h2>Exam Tracker</h2>
+        <div class="exam-tracker" id="examTracker">
+            <!-- Exam cards populated via JS -->
+        </div>
+    </section>
+    
+    <!-- QP & SF Links -->
+    <section>
+        <h2>Past Papers & Solutions</h2>
+        <div class="links" id="linksSection">
+            <!-- Links populated via JS -->
+        </div>
+    </section>
 </div>
 
+<footer>Made with 💙 by Arpan Maharjan</footer>
+
 <script>
-// Populate years
-const yearSelect = document.getElementById('year');
-const currentYear = new Date().getFullYear();
-for(let y=currentYear+1; y>=2000; y--){
-  let opt = document.createElement('option');
-  opt.value = y.toString().slice(-2);
-  opt.textContent = y;
-  yearSelect.appendChild(opt);
-}
+    // --- Exam Dates ---
+    const exams = [
+        {date:'2026-04-27', subject:'EGP', paper:'P1'},
+        {date:'2026-05-04', subject:'EGP', paper:'P2'},
+        {date:'2026-05-06', subject:'Mechanics/Maths', paper:'P4'},
+        {date:'2026-05-07', subject:'Chemistry', paper:'P4'},
+        {date:'2026-05-11', subject:'Physics', paper:'P4'},
+        {date:'2026-05-15', subject:'Maths', paper:'P3'},
+        {date:'2026-05-18', subject:'Chemistry', paper:'P5'},
+        {date:'2026-05-19', subject:'Computer', paper:'P3'},
+        {date:'2026-05-20', subject:'Physics', paper:'P5'},
+        {date:'2026-05-21', subject:'Computer', paper:'P4'}
+    ];
 
-// History functionality
-function saveToHistory(item){
-  let history = JSON.parse(localStorage.getItem('searchHistory')||'[]');
-  history.unshift({...item, timestamp:new Date().toISOString()});
-  localStorage.setItem('searchHistory', JSON.stringify(history.slice(0,10)));
-  updateHistory();
-}
-function updateHistory(){
-  const tbody = document.getElementById('historyTableBody');
-  const history = JSON.parse(localStorage.getItem('searchHistory')||'[]');
-  if(!history.length){tbody.innerHTML=`<tr><td colspan="6" style="text-align:center;">No history yet</td></tr>`; return;}
-  tbody.innerHTML = history.map((h,i)=>`
-    <tr onclick="openPaper('${h.subjectCode}','${h.component}','${h.session}','${h.year}','${h.paperType}')">
-      <td>${getSubjectName(h.subjectCode)}</td>
-      <td>${h.component}</td>
-      <td>${h.session.toUpperCase()}</td>
-      <td>20${h.year}</td>
-      <td>${h.paperType.toUpperCase()}</td>
-      <td><span class="delete-item" onclick="deleteItem(${i},event)">✖</span></td>
-    </tr>
-  `).join('');
-}
-function deleteItem(i,e){e.stopPropagation(); let h=JSON.parse(localStorage.getItem('searchHistory')||'[]'); h.splice(i,1); localStorage.setItem('searchHistory',JSON.stringify(h)); updateHistory();}
-function getSubjectName(code){
-  const map={'9702':'Physics','9701':'Chemistry','9618':'Computer Science','9608':'Computer (before 2021)','9709':'Mathematics','8021':'English General Paper'};
-  return map[code]||code;
-}
+    function populateExams() {
+        const container = document.getElementById('examTracker');
+        const today = new Date();
+        exams.forEach(ex => {
+            const exDate = new Date(ex.date);
+            const card = document.createElement('div');
+            card.classList.add('exam-card');
+            card.classList.add(exDate >= today ? 'upcoming':'past');
+            card.innerHTML = `<strong>${ex.subject}</strong><br>${ex.paper}<div class="exam-date">${ex.date}</div>`;
+            container.appendChild(card);
+        });
+    }
 
-// Open past paper
-function openPastPaper(){
-  const s=document.getElementById('subjectCode').value;
-  const c=document.getElementById('component').value;
-  const ses=document.getElementById('session').value;
-  const y=document.getElementById('year').value;
-  const p=document.getElementById('paperType').value;
-  saveToHistory({subjectCode:s, component:c, session:ses, year:y, paperType:p});
-  const url = `https://pastpapers.papacambridge.com/directories/CAIE/CAIE-pastpapers/upload/${s}_${ses}${y}_${p}_${c}.pdf`;
-  window.open(url,'_blank');
-  updateHistory();
-}
-function openPaper(s,c,ses,y,p){const url=`https://pastpapers.papacambridge.com/directories/CAIE/CAIE-pastpapers/upload/${s}_${ses}${y}_${p}_${c}.pdf`; window.open(url,'_blank');}
+    // --- Years & Papers ---
+    const years = [2024,2023,2022,2021,2020,2019,2018]; // Add more if needed
+    const papers = ['P1','P2','P3','P4','P5'];
 
-// YouTube search
-function searchYoutube(){
-  const subj=document.getElementById('subjectCode').value;
-  const comp=document.getElementById('component').value;
-  const q=`${subj} ${comp} paper`;
-  window.open(`https://www.youtube.com/results?search_query=${encodeURIComponent(q)}`,'_blank');
-}
+    function populateDropdowns() {
+        const yearSel = document.getElementById('yearSelect');
+        years.forEach(y => {
+            const opt = document.createElement('option');
+            opt.value = y;
+            opt.textContent = y;
+            yearSel.appendChild(opt);
+        });
+        const paperSel = document.getElementById('paperSelect');
+        papers.forEach(p => {
+            const opt = document.createElement('option');
+            opt.value = p;
+            opt.textContent = p;
+            paperSel.appendChild(opt);
+        });
+    }
 
-// Load history
-updateHistory();
+    // --- Generate QP Links ---
+    function generateLinks() {
+        const linksContainer = document.getElementById('linksSection');
+        years.forEach(y=>{
+            ['m','s','w'].forEach(sess=>{
+                papers.forEach(p=>{
+                    const linkCard = document.createElement('div');
+                    linkCard.classList.add('link-card');
+                    linkCard.innerHTML = `<strong>${p} ${y} (${sess.toUpperCase()})</strong><br><a href="https://www.example.com/${y}/${sess}/${p}" target="_blank">QP</a> | <a href="https://www.example.com/${y}/${sess}/${p}/sf" target="_blank">SF</a>`;
+                    linksContainer.appendChild(linkCard);
+                });
+            });
+        });
+    }
 
-// Example exam tracker data
-const exams=[
-  {subject:'Physics',component:'P1',date:'2026-04-28',session:'s'},
-  {subject:'Mathematics',component:'P2',date:'2026-04-29',session:'s'},
-  {subject:'Chemistry',component:'P3',date:'2026-04-30',session:'s'},
-  {subject:'EGP',component:'P1',date:'2026-04-27',session:'s'}
-];
-const tracker=document.getElementById('examTracker');
-exams.forEach(ex=>{
-  const card=document.createElement('div');
-  card.className='exam-card';
-  card.innerHTML=`<h3>${ex.subject}</h3><p>${ex.component}</p><p>${ex.date} (${ex.session.toUpperCase()})</p>`;
-  tracker.appendChild(card);
-});
+    // --- Button Actions ---
+    document.getElementById('goLink').addEventListener('click', ()=>{
+        const year = document.getElementById('yearSelect').value;
+        const sess = document.getElementById('sessionSelect').value;
+        const paper = document.getElementById('paperSelect').value;
+        const url = `https://www.example.com/${year}/${sess}/${paper}`;
+        window.open(url,'_blank');
+    });
 
-// Theme toggle
-const toggle=document.getElementById('themeToggle');
-toggle.onclick=function(){
-  document.body.classList.toggle('dark');
-}
+    document.getElementById('ytGo').addEventListener('click', ()=>{
+        const query = document.getElementById('ytSearch').value.trim();
+        if(query) {
+            const ytUrl = `https://www.youtube.com/results?search_query=${query}`;
+            window.open(ytUrl,'_blank');
+        }
+    });
+
+    // --- Initialize ---
+    populateExams();
+    populateDropdowns();
+    generateLinks();
 </script>
 </body>
 </html>
