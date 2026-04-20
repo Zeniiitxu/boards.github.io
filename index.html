@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=yes">
-    <title>focus.live · cozy co-study</title>
+    <title>focus.live</title>
     <style>
         * {
             margin: 0;
@@ -11,9 +11,7 @@
             box-sizing: border-box;
         }
 
-        /* ========== GUMROAD INSPIRED THEME ========== */
         :root {
-            /* Light mode (default) - Gumroad warm cream/peach */
             --bg-gradient-start: #fff9f0;
             --bg-gradient-end: #ffe8dc;
             --text-primary: #3d2b1a;
@@ -21,16 +19,13 @@
             --card-bg: rgba(255, 251, 245, 0.92);
             --card-border: #f0e0d0;
             --accent-peach: #ff6b6b;
-            --accent-coral: #ff8c6b;
             --accent-warm: #ffb347;
-            --accent-soft: #f5a97f;
             --avatar-bg: #fff5ee;
             --avatar-border: #ffd9c4;
             --avatar-active: #ffe8dc;
             --input-bg: #ffffffdd;
             --input-border: #ffdec8;
             --timer-bg: #fff8f2;
-            --timer-border: #ffdec8;
             --leader-row-border: #f5e6da;
             --chat-bubble: #ffffffdd;
             --chat-border-left: #ff8c6b;
@@ -42,11 +37,10 @@
             --shadow-sm: 0 8px 24px rgba(255, 107, 107, 0.12);
             --button-gradient-start: #ff8c6b;
             --button-gradient-end: #ffb347;
-            --button-gradient-secondary: #f5a97f;
-            --button-gradient-secondary-end: #e5986e;
+            --clock-bg: #fff0e8;
+            --goal-bg: #fff5ee;
         }
 
-        /* Dark mode - Gumroad warm dark variant */
         body.dark {
             --bg-gradient-start: #2a2418;
             --bg-gradient-end: #1f1a12;
@@ -55,33 +49,29 @@
             --card-bg: rgba(45, 38, 30, 0.92);
             --card-border: #5a4a38;
             --accent-peach: #ff8c6b;
-            --accent-coral: #ff7b5c;
             --accent-warm: #e6974a;
-            --accent-soft: #c97a52;
             --avatar-bg: #3d3226;
             --avatar-border: #6a553f;
             --avatar-active: #4d3e2e;
             --input-bg: #3d3226cc;
             --input-border: #6a553f;
             --timer-bg: #3d3226;
-            --timer-border: #6a553f;
             --leader-row-border: #4d3e2e;
             --chat-bubble: #3d3226cc;
             --chat-border-left: #ff8c6b;
             --scroll-track: #3d3226;
             --scroll-thumb: #6a553f;
             --badge-bg: #3d3226;
-            --online-green: #7cb518;
             --typing-bg: #3d3226;
             --shadow-sm: 0 8px 24px rgba(0, 0, 0, 0.3);
             --button-gradient-start: #ff8c6b;
             --button-gradient-end: #e6974a;
-            --button-gradient-secondary: #c97a52;
-            --button-gradient-secondary-end: #b86a44;
+            --clock-bg: #3d3226;
+            --goal-bg: #3d3226;
         }
 
         body {
-            font-family: 'Inter', -apple-system, 'Segoe UI', system-ui, 'Quicksand', sans-serif;
+            font-family: -apple-system, 'Segoe UI', system-ui, 'Helvetica Neue', sans-serif;
             background: linear-gradient(135deg, var(--bg-gradient-start), var(--bg-gradient-end));
             color: var(--text-primary);
             padding: 16px;
@@ -94,10 +84,9 @@
             width: 100%;
         }
 
-        /* header */
         .top-bar {
             text-align: center;
-            margin-bottom: 24px;
+            margin-bottom: 20px;
         }
         .top-bar h1 {
             font-size: 2rem;
@@ -106,72 +95,66 @@
             background-clip: text;
             -webkit-background-clip: text;
             color: transparent;
-            letter-spacing: -0.5px;
         }
-        .top-bar p {
-            font-size: 0.75rem;
-            color: var(--text-soft);
-            margin-top: 4px;
-        }
-        .header-actions {
+        .header-row {
             display: flex;
-            justify-content: flex-end;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 12px;
             margin-top: 8px;
         }
+        .clock-widget {
+            background: var(--clock-bg);
+            border-radius: 60px;
+            padding: 6px 16px;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            border: 1px solid var(--card-border);
+            font-family: monospace;
+        }
+        .clock-time { font-size: 1rem; font-weight: 600; color: var(--accent-peach); }
+        .clock-date { font-size: 0.65rem; color: var(--text-soft); }
         .dark-toggle {
             background: var(--badge-bg);
             border: 1px solid var(--card-border);
             border-radius: 60px;
-            padding: 6px 14px;
+            padding: 6px 16px;
             cursor: pointer;
             font-size: 0.7rem;
             color: var(--text-primary);
-            position: relative;
-            overflow: hidden;
-            transition: all 0.2s;
-        }
-        .dark-toggle:hover {
-            transform: scale(0.98);
         }
 
         .status-banner {
             background: var(--badge-bg);
             border-radius: 60px;
-            padding: 6px 14px;
-            font-size: 0.7rem;
+            padding: 5px 12px;
+            font-size: 0.65rem;
             text-align: center;
-            margin-bottom: 20px;
-            backdrop-filter: blur(4px);
-            border: 1px solid var(--card-border);
+            margin-bottom: 16px;
         }
 
-        /* Desktop side-by-side layout */
         .study-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 20px;
+            gap: 16px;
             align-items: start;
         }
 
         .left-column, .right-column {
             display: flex;
             flex-direction: column;
-            gap: 16px;
+            gap: 14px;
         }
 
-        /* cards */
         .card {
             background: var(--card-bg);
             backdrop-filter: blur(12px);
             border-radius: 28px;
-            padding: 18px;
+            padding: 16px;
             border: 1px solid var(--card-border);
             box-shadow: var(--shadow-sm);
-            transition: transform 0.2s ease, box-shadow 0.2s ease;
-        }
-        .card:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 12px 28px rgba(255, 107, 107, 0.2);
         }
 
         .card-title {
@@ -179,95 +162,77 @@
             align-items: center;
             gap: 8px;
             font-weight: 600;
-            font-size: 0.7rem;
+            font-size: 0.65rem;
             text-transform: uppercase;
             letter-spacing: 1px;
             color: var(--text-soft);
-            margin-bottom: 14px;
-            padding-bottom: 8px;
+            margin-bottom: 12px;
+            padding-bottom: 6px;
             border-bottom: 2px solid var(--accent-peach);
         }
 
-        /* avatar grid */
         .avatar-strip {
             display: flex;
             flex-wrap: wrap;
             gap: 8px;
-            margin: 12px 0;
+            margin: 10px 0;
         }
         .avatar-btn {
             background: var(--avatar-bg);
             border: 2px solid var(--avatar-border);
             border-radius: 60px;
-            font-size: 1.1rem;
+            font-size: 1.2rem;
             padding: 6px 12px;
             cursor: pointer;
             display: inline-flex;
             align-items: center;
             gap: 6px;
-            font-weight: 500;
-            transition: all 0.2s ease;
-            position: relative;
-            overflow: hidden;
             color: var(--text-primary);
         }
         .avatar-btn span { font-size: 0.65rem; }
         .avatar-btn.active {
             background: var(--avatar-active);
             border-color: var(--accent-peach);
-            transform: scale(0.98);
-        }
-        .avatar-btn:hover {
-            transform: scale(0.97);
         }
 
         .minimal-input {
             width: 100%;
-            padding: 12px 16px;
+            padding: 10px 14px;
             background: var(--input-bg);
             border: 2px solid var(--input-border);
             border-radius: 60px;
             font-size: 0.85rem;
             font-family: inherit;
             color: var(--text-primary);
-            backdrop-filter: blur(4px);
-            transition: all 0.2s;
         }
-        .minimal-input:focus { 
-            outline: none; 
-            border-color: var(--accent-peach);
-            box-shadow: 0 0 0 3px rgba(255, 107, 107, 0.2);
-        }
+        .minimal-input:focus { outline: none; border-color: var(--accent-peach); }
 
-        /* timer */
         .timer-block {
             background: var(--timer-bg);
             border-radius: 48px;
-            padding: 20px;
+            padding: 16px;
             text-align: center;
-            margin: 12px 0;
-            border: 2px solid var(--timer-border);
+            margin: 10px 0;
+            border: 2px solid var(--card-border);
         }
         #timer {
-            font-family: 'SF Mono', 'JetBrains Mono', monospace;
+            font-family: monospace;
             font-size: 3rem;
             font-weight: 700;
             letter-spacing: 3px;
-            color: var(--text-primary);
-            transition: all 0.2s ease;
         }
         .timer-pulse {
-            animation: timerPulse 1s ease-in-out infinite;
+            animation: pulse 1s infinite;
         }
-        @keyframes timerPulse {
-            0% { transform: scale(1); text-shadow: 0 0 0px rgba(255, 107, 107, 0); }
-            50% { transform: scale(1.02); text-shadow: 0 0 12px rgba(255, 107, 107, 0.4); }
-            100% { transform: scale(1); text-shadow: 0 0 0px rgba(255, 107, 107, 0); }
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.01); text-shadow: 0 0 8px rgba(255,107,107,0.3); }
+            100% { transform: scale(1); }
         }
 
         .button-group {
             display: flex;
-            gap: 12px;
+            gap: 10px;
         }
         .cute-btn {
             flex: 1;
@@ -275,207 +240,206 @@
             border: none;
             padding: 10px 0;
             border-radius: 60px;
-            font-weight: 700;
+            font-weight: 600;
             font-size: 0.8rem;
             color: white;
             cursor: pointer;
-            transition: transform 0.1s ease;
-            box-shadow: 0 4px 12px rgba(255, 107, 107, 0.3);
-            position: relative;
-            overflow: hidden;
         }
         .cute-btn.secondary {
-            background: linear-gradient(135deg, var(--button-gradient-secondary), var(--button-gradient-secondary-end));
+            background: linear-gradient(135deg, #c97a52, #b86a44);
         }
-        .cute-btn:active { transform: scale(0.97); }
 
         .scroll-area {
-            max-height: 200px;
+            max-height: 180px;
             overflow-y: auto;
-            margin: 10px 0;
-            padding-right: 4px;
+            margin: 8px 0;
         }
 
-        /* active users */
         .active-users-wrapper {
             display: flex;
             flex-wrap: wrap;
-            gap: 8px;
+            gap: 6px;
         }
         .active-user-chip {
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
             background: var(--badge-bg);
-            padding: 5px 12px;
+            padding: 4px 10px;
             border-radius: 60px;
             font-size: 0.7rem;
             border: 1px solid var(--card-border);
         }
         .online-dot {
-            width: 8px;
-            height: 8px;
-            background: var(--online-green);
+            width: 6px;
+            height: 6px;
+            background: #7cb518;
             border-radius: 50%;
             display: inline-block;
-            animation: pulse 1.5s infinite;
+            margin-right: 4px;
         }
-        @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
 
-        /* leaderboard */
         .leader-row {
             display: flex;
             align-items: center;
-            gap: 10px;
-            padding: 8px 0;
+            gap: 8px;
+            padding: 6px 0;
             border-bottom: 1px solid var(--leader-row-border);
-            font-size: 0.8rem;
+            font-size: 0.75rem;
         }
 
-        /* longest sessions blocks */
         .longest-grid {
             display: flex;
             flex-direction: column;
-            gap: 8px;
+            gap: 6px;
         }
         .longest-block {
             background: var(--badge-bg);
-            border-radius: 18px;
-            padding: 10px 14px;
+            border-radius: 16px;
+            padding: 8px 12px;
             display: flex;
             align-items: center;
-            gap: 10px;
-            border-left: 4px solid var(--accent-peach);
-            transition: transform 0.1s;
+            gap: 8px;
+            border-left: 3px solid var(--accent-peach);
         }
-        .longest-block:hover {
-            transform: translateX(4px);
-        }
-        .longest-rank { font-size: 1.1rem; min-width: 35px; }
-        .longest-avatar { font-size: 1.5rem; }
+        .longest-rank { font-size: 1rem; min-width: 30px; }
+        .longest-avatar { font-size: 1.3rem; }
         .longest-info { flex: 1; }
-        .longest-name { font-weight: 700; font-size: 0.8rem; }
-        .longest-time { font-size: 0.65rem; opacity: 0.7; font-family: monospace; }
-        .longest-badge { font-size: 1rem; }
+        .longest-name { font-weight: 600; font-size: 0.75rem; }
+        .longest-time { font-size: 0.6rem; opacity: 0.7; }
 
-        /* chat */
+        /* Goals section */
+        .goals-container {
+            margin-top: 8px;
+        }
+        .goal-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 6px 0;
+            border-bottom: 1px solid var(--leader-row-border);
+        }
+        .goal-checkbox {
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+            accent-color: var(--accent-peach);
+        }
+        .goal-text {
+            flex: 1;
+            font-size: 0.8rem;
+            word-break: break-word;
+        }
+        .goal-text.completed {
+            text-decoration: line-through;
+            opacity: 0.5;
+        }
+        .goal-delete {
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 0.9rem;
+            opacity: 0.5;
+        }
+        .add-goal {
+            display: flex;
+            gap: 8px;
+            margin-top: 10px;
+        }
+        .add-goal input {
+            flex: 1;
+            background: var(--input-bg);
+            border: 1px solid var(--input-border);
+            border-radius: 60px;
+            padding: 8px 12px;
+            font-size: 0.75rem;
+            font-family: inherit;
+        }
+        .add-goal button {
+            background: var(--accent-peach);
+            border: none;
+            border-radius: 60px;
+            padding: 8px 16px;
+            cursor: pointer;
+            font-size: 0.7rem;
+            color: white;
+            font-weight: 600;
+        }
+
         .chat-message {
             background: var(--chat-bubble);
-            border-radius: 18px;
-            padding: 8px 12px;
-            margin-bottom: 8px;
-            border-left: 4px solid var(--chat-border-left);
-        }
-        .chat-message-new {
-            animation: messagePop 0.3s ease-out;
-        }
-        @keyframes messagePop {
-            0% { transform: scale(0.95); opacity: 0; margin-left: 10px; }
-            80% { transform: scale(1.02); }
-            100% { transform: scale(1); opacity: 1; margin-left: 0; }
+            border-radius: 16px;
+            padding: 6px 10px;
+            margin-bottom: 6px;
+            border-left: 3px solid var(--chat-border-left);
         }
         .chat-meta {
             display: flex;
             align-items: center;
-            gap: 8px;
-            margin-bottom: 4px;
-            font-size: 0.65rem;
+            gap: 6px;
+            margin-bottom: 3px;
+            font-size: 0.6rem;
         }
-        .chat-user { font-weight: 700; color: var(--accent-peach); }
-        .chat-time { margin-left: auto; font-size: 0.55rem; opacity: 0.6; }
-        .chat-text { font-size: 0.8rem; word-break: break-word; }
+        .chat-user { font-weight: 600; color: var(--accent-peach); }
+        .chat-time { margin-left: auto; font-size: 0.5rem; opacity: 0.6; }
+        .chat-text { font-size: 0.75rem; word-break: break-word; }
 
         .input-send {
             display: flex;
-            gap: 10px;
-            margin-top: 12px;
+            gap: 8px;
+            margin-top: 10px;
         }
         .input-send input {
             flex: 1;
             background: var(--input-bg);
-            border: 2px solid var(--input-border);
+            border: 1px solid var(--input-border);
             border-radius: 60px;
-            padding: 10px 14px;
-            font-family: inherit;
-            font-size: 0.8rem;
-            color: var(--text-primary);
-        }
-        .input-send input:focus {
-            outline: none;
-            border-color: var(--accent-peach);
+            padding: 8px 12px;
+            font-size: 0.75rem;
         }
         .input-send button {
             background: linear-gradient(135deg, var(--button-gradient-start), var(--button-gradient-end));
             border: none;
-            width: 44px;
+            width: 40px;
             border-radius: 60px;
             cursor: pointer;
-            font-size: 1rem;
+            font-size: 0.9rem;
             color: white;
-            position: relative;
-            overflow: hidden;
         }
 
         .typing-indicator {
-            font-size: 0.65rem;
-            padding: 5px 10px;
+            font-size: 0.6rem;
+            padding: 4px 8px;
             background: var(--typing-bg);
             border-radius: 60px;
             display: inline-block;
-            margin-top: 8px;
+            margin-top: 6px;
+        }
+
+        .clear-chat-btn {
+            background: var(--badge-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 60px;
+            padding: 4px 10px;
+            font-size: 0.6rem;
+            cursor: pointer;
+            margin-left: 8px;
             color: var(--text-soft);
         }
 
         .tiny-note {
-            font-size: 0.6rem;
+            font-size: 0.55rem;
             text-align: center;
-            margin-top: 24px;
-            opacity: 0.6;
-            color: var(--text-soft);
+            margin-top: 16px;
+            opacity: 0.5;
         }
 
-        ::-webkit-scrollbar { width: 4px; }
-        ::-webkit-scrollbar-track { background: var(--scroll-track); border-radius: 10px; }
+        ::-webkit-scrollbar { width: 3px; }
+        ::-webkit-scrollbar-track { background: var(--scroll-track); }
         ::-webkit-scrollbar-thumb { background: var(--scroll-thumb); border-radius: 10px; }
 
-        /* Mobile: single column */
         @media (max-width: 768px) {
-            body {
-                padding: 12px;
-            }
-            .study-grid {
-                grid-template-columns: 1fr;
-                gap: 12px;
-            }
-            .left-column, .right-column {
-                gap: 12px;
-            }
-            .card {
-                padding: 14px;
-            }
-            #timer {
-                font-size: 2.5rem;
-            }
-            .avatar-btn {
-                font-size: 1rem;
-                padding: 5px 10px;
-            }
-            .avatar-btn span {
-                font-size: 0.6rem;
-            }
-            .cute-btn {
-                padding: 10px 0;
-                font-size: 0.75rem;
-            }
-        }
-
-        @media (max-width: 480px) {
-            .top-bar h1 {
-                font-size: 1.6rem;
-            }
-            #timer {
-                font-size: 2rem;
-            }
+            .study-grid { grid-template-columns: 1fr; gap: 12px; }
+            #timer { font-size: 2.2rem; }
+            .header-row { flex-direction: column; align-items: stretch; }
+            .dark-toggle { text-align: center; }
         }
     </style>
 </head>
@@ -483,34 +447,39 @@
 <div class="app">
     <div class="top-bar">
         <h1>focus.live</h1>
-        <p>cozy co-study · warm peach vibes · real-time chat</p>
-        <div class="header-actions"><button class="dark-toggle" id="darkModeToggle">🌙 dark mode</button></div>
+        <div class="header-row">
+            <div class="clock-widget">
+                <span class="clock-time" id="clockTime">--:-- --</span>
+                <span class="clock-date" id="clockDate">--- --</span>
+            </div>
+            <button class="dark-toggle" id="darkModeToggle">🌙 dark</button>
+        </div>
     </div>
-    <div class="status-banner" id="connectionStatus">🔄 connecting to cozy study space...</div>
+    <div class="status-banner" id="connectionStatus">🔄 connecting...</div>
 
     <div class="study-grid">
-        <!-- LEFT COLUMN -->
         <div class="left-column">
             <div class="card">
-                <div class="card-title"><span>🎭</span> your alter ego</div>
+                <div class="card-title"><span>🎭</span> alter ego</div>
                 <div class="avatar-strip" id="avatarStrip">
-                    <button class="avatar-btn" data-avatar="😺">😺 <span>meow</span></button>
-                    <button class="avatar-btn" data-avatar="🦊">🦊 <span>foxy</span></button>
-                    <button class="avatar-btn" data-avatar="🍜">🍜 <span>noodle</span></button>
-                    <button class="avatar-btn" data-avatar="🤌">🤌 <span>italian</span></button>
-                    <button class="avatar-btn" data-avatar="✨">✨ <span>main</span></button>
-                    <button class="avatar-btn" data-avatar="🐺">🐺 <span>sigma</span></button>
-                    <button class="avatar-btn" data-avatar="🧸">🧸 <span>bear</span></button>
+                    <button class="avatar-btn" data-avatar="😥" data-name="tension">😥 <span>tension</span></button>
+                    <button class="avatar-btn" data-avatar="🙉" data-name="monkey">🙉 <span>monkey</span></button>
+                    <button class="avatar-btn" data-avatar="🤫🧏🏻‍♀️" data-name="sigma girl">🤫🧏🏻‍♀️ <span>sigma girl</span></button>
+                    <button class="avatar-btn" data-avatar="🤫🧏🏻‍♂️" data-name="sigma boy">🤫🧏🏻‍♂️ <span>sigma boy</span></button>
+                    <button class="avatar-btn" data-avatar="🥀" data-name="ts fr">🥀 <span>ts fr</span></button>
+                    <button class="avatar-btn" data-avatar="🗿" data-name="nonchalant">🗿 <span>nonchalant finalboss</span></button>
+                    <button class="avatar-btn" data-avatar="🏳" data-name="finalboss">🏳 <span>ts pmo sb icl</span></button>
+                    <button class="avatar-btn" data-avatar="😇" data-name="peaceful">😇 <span>low cortisol</span></button>
                 </div>
-                <input type="text" id="usernameField" class="minimal-input" placeholder="your cozy name" autocomplete="off">
+                <input type="text" id="usernameField" class="minimal-input" placeholder="your name" autocomplete="off" value="">
             </div>
 
             <div class="card">
                 <div class="card-title"><span>⏱️</span> focus timer</div>
                 <div class="timer-block"><div id="timer">00:00</div></div>
                 <div class="button-group">
-                    <button class="cute-btn" id="timerToggleBtn">🌸 start</button>
-                    <button class="cute-btn secondary" id="finishSessionBtn">✨ finish</button>
+                    <button class="cute-btn" id="timerToggleBtn">▶ start</button>
+                    <button class="cute-btn secondary" id="finishSessionBtn">✓ finish</button>
                 </div>
             </div>
 
@@ -519,31 +488,39 @@
                 <div id="activeUsersList" class="active-users-wrapper">loading...</div>
                 <div id="typingIndicatorArea" class="typing-indicator">✨ nobody typing...</div>
             </div>
+
+            <div class="card">
+                <div class="card-title"><span>🎯</span> my goals (only you see)</div>
+                <div id="goalsList" class="goals-container"></div>
+                <div class="add-goal">
+                    <input type="text" id="goalInput" placeholder="add a goal...">
+                    <button id="addGoalBtn">+</button>
+                </div>
+            </div>
         </div>
 
-        <!-- RIGHT COLUMN -->
         <div class="right-column">
             <div class="card">
-                <div class="card-title"><span>📋</span> today's top focusers</div>
-                <div id="leaderboardArea" class="scroll-area">✨ no sessions yet</div>
+                <div class="card-title"><span>📋</span> leaderboard</div>
+                <div id="leaderboardArea" class="scroll-area">✨ no sessions</div>
             </div>
 
             <div class="card">
-                <div class="card-title"><span>🏆</span> longest sessions · all time</div>
+                <div class="card-title"><span>🏆</span> longest sessions</div>
                 <div id="longestList" class="longest-grid">loading...</div>
             </div>
 
             <div class="card">
-                <div class="card-title"><span>💬</span> live chat</div>
+                <div class="card-title"><span>💬</span> live chat <button class="clear-chat-btn" id="clearChatBtn">clear all</button></div>
                 <div id="chatArea" class="scroll-area"></div>
                 <div class="input-send">
-                    <input type="text" id="chatInputField" placeholder="type a sweet message...">
+                    <input type="text" id="chatInputField" placeholder="message...">
                     <button id="sendChatBtn">→</button>
                 </div>
             </div>
         </div>
     </div>
-    <div class="tiny-note">☕ warm & cozy · everything syncs live · your study friends are here</div>
+    <div class="tiny-note">⚡ live · goals are private · chat clears for everyone</div>
 </div>
 
 <script type="module">
@@ -556,8 +533,7 @@
         projectId: "styd-d1945",
         storageBucket: "styd-d1945.firebasestorage.app",
         messagingSenderId: "60953296553",
-        appId: "1:60953296553:web:ac86bfccdd16c915aff3b8",
-        measurementId: "G-K8ZQJ0PEN5"
+        appId: "1:60953296553:web:ac86bfccdd16c915aff3b8"
     };
 
     const app = initializeApp(firebaseConfig);
@@ -574,8 +550,13 @@
         localStorage.setItem("focusUserId", currentUserId);
     }
     
-    let currentAvatar = localStorage.getItem("liveAvatar") || "😺";
-    let currentUsername = localStorage.getItem("liveUsername") || "studycute";
+    let currentAvatar = localStorage.getItem("liveAvatar") || "😥";
+    let currentUsername = localStorage.getItem("liveUsername") || "";
+    
+    // If no username saved, leave empty - user must type
+    if (!currentUsername) {
+        currentUsername = "";
+    }
     
     let currentSeconds = 0;
     let timerInterval = null;
@@ -583,6 +564,7 @@
     let typingTimeout = null;
     let isTypingCurrently = false;
     
+    // DOM
     const usernameInput = document.getElementById('usernameField');
     const timerDisplay = document.getElementById('timer');
     const toggleBtn = document.getElementById('timerToggleBtn');
@@ -596,6 +578,72 @@
     const connectionSpan = document.getElementById('connectionStatus');
     const darkToggle = document.getElementById('darkModeToggle');
     const chatArea = document.getElementById('chatArea');
+    const clearChatBtn = document.getElementById('clearChatBtn');
+    const goalsListDiv = document.getElementById('goalsList');
+    const goalInput = document.getElementById('goalInput');
+    const addGoalBtn = document.getElementById('addGoalBtn');
+    const clockTimeEl = document.getElementById('clockTime');
+    const clockDateEl = document.getElementById('clockDate');
+    
+    // Clock
+    function updateClock() {
+        const now = new Date();
+        const hours = now.getHours();
+        const minutes = now.getMinutes().toString().padStart(2, '0');
+        const ampm = hours >= 12 ? 'PM' : 'AM';
+        const displayHours = hours % 12 || 12;
+        clockTimeEl.textContent = `${displayHours}:${minutes} ${ampm}`;
+        clockDateEl.textContent = now.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+    }
+    updateClock();
+    setInterval(updateClock, 1000);
+    
+    // Goals (localStorage only - private)
+    let userGoals = JSON.parse(localStorage.getItem(`goals_${currentUserId}`) || '[]');
+    
+    function renderGoals() {
+        if (!goalsListDiv) return;
+        if (userGoals.length === 0) {
+            goalsListDiv.innerHTML = '<div style="padding:8px 0; text-align:center; opacity:0.5; font-size:0.7rem;">✨ add a study goal</div>';
+            return;
+        }
+        goalsListDiv.innerHTML = userGoals.map((goal, idx) => `
+            <div class="goal-item">
+                <input type="checkbox" class="goal-checkbox" data-idx="${idx}" ${goal.completed ? 'checked' : ''}>
+                <span class="goal-text ${goal.completed ? 'completed' : ''}">${escapeHtml(goal.text)}</span>
+                <button class="goal-delete" data-idx="${idx}">✕</button>
+            </div>
+        `).join('');
+        
+        document.querySelectorAll('.goal-checkbox').forEach(cb => {
+            cb.addEventListener('change', (e) => {
+                const idx = parseInt(e.target.dataset.idx);
+                userGoals[idx].completed = e.target.checked;
+                localStorage.setItem(`goals_${currentUserId}`, JSON.stringify(userGoals));
+                renderGoals();
+            });
+        });
+        document.querySelectorAll('.goal-delete').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                const idx = parseInt(e.target.dataset.idx);
+                userGoals.splice(idx, 1);
+                localStorage.setItem(`goals_${currentUserId}`, JSON.stringify(userGoals));
+                renderGoals();
+            });
+        });
+    }
+    
+    function addGoal() {
+        const text = goalInput.value.trim();
+        if (!text) return;
+        userGoals.push({ text: text, completed: false, createdAt: Date.now() });
+        localStorage.setItem(`goals_${currentUserId}`, JSON.stringify(userGoals));
+        goalInput.value = '';
+        renderGoals();
+    }
+    
+    addGoalBtn.addEventListener('click', addGoal);
+    goalInput.addEventListener('keypress', (e) => { if (e.key === 'Enter') addGoal(); });
     
     function formatTime(secs) {
         let mins = Math.floor(secs / 60);
@@ -615,7 +663,7 @@
         if(timerInterval) clearInterval(timerInterval);
         timerInterval = null;
         isRunning = false;
-        toggleBtn.innerHTML = '🌸 start';
+        toggleBtn.innerHTML = '▶ start';
         timerDisplay.classList.remove('timer-pulse');
     }
     
@@ -633,14 +681,17 @@
     }
     function setUsername(name) {
         let trimmed = name.trim();
-        if(trimmed === "") trimmed = "studycute";
         currentUsername = trimmed;
         localStorage.setItem("liveUsername", currentUsername);
-        usernameInput.value = currentUsername;
         updateActiveUser();
     }
     
+    usernameInput.value = currentUsername;
+    usernameInput.addEventListener('input', (e) => setUsername(e.target.value));
+    // No default "studycute" - user must type their own name
+    
     async function updateActiveUser() {
+        if (!currentUsername) return;
         try {
             const q = query(collection(db, ACTIVE_USERS_COLLECTION), where("userId", "==", currentUserId));
             const snap = await getDocs(q);
@@ -665,46 +716,48 @@
     }
     
     function explodeConfetti() {
-        for(let i = 0; i < 60; i++) {
-            let confetti = document.createElement('div');
-            const emojis = ['🎉', '✨', '🌸', '⭐', '💖', '🎈', '🍪', '☕'];
+        const emojis = ['🎉', '✨', '🌸', '⭐', '💖'];
+        const count = 25;
+        for(let i = 0; i < count; i++) {
+            const confetti = document.createElement('div');
             confetti.innerHTML = emojis[Math.floor(Math.random() * emojis.length)];
             confetti.style.position = 'fixed';
             confetti.style.left = Math.random() * 100 + '%';
             confetti.style.top = '-20px';
-            confetti.style.fontSize = (Math.random() * 20 + 15) + 'px';
+            confetti.style.fontSize = (Math.random() * 16 + 12) + 'px';
             confetti.style.pointerEvents = 'none';
             confetti.style.zIndex = '9999';
-            confetti.style.transition = 'all 1.2s ease-out';
+            confetti.style.transition = 'all 0.8s ease-out';
             document.body.appendChild(confetti);
             setTimeout(() => {
-                confetti.style.transform = `translateY(${Math.random() * 500 + 200}px) translateX(${(Math.random() - 0.5) * 250}px) rotate(${Math.random() * 360}deg)`;
+                confetti.style.transform = `translateY(${Math.random() * 400 + 150}px) translateX(${(Math.random() - 0.5) * 200}px)`;
                 confetti.style.opacity = '0';
             }, 10);
-            setTimeout(() => confetti.remove(), 1300);
+            setTimeout(() => confetti.remove(), 900);
         }
-        if (navigator.vibrate) navigator.vibrate([100, 50, 100]);
     }
     
     async function finishSession() {
-        if(currentSeconds === 0) { addSystemMessage("☕ run the timer first!", "⏰"); return; }
+        if(currentSeconds === 0) { addSystemMessage("run the timer first!"); return; }
+        if (!currentUsername) { addSystemMessage("please enter your name first!"); return; }
         try {
             await addDoc(collection(db, SESSIONS_COLLECTION), {
                 userId: currentUserId, name: currentUsername, avatar: currentAvatar,
                 timeSeconds: currentSeconds, timestamp: serverTimestamp(),
                 date: new Date().toISOString().slice(0,10)
             });
-            addSystemMessage(`${currentUsername} studied ${formatTime(currentSeconds)}! 🎉`, currentAvatar);
+            addSystemMessage(`${currentUsername} studied ${formatTime(currentSeconds)}! 🎉`);
             explodeConfetti();
             currentSeconds = 0;
             updateTimerUI();
             if(isRunning) pauseTimer();
-        } catch(e) { console.error(e); alert("Failed to save"); }
+        } catch(e) { console.error(e); }
     }
     
     async function sendMessage() {
         let text = chatInput.value.trim();
         if(!text) return;
+        if (!currentUsername) { addSystemMessage("please enter your name first!"); return; }
         try {
             await addDoc(collection(db, CHAT_COLLECTION), {
                 userId: currentUserId, user: currentUsername, avatar: currentAvatar, text: text, timestamp: serverTimestamp()
@@ -714,7 +767,19 @@
         } catch(e) {}
     }
     
-    async function addSystemMessage(text, avatar = "☕") {
+    async function clearAllChat() {
+        if (!confirm("Clear all chat messages for everyone?")) return;
+        try {
+            const q = query(collection(db, CHAT_COLLECTION));
+            const snap = await getDocs(q);
+            const batch = writeBatch(db);
+            snap.forEach(doc => batch.delete(doc.ref));
+            await batch.commit();
+            addSystemMessage("chat cleared by admin ✨");
+        } catch(e) { console.error(e); }
+    }
+    
+    async function addSystemMessage(text, avatar = "📢") {
         try {
             await addDoc(collection(db, CHAT_COLLECTION), {
                 userId: "system", user: "system", avatar: avatar, text: text, timestamp: serverTimestamp()
@@ -723,7 +788,7 @@
     }
     
     async function startTyping() {
-        if(isTypingCurrently) return;
+        if(isTypingCurrently || !currentUsername) return;
         isTypingCurrently = true;
         try {
             const q = query(collection(db, TYPING_COLLECTION), where("userId", "==", currentUserId));
@@ -748,19 +813,8 @@
         } catch(e) {}
     }
     
-    async function cleanupOldTyping() {
-        try {
-            const fiveSecAgo = new Date(Date.now() - 5000);
-            const q = query(collection(db, TYPING_COLLECTION), where("timestamp", "<", Timestamp.fromDate(fiveSecAgo)));
-            const snap = await getDocs(q);
-            const batch = writeBatch(db);
-            snap.forEach(doc => batch.delete(doc.ref));
-            await batch.commit();
-        } catch(e) {}
-    }
-    
     function setupListeners() {
-        connectionSpan.innerHTML = "☕ connected · cozy mode active";
+        connectionSpan.innerHTML = "✅ connected";
         
         const today = new Date().toISOString().slice(0,10);
         const qSessions = query(collection(db, SESSIONS_COLLECTION), orderBy("timestamp", "desc"), limit(200));
@@ -769,14 +823,14 @@
             snapshot.forEach(doc => {
                 const s = doc.data();
                 const sessionDate = s.timestamp?.toDate ? s.timestamp.toDate().toISOString().slice(0,10) : s.date;
-                if(sessionDate === today) {
+                if(sessionDate === today && s.name) {
                     if(!userBest.has(s.userId) || userBest.get(s.userId).timeSeconds < s.timeSeconds) {
                         userBest.set(s.userId, { name: s.name, avatar: s.avatar, timeSeconds: s.timeSeconds });
                     }
                 }
             });
             const leaderboard = Array.from(userBest.values()).sort((a,b) => b.timeSeconds - a.timeSeconds).slice(0,8);
-            if(leaderboard.length === 0) leaderboardDiv.innerHTML = "<div style='padding:12px; text-align:center'>✨ no study sessions today</div>";
+            if(leaderboard.length === 0) leaderboardDiv.innerHTML = "<div style='padding:12px; text-align:center'>✨ no sessions</div>";
             else {
                 leaderboardDiv.innerHTML = leaderboard.map((u, i) => {
                     let medal = i===0?"🥇":i===1?"🥈":i===2?"🥉":`${i+1}.`;
@@ -790,35 +844,25 @@
             const userBest = new Map();
             snapshot.forEach(doc => {
                 const s = doc.data();
-                if(!userBest.has(s.userId) || userBest.get(s.userId).timeSeconds < s.timeSeconds) {
+                if(s.name && (!userBest.has(s.userId) || userBest.get(s.userId).timeSeconds < s.timeSeconds)) {
                     userBest.set(s.userId, { name: s.name, avatar: s.avatar, timeSeconds: s.timeSeconds });
                 }
             });
             const longest = Array.from(userBest.values()).sort((a,b) => b.timeSeconds - a.timeSeconds).slice(0,8);
-            if(longest.length === 0) longestDiv.innerHTML = "<div style='padding:20px; text-align:center'>🏆 no records yet</div>";
+            if(longest.length === 0) longestDiv.innerHTML = "<div style='padding:20px; text-align:center'>🏆 no records</div>";
             else {
                 longestDiv.innerHTML = longest.map((u, i) => {
                     let medal = i===0?"👑":i===1?"🥈":i===2?"🥉":"⭐";
-                    return `
-                        <div class="longest-block">
-                            <div class="longest-rank">${medal}</div>
-                            <div class="longest-avatar">${u.avatar}</div>
-                            <div class="longest-info">
-                                <div class="longest-name">${escapeHtml(u.name)}</div>
-                                <div class="longest-time">${formatTime(u.timeSeconds)}</div>
-                            </div>
-                            <div class="longest-badge">🏆</div>
-                        </div>
-                    `;
+                    return `<div class="longest-block"><div class="longest-rank">${medal}</div><div class="longest-avatar">${u.avatar}</div><div class="longest-info"><div class="longest-name">${escapeHtml(u.name)}</div><div class="longest-time">${formatTime(u.timeSeconds)}</div></div><div>🏆</div></div>`;
                 }).join('');
             }
         });
         
-        const qChat = query(collection(db, CHAT_COLLECTION), orderBy("timestamp", "asc"), limit(80));
+        const qChat = query(collection(db, CHAT_COLLECTION), orderBy("timestamp", "asc"), limit(100));
         onSnapshot(qChat, (snapshot) => {
             const messages = [];
             snapshot.forEach(doc => messages.push({ id: doc.id, ...doc.data() }));
-            if(messages.length === 0) chatArea.innerHTML = "<div style='padding:12px; text-align:center'>💬 be first to chat!</div>";
+            if(messages.length === 0) chatArea.innerHTML = "<div style='padding:12px; text-align:center'>💬 no messages</div>";
             else {
                 chatArea.innerHTML = messages.map(m => {
                     let time = "";
@@ -826,15 +870,10 @@
                         let date = m.timestamp.toDate();
                         time = date.toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'});
                     }
-                    return `<div class="chat-message"><div class="chat-meta"><span>${m.avatar || "💬"}</span><span class="chat-user">${escapeHtml(m.user)}</span><span class="chat-time">${time}</span></div><div class="chat-text">${escapeHtml(m.text)}</div></div>`;
+                    return `<div class="chat-message"><div class="chat-meta"><span>${m.avatar || "💬"}</span><span class="chat-user">${escapeHtml(m.user || "?")}</span><span class="chat-time">${time}</span></div><div class="chat-text">${escapeHtml(m.text || "")}</div></div>`;
                 }).join('');
             }
             chatArea.scrollTop = chatArea.scrollHeight;
-            setTimeout(() => {
-                let lastMsg = chatArea.lastElementChild;
-                if(lastMsg) lastMsg.classList.add('chat-message-new');
-                setTimeout(() => lastMsg?.classList.remove('chat-message-new'), 300);
-            }, 50);
         });
         
         const qActive = query(collection(db, ACTIVE_USERS_COLLECTION), orderBy("timestamp", "desc"));
@@ -843,7 +882,7 @@
             snapshot.forEach(doc => users.push(doc.data()));
             const unique = new Map();
             users.forEach(u => unique.set(u.userId, u));
-            const userList = Array.from(unique.values());
+            const userList = Array.from(unique.values()).filter(u => u.username);
             if(userList.length === 0) activeUsersDiv.innerHTML = "<div style='padding:8px'>👻 no one online</div>";
             else {
                 activeUsersDiv.innerHTML = userList.map(u => `<div class="active-user-chip"><span class="online-dot"></span> ${u.avatar} ${escapeHtml(u.username)}</div>`).join('');
@@ -854,7 +893,7 @@
         onSnapshot(qTyping, (snapshot) => {
             const typing = [];
             snapshot.forEach(doc => typing.push(doc.data()));
-            const others = typing.filter(t => t.userId !== currentUserId);
+            const others = typing.filter(t => t.userId !== currentUserId && t.username);
             if(others.length === 0) typingIndicatorSpan.innerHTML = "✨ nobody typing...";
             else {
                 let names = others.map(t => `${t.avatar} ${t.username}`).join(", ");
@@ -863,81 +902,37 @@
         });
     }
     
-    function addRippleEffect(element, e) {
-        const ripple = document.createElement('span');
-        ripple.style.position = 'absolute';
-        ripple.style.borderRadius = '50%';
-        ripple.style.backgroundColor = 'rgba(255,255,255,0.5)';
-        ripple.style.width = '20px';
-        ripple.style.height = '20px';
-        ripple.style.transform = 'scale(0)';
-        ripple.style.transition = 'transform 0.4s ease-out, opacity 0.4s';
-        ripple.style.pointerEvents = 'none';
-        const rect = element.getBoundingClientRect();
-        const x = e.clientX - rect.left;
-        const y = e.clientY - rect.top;
-        ripple.style.left = x + 'px';
-        ripple.style.top = y + 'px';
-        ripple.style.position = 'absolute';
-        element.style.position = 'relative';
-        element.style.overflow = 'hidden';
-        element.appendChild(ripple);
-        setTimeout(() => { ripple.style.transform = 'scale(30)'; ripple.style.opacity = '0'; }, 10);
-        setTimeout(() => ripple.remove(), 400);
-    }
-    
     function escapeHtml(str) { if(!str) return ''; return str.replace(/[&<>]/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;'}[m])); }
     
     function bindEvents() {
         document.querySelectorAll('.avatar-btn').forEach(btn => {
-            btn.addEventListener('click', (e) => {
-                setAvatar(btn.getAttribute('data-avatar'));
-                addRippleEffect(btn, e);
-            });
+            btn.addEventListener('click', () => setAvatar(btn.getAttribute('data-avatar')));
         });
-        usernameInput.addEventListener('input', (e) => setUsername(e.target.value));
-        toggleBtn.addEventListener('click', (e) => { 
-            isRunning ? pauseTimer() : startTimer();
-            addRippleEffect(e.target, e);
-        });
-        finishBtn.addEventListener('click', (e) => {
-            finishSession();
-            addRippleEffect(e.target, e);
-        });
-        sendChatBtn.addEventListener('click', (e) => {
-            sendMessage();
-            addRippleEffect(e.target, e);
-        });
+        toggleBtn.addEventListener('click', () => { isRunning ? pauseTimer() : startTimer(); });
+        finishBtn.addEventListener('click', finishSession);
+        sendChatBtn.addEventListener('click', sendMessage);
+        clearChatBtn.addEventListener('click', clearAllChat);
         chatInput.addEventListener('keypress', (e) => { if(e.key === 'Enter') sendMessage(); });
         chatInput.addEventListener('input', () => {
-            if(chatInput.value.trim()) startTyping();
+            if(chatInput.value.trim() && currentUsername) startTyping();
             if(typingTimeout) clearTimeout(typingTimeout);
             typingTimeout = setTimeout(() => stopTyping(), 1500);
         });
-        darkToggle.addEventListener('click', (e) => {
+        darkToggle.addEventListener('click', () => {
             document.body.classList.toggle('dark');
             localStorage.setItem('darkMode', document.body.classList.contains('dark'));
-            darkToggle.innerHTML = document.body.classList.contains('dark') ? '☀️ light mode' : '🌙 dark mode';
-            addRippleEffect(e.target, e);
         });
-        document.querySelectorAll('.cute-btn, .avatar-btn, .dark-toggle, .input-send button').forEach(btn => {
-            btn.addEventListener('click', (e) => addRippleEffect(btn, e));
-        });
-        if(localStorage.getItem('darkMode') === 'true') {
-            document.body.classList.add('dark');
-            darkToggle.innerHTML = '☀️ light mode';
-        }
+        if(localStorage.getItem('darkMode') === 'true') document.body.classList.add('dark');
     }
     
-    usernameInput.value = currentUsername;
     highlightAvatar();
     updateTimerUI();
     bindEvents();
+    renderGoals();
     updateActiveUser();
     setupListeners();
     setInterval(updateActiveUser, 20000);
     setInterval(cleanupOldActiveUsers, 15000);
-    setInterval(cleanupOldTyping, 5000);
 </script>
 </body>
 </html>
