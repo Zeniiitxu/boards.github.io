@@ -2,33 +2,55 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Co-Study Hub</title>
     <style>
-        :root { --primary: #7c4dff; --bg: #f5f7fa; --bubble-me: #7c4dff; --bubble-other: #e0e0e0; }
-        body { font-family: 'Segoe UI', sans-serif; background: var(--bg); margin: 0; padding: 20px; }
-        .container { max-width: 500px; margin: auto; background: white; padding: 20px; border-radius: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); }
+        :root { 
+            --bg: #e6e4eb; 
+            --card: #ffffff; 
+            --accent: #8e88a3; 
+            --text: #4a455a; 
+        }
+        body { font-family: 'Segoe UI', sans-serif; background: var(--bg); color: var(--text); padding: 20px; }
+        .container { max-width: 500px; margin: auto; }
+        .card { background: var(--card); padding: 20px; border-radius: 20px; box-shadow: 0 5px 15px rgba(0,0,0,0.05); margin-bottom: 20px; }
         
-        #timer { font-size: 3rem; font-weight: bold; color: var(--primary); text-align: center; }
-        .chat-box { height: 300px; overflow-y: auto; background: #f9f9f9; padding: 15px; border-radius: 15px; margin: 10px 0; border: 1px solid #eee; }
-        .bubble { padding: 10px 15px; border-radius: 18px; margin: 8px 0; max-width: 80%; word-wrap: break-word; }
-        .my-bubble { background: var(--bubble-me); color: white; align-self: flex-end; margin-left: auto; }
-        .other-bubble { background: var(--bubble-other); color: #333; align-self: flex-start; }
+        /* New Widgets */
+        #quote-box { font-style: italic; color: var(--accent); font-size: 0.9rem; text-align: center; }
+        .mood-selector { display: flex; gap: 10px; justify-content: center; margin: 10px 0; }
         
-        input, button { width: 100%; padding: 12px; margin: 5px 0; border-radius: 10px; border: 1px solid #ddd; box-sizing: border-box; }
-        button { background: var(--primary); color: white; border: none; font-weight: bold; cursor: pointer; }
+        /* Elements */
+        input, select { width: 100%; padding: 12px; margin: 5px 0; border: 1px solid #d1ceda; border-radius: 10px; box-sizing: border-box; }
+        button { width: 100%; padding: 12px; background: var(--accent); color: white; border: none; border-radius: 10px; font-weight: bold; cursor: pointer; }
+        
+        #timer { font-size: 3.5rem; font-weight: 200; text-align: center; color: var(--accent); }
+        .chat-box { height: 250px; overflow-y: auto; background: #fdfdfd; padding: 15px; border-radius: 15px; }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <input id="username" placeholder="Enter your name to start...">
-    <div id="timer">00:00</div>
-    <button id="toggleBtn" onclick="toggleTimer()">Start Focus</button>
+    <div class="card" id="quote-box">"Success is the sum of small efforts, repeated."</div>
 
-    <h3>Study Chat</h3>
+    <div class="card">
+        <input id="username" placeholder="Your Name">
+        <select id="mood">
+            <option value="📚">Studying 📚</option>
+            <option value="🧠">Deep Work 🧠</option>
+            <option value="☕">Coffee Break ☕</option>
+            <option value="🎧">Focus Beats 🎧</option>
+        </select>
+        <input id="goal" placeholder="What is your goal today?">
+        
+        <div id="timer">00:00</div>
+        <button id="toggleBtn" onclick="toggleTimer()">Start Focus</button>
+    </div>
+
+    <h3>🏆 Study Circle</h3>
+    <div id="leaderboard" class="card"></div>
+
+    <h3>💬 Live Chat</h3>
     <div class="chat-box" id="chat"></div>
-    <input id="message" placeholder="Type a message...">
+    <input id="message" placeholder="Send a message...">
     <button onclick="sendMessage()">Send</button>
 </div>
 
@@ -36,29 +58,21 @@
     import { initializeApp } from "https://www.gstatic.com/firebasejs/12.12.0/firebase-app.js";
     import { getFirestore, collection, addDoc, onSnapshot, query, orderBy, serverTimestamp } from "https://www.gstatic.com/firebasejs/12.12.0/firebase-firestore.js";
 
-    // 1. YOUR CONFIG (Make sure this matches your Firebase project exactly)
-    const firebaseConfig = {
-        apiKey: "AIzaSyC_uTFuqqywIyPMPjH4sNcXDbC__0vhTOE",
-        authDomain: "styd-d1945.firebaseapp.com",
-        projectId: "styd-d1945",
-        storageBucket: "styd-d1945.firebasestorage.app",
-        messagingSenderId: "60953296553",
-        appId: "1:60953296553:web:ac86bfccdd16c915aff3b8",
-        measurementId: "G-K8ZQJ0PEN5"
-    };
-
+    const firebaseConfig = { /* PASTE CONFIG HERE */ };
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
 
-    // 2. PERSISTENCE: Save name automatically
-    const nameInput = document.getElementById('username');
-    nameInput.value = localStorage.getItem("username") || "";
-    nameInput.oninput = (e) => localStorage.setItem("username", e.target.value);
+    // Save inputs to LocalStorage
+    document.getElementById('username').oninput = (e) => localStorage.setItem("username", e.target.value);
+    document.getElementById('username').value = localStorage.getItem("username") || "";
 
-    // 3. TIMER
+    // Timer logic
     let seconds = 0, timerInterval = null;
     window.toggleTimer = () => {
         const btn = document.getElementById('toggleBtn');
+        const mood = document.getElementById('mood').value;
+        const goal = document.getElementById('goal').value;
+
         if (timerInterval) {
             clearInterval(timerInterval);
             timerInterval = null;
@@ -72,30 +86,24 @@
         }
     };
 
-    // 4. CHAT
+    // Leaderboard logic with Mood and Goal
+    onSnapshot(query(collection(db, "sessions"), orderBy("timestamp", "desc")), (snap) => {
+        const div = document.getElementById('leaderboard');
+        div.innerHTML = "";
+        snap.forEach(d => {
+            const data = d.data();
+            div.innerHTML += `<div>${data.mood} <b>${data.name}</b>: ${data.goal}</div>`;
+        });
+    });
+
+    // Chat
     window.sendMessage = async () => {
         const msg = document.getElementById("message").value;
         const name = localStorage.getItem("username") || "Guest";
         if (!msg) return;
-        
-        try {
-            await addDoc(collection(db, "chat"), { text: msg, user: name, timestamp: serverTimestamp() });
-            document.getElementById("message").value = "";
-        } catch (e) {
-            alert("Error sending: " + e.message);
-        }
+        await addDoc(collection(db, "chat"), { text: msg, user: name, timestamp: serverTimestamp() });
+        document.getElementById("message").value = "";
     };
-
-    onSnapshot(query(collection(db, "chat"), orderBy("timestamp", "asc")), (snap) => {
-        const chat = document.getElementById('chat');
-        chat.innerHTML = "";
-        snap.forEach(d => {
-            const data = d.data();
-            const isMe = data.user === localStorage.getItem("username");
-            chat.innerHTML += `<div class="bubble ${isMe ? 'my-bubble' : 'other-bubble'}"><b>${data.user}:</b> ${data.text}</div>`;
-        });
-        chat.scrollTop = chat.scrollHeight;
-    });
 </script>
 </body>
 </html>
