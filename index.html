@@ -1,14 +1,724 @@
 <!DOCTYPE html>
-<html>
-<body>
-    <h1 id="header">Waiting...</h1>
-    <button id="btn">Click me</button>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>focus.live · real-time co-study with Firebase</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            transition: background-color 0.2s ease, border-color 0.2s ease;
+        }
 
-    <script>
-        document.getElementById('btn').addEventListener('click', () => {
-            document.getElementById('header').innerText = "IT WORKS!";
-            alert("The JavaScript is running!");
+        :root {
+            --bg-page: #f7f5f0;
+            --text-primary: #2c2a24;
+            --text-soft: #8a7f6e;
+            --card-bg: #ffffff;
+            --card-border: #eae4d9;
+            --card-title: #b2a187;
+            --btn-bg: #f0ebe3;
+            --btn-active: #e0d6ca;
+            --avatar-bg: #f5f2ec;
+            --avatar-border: #e2d9cf;
+            --avatar-active: #e6dfd4;
+            --input-bg: #fefcf9;
+            --input-border: #e2d9cf;
+            --timer-bg: #faf8f4;
+            --timer-border: #ece3d9;
+            --leader-row-border: #efe6dd;
+            --chat-bubble: #fefcf9;
+            --chat-border-left: #d9cdbc;
+            --scroll-track: #f0eae2;
+            --scroll-thumb: #d1c3b2;
+            --badge-bg: #f0ebe3;
+            --online-green: #4caf50;
+            --typing-bg: #e8e0d6;
+        }
+
+        body.dark {
+            --bg-page: #1a1c1e;
+            --text-primary: #ece8e0;
+            --text-soft: #a89f8e;
+            --card-bg: #26292c;
+            --card-border: #3a3e42;
+            --card-title: #b8aa92;
+            --btn-bg: #33373b;
+            --btn-active: #40454a;
+            --avatar-bg: #2d3135;
+            --avatar-border: #4a4f55;
+            --avatar-active: #3e4449;
+            --input-bg: #2f3438;
+            --input-border: #4a4f55;
+            --timer-bg: #2b2f33;
+            --timer-border: #3e4348;
+            --leader-row-border: #3a3e42;
+            --chat-bubble: #2f3438;
+            --chat-border-left: #8f7a5c;
+            --scroll-track: #2b2f33;
+            --scroll-thumb: #5f5b52;
+            --badge-bg: #33373b;
+            --typing-bg: #3a3e42;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, 'Segoe UI', system-ui, sans-serif;
+            background: var(--bg-page);
+            color: var(--text-primary);
+            padding: 1.5rem;
+            line-height: 1.4;
+        }
+
+        .app {
+            max-width: 1300px;
+            margin: 0 auto;
+        }
+
+        .top-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            flex-wrap: wrap;
+            margin-bottom: 1.5rem;
+            gap: 1rem;
+        }
+        .title-section h1 {
+            font-size: 1.8rem;
+            font-weight: 500;
+            letter-spacing: -0.3px;
+        }
+        .title-section p {
+            font-size: 0.8rem;
+            color: var(--text-soft);
+        }
+        .dark-toggle {
+            background: var(--btn-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 60px;
+            padding: 6px 16px;
+            cursor: pointer;
+            font-size: 0.8rem;
+        }
+
+        .status-banner {
+            background: var(--badge-bg);
+            border-radius: 60px;
+            padding: 6px 16px;
+            font-size: 0.75rem;
+            display: inline-block;
+            margin-bottom: 1rem;
+        }
+
+        .study-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .card {
+            background: var(--card-bg);
+            border-radius: 28px;
+            padding: 1.4rem;
+            border: 1px solid var(--card-border);
+        }
+
+        .card-title {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: 500;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--card-title);
+            margin-bottom: 1.2rem;
+            border-bottom: 1px solid var(--leader-row-border);
+            padding-bottom: 0.6rem;
+        }
+
+        .avatar-strip {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin: 1rem 0;
+        }
+        .avatar-btn {
+            background: var(--avatar-bg);
+            border: 1px solid var(--avatar-border);
+            border-radius: 60px;
+            font-size: 1.1rem;
+            padding: 5px 12px;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .avatar-btn span { font-size: 0.65rem; }
+        .avatar-btn.active {
+            background: var(--avatar-active);
+            border-color: var(--card-title);
+        }
+
+        .minimal-input {
+            width: 100%;
+            padding: 10px 14px;
+            background: var(--input-bg);
+            border: 1px solid var(--input-border);
+            border-radius: 40px;
+            font-size: 0.85rem;
+            font-family: inherit;
+            color: var(--text-primary);
+        }
+
+        .timer-block {
+            background: var(--timer-bg);
+            border-radius: 32px;
+            padding: 1rem;
+            text-align: center;
+            margin: 1rem 0;
+        }
+        #timer {
+            font-family: monospace;
+            font-size: 3rem;
+            font-weight: 500;
+            letter-spacing: 2px;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 10px;
+            margin-top: 12px;
+        }
+        .minimal-btn {
+            flex: 1;
+            background: var(--btn-bg);
+            border: none;
+            padding: 8px 0;
+            border-radius: 40px;
+            font-weight: 500;
+            font-size: 0.8rem;
+            cursor: pointer;
+        }
+        .minimal-btn.primary { background: var(--btn-active); }
+
+        .scroll-area {
+            max-height: 220px;
+            overflow-y: auto;
+            margin: 0.8rem 0;
+            padding-right: 4px;
+        }
+
+        .active-user-chip {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: var(--badge-bg);
+            padding: 4px 12px;
+            border-radius: 60px;
+            font-size: 0.75rem;
+            margin: 4px;
+        }
+        .online-dot {
+            width: 8px;
+            height: 8px;
+            background: var(--online-green);
+            border-radius: 50%;
+            display: inline-block;
+        }
+
+        .leader-row, .longest-row {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 6px 0;
+            border-bottom: 1px solid var(--leader-row-border);
+            font-size: 0.85rem;
+        }
+
+        .chat-message {
+            background: var(--chat-bubble);
+            border-radius: 18px;
+            padding: 8px 12px;
+            margin-bottom: 8px;
+            border-left: 3px solid var(--chat-border-left);
+        }
+        .chat-meta {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 4px;
+            font-size: 0.7rem;
+        }
+        .chat-user { font-weight: 600; }
+        .chat-time { margin-left: auto; font-size: 0.6rem; opacity: 0.7; }
+        .chat-text { font-size: 0.8rem; word-break: break-word; }
+
+        .input-send {
+            display: flex;
+            gap: 8px;
+            margin-top: 10px;
+        }
+        .input-send input {
+            flex: 1;
+            background: var(--input-bg);
+            border: 1px solid var(--input-border);
+            border-radius: 40px;
+            padding: 8px 14px;
+            font-family: inherit;
+            font-size: 0.8rem;
+        }
+        .input-send button {
+            background: var(--btn-bg);
+            border: none;
+            width: 42px;
+            border-radius: 40px;
+            cursor: pointer;
+        }
+
+        .typing-indicator {
+            font-size: 0.7rem;
+            color: var(--text-soft);
+            padding: 6px 0;
+            font-style: italic;
+            background: var(--typing-bg);
+            border-radius: 20px;
+            padding: 4px 12px;
+            margin-top: 6px;
+            display: inline-block;
+        }
+
+        .tiny-note {
+            font-size: 0.65rem;
+            text-align: center;
+            margin-top: 1.5rem;
+            color: var(--text-soft);
+        }
+
+        ::-webkit-scrollbar { width: 4px; }
+        ::-webkit-scrollbar-track { background: var(--scroll-track); border-radius: 10px; }
+        ::-webkit-scrollbar-thumb { background: var(--scroll-thumb); border-radius: 10px; }
+    </style>
+</head>
+<body>
+<div class="app">
+    <div class="top-bar">
+        <div class="title-section">
+            <h1>⎯ focus.live ⎯</h1>
+            <p>real-time co-study · global leaderboard · active users · typing indicator</p>
+        </div>
+        <button class="dark-toggle" id="darkModeToggle">🌙 dark mode</button>
+    </div>
+    <div class="status-banner" id="connectionStatus">🔄 connecting to Firebase...</div>
+
+    <div class="study-grid">
+        <!-- LEFT COLUMN -->
+        <div>
+            <div class="card">
+                <div class="card-title"><span>🎭</span> alter ego · meme lords</div>
+                <div class="avatar-strip" id="avatarStrip">
+                    <button class="avatar-btn" data-avatar="😺">😺 <span>meow</span></button>
+                    <button class="avatar-btn" data-avatar="🗿">🗿 <span>gigachad</span></button>
+                    <button class="avatar-btn" data-avatar="🫠">🫠 <span>melt</span></button>
+                    <button class="avatar-btn" data-avatar="🤌">🤌 <span>italian</span></button>
+                    <button class="avatar-btn" data-avatar="✨">✨ <span>main</span></button>
+                    <button class="avatar-btn" data-avatar="🐺">🐺 <span>sigma</span></button>
+                    <button class="avatar-btn" data-avatar="🧌">🧌 <span>troll</span></button>
+                    <button class="avatar-btn" data-avatar="👁️👄👁️">👁️👄👁️ <span>stare</span></button>
+                </div>
+                <input type="text" id="usernameField" class="minimal-input" placeholder="your name" autocomplete="off">
+            </div>
+
+            <div class="card">
+                <div class="card-title"><span>⏱️</span> focus timer</div>
+                <div class="timer-block"><div id="timer">00:00</div></div>
+                <div class="button-group">
+                    <button class="minimal-btn" id="timerToggleBtn">▶ start</button>
+                    <button class="minimal-btn primary" id="finishSessionBtn">✓ finish</button>
+                </div>
+                <div style="font-size:0.7rem; margin-top:8px; text-align:center; opacity:0.7;">finish = save to global leaderboard</div>
+            </div>
+
+            <div class="card">
+                <div class="card-title"><span>🏆</span> longest sessions (all time)</div>
+                <div id="longestList" class="scroll-area">loading...</div>
+            </div>
+        </div>
+
+        <!-- RIGHT COLUMN -->
+        <div>
+            <div class="card">
+                <div class="card-title"><span>👥</span> active users · online now</div>
+                <div id="activeUsersList" class="scroll-area" style="max-height: 100px;">loading...</div>
+                <div id="typingIndicatorArea" class="typing-indicator">✨ nobody is typing...</div>
+            </div>
+
+            <div class="card">
+                <div class="card-title"><span>📋</span> global leaderboard (today)</div>
+                <div id="leaderboardArea" class="scroll-area">loading...</div>
+            </div>
+
+            <div class="card">
+                <div class="card-title"><span>💬</span> live chat</div>
+                <div id="chatArea" class="scroll-area"></div>
+                <div class="input-send">
+                    <input type="text" id="chatInputField" placeholder="type a message...">
+                    <button id="sendChatBtn">→</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="tiny-note">⚡ live with Firebase · real-time chat, active users, typing indicator, longest session records</div>
+</div>
+
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/12.12.0/firebase-app.js";
+    import { getFirestore, collection, doc, addDoc, deleteDoc, query, orderBy, limit, onSnapshot, serverTimestamp, Timestamp, where, getDocs, writeBatch } from "https://www.gstatic.com/firebasejs/12.12.0/firebase-firestore.js";
+    
+    // Your Firebase config
+    const firebaseConfig = {
+        apiKey: "AIzaSyC_uTFuqqywIyPMPjH4sNcXDbC__0vhTOE",
+        authDomain: "styd-d1945.firebaseapp.com",
+        projectId: "styd-d1945",
+        storageBucket: "styd-d1945.firebasestorage.app",
+        messagingSenderId: "60953296553",
+        appId: "1:60953296553:web:ac86bfccdd16c915aff3b8",
+        measurementId: "G-K8ZQJ0PEN5"
+    };
+
+    // Initialize Firebase
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+    
+    // Collections
+    const SESSIONS_COLLECTION = "study_sessions";
+    const CHAT_COLLECTION = "chat_messages";
+    const ACTIVE_USERS_COLLECTION = "active_users";
+    const TYPING_COLLECTION = "typing_indicators";
+    
+    // User ID (persistent across sessions)
+    let currentUserId = localStorage.getItem("focusUserId");
+    if (!currentUserId) {
+        currentUserId = crypto.randomUUID ? crypto.randomUUID() : Math.random().toString(36).substring(2);
+        localStorage.setItem("focusUserId", currentUserId);
+    }
+    
+    let currentAvatar = localStorage.getItem("liveAvatar") || "😺";
+    let currentUsername = localStorage.getItem("liveUsername") || "focuser";
+    
+    // Timer state
+    let currentSeconds = 0;
+    let timerInterval = null;
+    let isRunning = false;
+    
+    // Typing debounce
+    let typingTimeout = null;
+    let isTypingCurrently = false;
+    
+    // DOM elements
+    const usernameInput = document.getElementById('usernameField');
+    const timerDisplay = document.getElementById('timer');
+    const toggleBtn = document.getElementById('timerToggleBtn');
+    const finishBtn = document.getElementById('finishSessionBtn');
+    const chatInput = document.getElementById('chatInputField');
+    const sendChatBtn = document.getElementById('sendChatBtn');
+    const leaderboardDiv = document.getElementById('leaderboardArea');
+    const longestDiv = document.getElementById('longestList');
+    const activeUsersDiv = document.getElementById('activeUsersList');
+    const typingIndicatorSpan = document.getElementById('typingIndicatorArea');
+    const connectionSpan = document.getElementById('connectionStatus');
+    const darkToggle = document.getElementById('darkModeToggle');
+    
+    function formatTime(secs) {
+        let mins = Math.floor(secs / 60);
+        let remain = secs % 60;
+        return `${mins.toString().padStart(2, '0')}:${remain.toString().padStart(2, '0')}`;
+    }
+    function updateTimerUI() { timerDisplay.innerText = formatTime(currentSeconds); }
+    
+    function startTimer() {
+        if (timerInterval) clearInterval(timerInterval);
+        isRunning = true;
+        timerInterval = setInterval(() => { if(isRunning) { currentSeconds++; updateTimerUI(); } }, 1000);
+        toggleBtn.innerText = '⏸ pause';
+    }
+    function pauseTimer() {
+        if(timerInterval) clearInterval(timerInterval);
+        timerInterval = null;
+        isRunning = false;
+        toggleBtn.innerText = '▶ start';
+    }
+    
+    // Avatar & username
+    function setAvatar(emoji) {
+        currentAvatar = emoji;
+        localStorage.setItem("liveAvatar", currentAvatar);
+        highlightAvatar();
+        updateActiveUser();
+    }
+    function highlightAvatar() {
+        document.querySelectorAll('.avatar-btn').forEach(btn => {
+            if(btn.getAttribute('data-avatar') === currentAvatar) btn.classList.add('active');
+            else btn.classList.remove('active');
         });
-    </script>
+    }
+    function setUsername(name) {
+        let trimmed = name.trim();
+        if(trimmed === "") trimmed = "focuser";
+        currentUsername = trimmed;
+        localStorage.setItem("liveUsername", currentUsername);
+        usernameInput.value = currentUsername;
+        updateActiveUser();
+    }
+    
+    // Update active user (heartbeat)
+    async function updateActiveUser() {
+        try {
+            const userRef = doc(db, ACTIVE_USERS_COLLECTION, currentUserId);
+            await addDoc(collection(db, ACTIVE_USERS_COLLECTION), {
+                userId: currentUserId,
+                username: currentUsername,
+                avatar: currentAvatar,
+                lastSeen: serverTimestamp(),
+                timestamp: serverTimestamp()
+            });
+            // Clean up old active users after 30 seconds
+        } catch(e) { console.warn("active user update", e); }
+    }
+    
+    // Clean up old active users (older than 30 seconds)
+    async function cleanupOldActiveUsers() {
+        try {
+            const thirtySecAgo = new Date(Date.now() - 30000);
+            const q = query(collection(db, ACTIVE_USERS_COLLECTION), where("timestamp", "<", thirtySecAgo));
+            const snapshot = await getDocs(q);
+            const batch = writeBatch(db);
+            snapshot.docs.forEach(doc => batch.delete(doc.ref));
+            await batch.commit();
+        } catch(e) {}
+    }
+    setInterval(cleanupOldActiveUsers, 15000);
+    setInterval(updateActiveUser, 20000);
+    
+    // Finish session
+    async function finishSession() {
+        if(currentSeconds === 0) { addSystemMessage("run the timer first!"); return; }
+        try {
+            await addDoc(collection(db, SESSIONS_COLLECTION), {
+                userId: currentUserId,
+                name: currentUsername,
+                avatar: currentAvatar,
+                timeSeconds: currentSeconds,
+                timestamp: serverTimestamp(),
+                date: new Date().toISOString().slice(0,10)
+            });
+            addSystemMessage(`🎉 studied ${formatTime(currentSeconds)}!`, currentAvatar);
+            currentSeconds = 0;
+            updateTimerUI();
+            if(isRunning) pauseTimer();
+        } catch(e) { console.error(e); alert("Failed to save session"); }
+    }
+    
+    async function sendMessage() {
+        let text = chatInput.value.trim();
+        if(!text) return;
+        try {
+            await addDoc(collection(db, CHAT_COLLECTION), {
+                userId: currentUserId,
+                user: currentUsername,
+                avatar: currentAvatar,
+                text: text,
+                timestamp: serverTimestamp()
+            });
+            chatInput.value = "";
+            stopTyping();
+        } catch(e) { console.error(e); }
+    }
+    
+    async function addSystemMessage(text, avatar = "⚡") {
+        try {
+            await addDoc(collection(db, CHAT_COLLECTION), {
+                userId: "system",
+                user: "system",
+                avatar: avatar,
+                text: text,
+                timestamp: serverTimestamp()
+            });
+        } catch(e) {}
+    }
+    
+    // Typing indicator
+    async function startTyping() {
+        if(isTypingCurrently) return;
+        isTypingCurrently = true;
+        try {
+            await addDoc(collection(db, TYPING_COLLECTION), {
+                userId: currentUserId,
+                username: currentUsername,
+                avatar: currentAvatar,
+                timestamp: serverTimestamp()
+            });
+        } catch(e) {}
+    }
+    async function stopTyping() {
+        if(!isTypingCurrently) return;
+        isTypingCurrently = false;
+        try {
+            const q = query(collection(db, TYPING_COLLECTION), where("userId", "==", currentUserId));
+            const snapshot = await getDocs(q);
+            const batch = writeBatch(db);
+            snapshot.docs.forEach(doc => batch.delete(doc.ref));
+            await batch.commit();
+        } catch(e) {}
+    }
+    
+    // Clean up old typing indicators (older than 5 seconds)
+    async function cleanupOldTyping() {
+        try {
+            const fiveSecAgo = new Date(Date.now() - 5000);
+            const q = query(collection(db, TYPING_COLLECTION), where("timestamp", "<", fiveSecAgo));
+            const snapshot = await getDocs(q);
+            const batch = writeBatch(db);
+            snapshot.docs.forEach(doc => batch.delete(doc.ref));
+            await batch.commit();
+        } catch(e) {}
+    }
+    setInterval(cleanupOldTyping, 4000);
+    
+    // Set up real-time listeners
+    function setupListeners() {
+        connectionSpan.innerHTML = "✅ connected · live mode";
+        
+        // Leaderboard (today's top sessions by user)
+        const today = new Date().toISOString().slice(0,10);
+        const qSessions = query(collection(db, SESSIONS_COLLECTION), orderBy("timestamp", "desc"), limit(100));
+        onSnapshot(qSessions, (snapshot) => {
+            const sessions = [];
+            snapshot.forEach(doc => sessions.push(doc.data()));
+            // Group by user, take best session per user today
+            const userBest = new Map();
+            sessions.forEach(s => {
+                if(s.date === today || (s.timestamp && new Date(s.timestamp?.toDate?.() || s.timestamp).toISOString().slice(0,10) === today)) {
+                    if(!userBest.has(s.userId) || userBest.get(s.userId).timeSeconds < s.timeSeconds) {
+                        userBest.set(s.userId, { name: s.name, avatar: s.avatar, timeSeconds: s.timeSeconds });
+                    }
+                }
+            });
+            const leaderboard = Array.from(userBest.values()).sort((a,b) => b.timeSeconds - a.timeSeconds).slice(0,10);
+            if(leaderboard.length === 0) leaderboardDiv.innerHTML = "<div style='padding:12px; text-align:center'>✨ no sessions today</div>";
+            else {
+                leaderboardDiv.innerHTML = leaderboard.map((u, i) => {
+                    let medal = i===0?"🥇":i===1?"🥈":i===2?"🥉":`${i+1}.`;
+                    return `<div class="leader-row"><div>${medal}</div><div>${u.avatar}</div><div style="flex:1">${escapeHtml(u.name)}</div><div>${formatTime(u.timeSeconds)}</div></div>`;
+                }).join('');
+            }
+        });
+        
+        // Longest sessions (all time, best per user)
+        const qAllSessions = query(collection(db, SESSIONS_COLLECTION), orderBy("timestamp", "desc"), limit(500));
+        onSnapshot(qAllSessions, (snapshot) => {
+            const userBest = new Map();
+            snapshot.forEach(doc => {
+                const s = doc.data();
+                if(!userBest.has(s.userId) || userBest.get(s.userId).timeSeconds < s.timeSeconds) {
+                    userBest.set(s.userId, { name: s.name, avatar: s.avatar, timeSeconds: s.timeSeconds });
+                }
+            });
+            const longest = Array.from(userBest.values()).sort((a,b) => b.timeSeconds - a.timeSeconds).slice(0,10);
+            if(longest.length === 0) longestDiv.innerHTML = "<div style='padding:12px; text-align:center'>🏆 no records yet</div>";
+            else {
+                longestDiv.innerHTML = longest.map((u, i) => {
+                    return `<div class="longest-row"><div>${i+1}.</div><div>${u.avatar}</div><div style="flex:1">${escapeHtml(u.name)}</div><div>🏆 ${formatTime(u.timeSeconds)}</div></div>`;
+                }).join('');
+            }
+        });
+        
+        // Chat messages
+        const qChat = query(collection(db, CHAT_COLLECTION), orderBy("timestamp", "asc"), limit(100));
+        onSnapshot(qChat, (snapshot) => {
+            const messages = [];
+            snapshot.forEach(doc => messages.push({ id: doc.id, ...doc.data() }));
+            if(messages.length === 0) chatArea.innerHTML = "<div style='padding:12px; text-align:center'>💬 no messages yet</div>";
+            else {
+                chatArea.innerHTML = messages.map(m => {
+                    let time = "";
+                    if(m.timestamp) {
+                        let date = m.timestamp.toDate ? m.timestamp.toDate() : new Date(m.timestamp);
+                        time = date.toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'});
+                    }
+                    return `<div class="chat-message"><div class="chat-meta"><span>${m.avatar || "📝"}</span><span class="chat-user">${escapeHtml(m.user)}</span><span class="chat-time">${time}</span></div><div class="chat-text">${escapeHtml(m.text)}</div></div>`;
+                }).join('');
+            }
+            chatArea.scrollTop = chatArea.scrollHeight;
+        });
+        
+        // Active users
+        const qActive = query(collection(db, ACTIVE_USERS_COLLECTION), orderBy("timestamp", "desc"));
+        onSnapshot(qActive, (snapshot) => {
+            const users = new Map();
+            snapshot.forEach(doc => {
+                const u = doc.data();
+                users.set(u.userId, u);
+            });
+            const userList = Array.from(users.values()).filter(u => u.userId !== currentUserId);
+            if(userList.length === 0) activeUsersDiv.innerHTML = "<div style='padding:8px; text-align:center'>👻 no one else online</div>";
+            else {
+                activeUsersDiv.innerHTML = userList.map(u => `<div class="active-user-chip"><span class="online-dot"></span> ${u.avatar} ${escapeHtml(u.username)}</div>`).join('');
+            }
+        });
+        
+        // Typing indicators
+        const qTyping = query(collection(db, TYPING_COLLECTION), orderBy("timestamp", "desc"));
+        onSnapshot(qTyping, (snapshot) => {
+            const typingUsers = [];
+            snapshot.forEach(doc => {
+                const t = doc.data();
+                if(t.userId !== currentUserId) typingUsers.push(t);
+            });
+            if(typingUsers.length === 0) typingIndicatorSpan.innerHTML = "✨ nobody is typing...";
+            else {
+                let names = typingUsers.map(t => `${t.avatar} ${t.username}`).join(", ");
+                typingIndicatorSpan.innerHTML = `✍️ ${names} ${typingUsers.length === 1 ? "is" : "are"} typing...`;
+            }
+        });
+    }
+    
+    function escapeHtml(str) { if(!str) return ''; return str.replace(/[&<>]/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;'}[m])); }
+    
+    // Event binding
+    function bindEvents() {
+        document.querySelectorAll('.avatar-btn').forEach(btn => {
+            btn.addEventListener('click', () => setAvatar(btn.getAttribute('data-avatar')));
+        });
+        usernameInput.addEventListener('input', (e) => setUsername(e.target.value));
+        toggleBtn.addEventListener('click', () => { isRunning ? pauseTimer() : startTimer(); });
+        finishBtn.addEventListener('click', finishSession);
+        sendChatBtn.addEventListener('click', sendMessage);
+        chatInput.addEventListener('keypress', (e) => { if(e.key === 'Enter') sendMessage(); });
+        chatInput.addEventListener('input', () => {
+            if(chatInput.value.trim()) startTyping();
+            if(typingTimeout) clearTimeout(typingTimeout);
+            typingTimeout = setTimeout(() => stopTyping(), 1500);
+        });
+        darkToggle.addEventListener('click', () => {
+            document.body.classList.toggle('dark');
+            localStorage.setItem('darkMode', document.body.classList.contains('dark'));
+        });
+        if(localStorage.getItem('darkMode') === 'true') document.body.classList.add('dark');
+    }
+    
+    // Initialize
+    usernameInput.value = currentUsername;
+    highlightAvatar();
+    updateTimerUI();
+    bindEvents();
+    updateActiveUser();
+    setupListeners();
+    
+    // Initial cleanup
+    cleanupOldActiveUsers();
+    cleanupOldTyping();
+</script>
 </body>
 </html>
