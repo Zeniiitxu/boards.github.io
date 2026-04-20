@@ -78,7 +78,7 @@
         }
 
         .app {
-            max-width: 600px;
+            max-width: 1400px;
             margin: 0 auto;
             width: 100%;
         }
@@ -86,7 +86,7 @@
         /* header */
         .top-bar {
             text-align: center;
-            margin-bottom: 20px;
+            margin-bottom: 24px;
         }
         .top-bar h1 {
             font-size: 2rem;
@@ -98,7 +98,7 @@
             letter-spacing: -0.5px;
         }
         .top-bar p {
-            font-size: 0.7rem;
+            font-size: 0.75rem;
             color: var(--text-soft);
             margin-top: 4px;
         }
@@ -125,17 +125,31 @@
             padding: 6px 14px;
             font-size: 0.7rem;
             text-align: center;
-            margin-bottom: 16px;
+            margin-bottom: 20px;
             backdrop-filter: blur(4px);
+        }
+
+        /* ========== DESKTOP: SIDE-BY-SIDE LAYOUT ========== */
+        .study-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            align-items: start;
+        }
+
+        /* Left column and right column containers */
+        .left-column, .right-column {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
         }
 
         /* cards with hover effect */
         .card {
             background: var(--card-bg);
             backdrop-filter: blur(12px);
-            border-radius: 32px;
+            border-radius: 28px;
             padding: 18px;
-            margin-bottom: 16px;
             border: 1px solid var(--card-border);
             box-shadow: var(--shadow-sm);
             transition: transform 0.2s ease, box-shadow 0.2s ease;
@@ -150,7 +164,7 @@
             align-items: center;
             gap: 8px;
             font-weight: 600;
-            font-size: 0.75rem;
+            font-size: 0.7rem;
             text-transform: uppercase;
             letter-spacing: 1px;
             color: var(--text-soft);
@@ -170,8 +184,8 @@
             background: var(--avatar-bg);
             border: 2px solid var(--avatar-border);
             border-radius: 60px;
-            font-size: 1.2rem;
-            padding: 8px 14px;
+            font-size: 1.1rem;
+            padding: 6px 12px;
             cursor: pointer;
             display: inline-flex;
             align-items: center;
@@ -181,7 +195,7 @@
             position: relative;
             overflow: hidden;
         }
-        .avatar-btn span { font-size: 0.7rem; }
+        .avatar-btn span { font-size: 0.65rem; }
         .avatar-btn.active {
             background: var(--avatar-active);
             border-color: var(--pink-dark);
@@ -194,7 +208,7 @@
             background: var(--input-bg);
             border: 2px solid var(--input-border);
             border-radius: 60px;
-            font-size: 0.9rem;
+            font-size: 0.85rem;
             font-family: inherit;
             color: var(--text-primary);
             backdrop-filter: blur(4px);
@@ -212,7 +226,7 @@
         }
         #timer {
             font-family: monospace;
-            font-size: 3.5rem;
+            font-size: 3rem;
             font-weight: 700;
             letter-spacing: 3px;
             color: var(--text-primary);
@@ -235,10 +249,10 @@
             flex: 1;
             background: linear-gradient(135deg, var(--pink-primary), var(--purple-accent));
             border: none;
-            padding: 12px 0;
+            padding: 10px 0;
             border-radius: 60px;
             font-weight: 700;
-            font-size: 0.85rem;
+            font-size: 0.8rem;
             color: white;
             cursor: pointer;
             transition: transform 0.1s ease;
@@ -269,9 +283,9 @@
             align-items: center;
             gap: 6px;
             background: var(--badge-bg);
-            padding: 6px 14px;
+            padding: 5px 12px;
             border-radius: 60px;
-            font-size: 0.75rem;
+            font-size: 0.7rem;
             border: 1px solid var(--card-border);
         }
         .online-dot {
@@ -285,48 +299,42 @@
         @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
 
         /* leaderboard rows */
-        .leader-row, .longest-row {
+        .leader-row {
             display: flex;
             align-items: center;
             gap: 10px;
             padding: 8px 0;
             border-bottom: 1px solid var(--leader-row-border);
-            font-size: 0.85rem;
+            font-size: 0.8rem;
         }
 
         /* longest session blocks */
         .longest-grid {
             display: flex;
             flex-direction: column;
-            gap: 10px;
+            gap: 8px;
         }
         .longest-block {
             background: var(--badge-bg);
-            border-radius: 20px;
-            padding: 12px 16px;
+            border-radius: 18px;
+            padding: 10px 14px;
             display: flex;
             align-items: center;
-            gap: 12px;
-            border-left: 5px solid var(--pink-primary);
-            transition: transform 0.1s;
+            gap: 10px;
+            border-left: 4px solid var(--pink-primary);
         }
-
-        .longest-rank {
-            font-size: 1.3rem;
-            font-weight: bold;
-            min-width: 45px;
-        }
-        .longest-avatar { font-size: 1.8rem; }
+        .longest-rank { font-size: 1.1rem; min-width: 35px; }
+        .longest-avatar { font-size: 1.5rem; }
         .longest-info { flex: 1; }
-        .longest-name { font-weight: 700; font-size: 0.9rem; }
-        .longest-time { font-size: 0.7rem; opacity: 0.7; font-family: monospace; }
-        .longest-badge { font-size: 1.2rem; }
+        .longest-name { font-weight: 700; font-size: 0.8rem; }
+        .longest-time { font-size: 0.65rem; opacity: 0.7; font-family: monospace; }
+        .longest-badge { font-size: 1rem; }
 
-        /* chat with message pop animation */
+        /* chat */
         .chat-message {
             background: var(--chat-bubble);
-            border-radius: 20px;
-            padding: 10px 14px;
+            border-radius: 18px;
+            padding: 8px 12px;
             margin-bottom: 8px;
             border-left: 4px solid var(--chat-border-left);
         }
@@ -343,11 +351,11 @@
             align-items: center;
             gap: 8px;
             margin-bottom: 4px;
-            font-size: 0.7rem;
+            font-size: 0.65rem;
         }
         .chat-user { font-weight: 700; }
-        .chat-time { margin-left: auto; font-size: 0.6rem; opacity: 0.6; }
-        .chat-text { font-size: 0.85rem; word-break: break-word; }
+        .chat-time { margin-left: auto; font-size: 0.55rem; opacity: 0.6; }
+        .chat-text { font-size: 0.8rem; word-break: break-word; }
 
         .input-send {
             display: flex;
@@ -359,25 +367,25 @@
             background: var(--input-bg);
             border: 2px solid var(--input-border);
             border-radius: 60px;
-            padding: 10px 16px;
+            padding: 10px 14px;
             font-family: inherit;
-            font-size: 0.85rem;
+            font-size: 0.8rem;
         }
         .input-send button {
             background: linear-gradient(135deg, var(--pink-primary), var(--purple-accent));
             border: none;
-            width: 48px;
+            width: 44px;
             border-radius: 60px;
             cursor: pointer;
-            font-size: 1.1rem;
+            font-size: 1rem;
             color: white;
             position: relative;
             overflow: hidden;
         }
 
         .typing-indicator {
-            font-size: 0.7rem;
-            padding: 6px 12px;
+            font-size: 0.65rem;
+            padding: 5px 10px;
             background: var(--typing-bg);
             border-radius: 60px;
             display: inline-block;
@@ -387,73 +395,134 @@
         .tiny-note {
             font-size: 0.6rem;
             text-align: center;
-            margin-top: 20px;
+            margin-top: 24px;
             opacity: 0.6;
         }
 
         ::-webkit-scrollbar { width: 4px; }
         ::-webkit-scrollbar-track { background: var(--scroll-track); border-radius: 10px; }
         ::-webkit-scrollbar-thumb { background: var(--scroll-thumb); border-radius: 10px; }
+
+        /* ========== MOBILE: SINGLE COLUMN SCROLLABLE ========== */
+        @media (max-width: 768px) {
+            body {
+                padding: 12px;
+            }
+            .study-grid {
+                grid-template-columns: 1fr;
+                gap: 12px;
+            }
+            .left-column, .right-column {
+                gap: 12px;
+            }
+            .card {
+                padding: 14px;
+            }
+            #timer {
+                font-size: 2.5rem;
+            }
+            .avatar-btn {
+                font-size: 1rem;
+                padding: 5px 10px;
+            }
+            .avatar-btn span {
+                font-size: 0.6rem;
+            }
+            .cute-btn {
+                padding: 10px 0;
+                font-size: 0.75rem;
+            }
+            .longest-block {
+                padding: 8px 12px;
+            }
+            .chat-message {
+                padding: 8px 10px;
+            }
+        }
+
+        /* Small phones */
+        @media (max-width: 480px) {
+            .top-bar h1 {
+                font-size: 1.6rem;
+            }
+            #timer {
+                font-size: 2rem;
+            }
+            .card-title {
+                font-size: 0.65rem;
+            }
+        }
     </style>
 </head>
 <body>
 <div class="app">
     <div class="top-bar">
         <h1>focus.live</h1>
+        <p>cute co-study · real-time chat · global leaderboard</p>
         <div class="header-actions"><button class="dark-toggle" id="darkModeToggle">🎨 dark mode</button></div>
     </div>
     <div class="status-banner" id="connectionStatus">🔄 connecting...</div>
 
-    <!-- avatar & timer -->
-    <div class="card">
-        <div class="card-title"><span>🎭</span> your alter ego</div>
-        <div class="avatar-strip" id="avatarStrip">
-            <button class="avatar-btn" data-avatar="😺">😺 <span>meow</span></button>
-            <button class="avatar-btn" data-avatar="🗿">🗿 <span>chad</span></button>
-            <button class="avatar-btn" data-avatar="🫠">🫠 <span>melt</span></button>
-            <button class="avatar-btn" data-avatar="🤌">🤌 <span>italian</span></button>
-            <button class="avatar-btn" data-avatar="✨">✨ <span>main</span></button>
-            <button class="avatar-btn" data-avatar="🐺">🐺 <span>sigma</span></button>
-            <button class="avatar-btn" data-avatar="🧸">🧸 <span>bear</span></button>
+    <!-- DESKTOP: 2 COLUMNS | MOBILE: 1 COLUMN -->
+    <div class="study-grid">
+        <!-- LEFT COLUMN -->
+        <div class="left-column">
+            <!-- Profile card -->
+            <div class="card">
+                <div class="card-title"><span>🎭</span> your alter ego</div>
+                <div class="avatar-strip" id="avatarStrip">
+                    <button class="avatar-btn" data-avatar="😺">😺 <span>meow</span></button>
+                    <button class="avatar-btn" data-avatar="🗿">🗿 <span>chad</span></button>
+                    <button class="avatar-btn" data-avatar="🫠">🫠 <span>melt</span></button>
+                    <button class="avatar-btn" data-avatar="🤌">🤌 <span>italian</span></button>
+                    <button class="avatar-btn" data-avatar="✨">✨ <span>main</span></button>
+                    <button class="avatar-btn" data-avatar="🐺">🐺 <span>sigma</span></button>
+                    <button class="avatar-btn" data-avatar="🧸">🧸 <span>bear</span></button>
+                </div>
+                <input type="text" id="usernameField" class="minimal-input" placeholder="your cute name" autocomplete="off">
+            </div>
+
+            <!-- Timer card -->
+            <div class="card">
+                <div class="card-title"><span>⏱️</span> focus timer</div>
+                <div class="timer-block"><div id="timer">00:00</div></div>
+                <div class="button-group">
+                    <button class="cute-btn" id="timerToggleBtn">🌸 start</button>
+                    <button class="cute-btn secondary" id="finishSessionBtn">✨ finish</button>
+                </div>
+            </div>
+
+            <!-- Active Users card -->
+            <div class="card">
+                <div class="card-title"><span>👥</span> online now</div>
+                <div id="activeUsersList" class="active-users-wrapper">loading...</div>
+                <div id="typingIndicatorArea" class="typing-indicator">✨ nobody typing...</div>
+            </div>
         </div>
-        <input type="text" id="usernameField" class="minimal-input" placeholder="your cute name" autocomplete="off">
-    </div>
 
-    <div class="card">
-        <div class="card-title"><span>⏱️</span> focus timer</div>
-        <div class="timer-block"><div id="timer">00:00</div></div>
-        <div class="button-group">
-            <button class="cute-btn" id="timerToggleBtn">🌸 start</button>
-            <button class="cute-btn secondary" id="finishSessionBtn">✨ finish</button>
-        </div>
-    </div>
+        <!-- RIGHT COLUMN -->
+        <div class="right-column">
+            <!-- Leaderboard card -->
+            <div class="card">
+                <div class="card-title"><span>📋</span> today's top focusers</div>
+                <div id="leaderboardArea" class="scroll-area">✨ no sessions yet</div>
+            </div>
 
-    <!-- active users & typing -->
-    <div class="card">
-        <div class="card-title"><span>👥</span> online now</div>
-        <div id="activeUsersList" class="active-users-wrapper">loading...</div>
-        <div id="typingIndicatorArea" class="typing-indicator">✨ nobody typing...</div>
-    </div>
+            <!-- Longest sessions card -->
+            <div class="card">
+                <div class="card-title"><span>🏆</span> longest sessions · all time</div>
+                <div id="longestList" class="longest-grid">loading...</div>
+            </div>
 
-    <!-- leaderboard -->
-    <div class="card">
-        <div class="card-title"><span>📋</span> today's top focusers</div>
-        <div id="leaderboardArea" class="scroll-area">✨ no sessions yet</div>
-    </div>
-
-    <!-- longest sessions as blocks -->
-    <div class="card">
-        <div class="card-title"><span>🏆</span> longest sessions · all time</div>
-        <div id="longestList" class="longest-grid">loading...</div>
-    </div>
-
-    <!-- chat -->
-    <div class="card">
-        <div class="card-title"><span>💬</span> live chat</div>
-        <div id="chatArea" class="scroll-area"></div>
-        <div class="input-send">
-            <input type="text" id="chatInputField" placeholder="type a sweet message...">
-            <button id="sendChatBtn">→</button>
+            <!-- Chat card -->
+            <div class="card">
+                <div class="card-title"><span>💬</span> live chat</div>
+                <div id="chatArea" class="scroll-area"></div>
+                <div class="input-send">
+                    <input type="text" id="chatInputField" placeholder="type a sweet message...">
+                    <button id="sendChatBtn">→</button>
+                </div>
+            </div>
         </div>
     </div>
     <div class="tiny-note">⚡ everything is live · chat, leaderboard, active users sync in real-time</div>
@@ -578,7 +647,6 @@
         } catch(e) {}
     }
     
-    // Confetti effect function
     function explodeConfetti() {
         for(let i = 0; i < 60; i++) {
             let confetti = document.createElement('div');
@@ -598,7 +666,6 @@
             }, 10);
             setTimeout(() => confetti.remove(), 1300);
         }
-        // Vibrate on mobile
         if (navigator.vibrate) navigator.vibrate([100, 50, 100]);
     }
     
@@ -611,7 +678,7 @@
                 date: new Date().toISOString().slice(0,10)
             });
             addSystemMessage(`${currentUsername} studied ${formatTime(currentSeconds)}! 🎉`, currentAvatar);
-            explodeConfetti(); // ✨ CONFETTI EFFECT ✨
+            explodeConfetti();
             currentSeconds = 0;
             updateTimerUI();
             if(isRunning) pauseTimer();
@@ -678,7 +745,6 @@
     function setupListeners() {
         connectionSpan.innerHTML = "✅ live · cute mode";
         
-        // Leaderboard today
         const today = new Date().toISOString().slice(0,10);
         const qSessions = query(collection(db, SESSIONS_COLLECTION), orderBy("timestamp", "desc"), limit(200));
         onSnapshot(qSessions, (snapshot) => {
@@ -702,7 +768,6 @@
             }
         });
         
-        // Longest sessions as BLOCKS
         const qAll = query(collection(db, SESSIONS_COLLECTION), orderBy("timestamp", "desc"), limit(500));
         onSnapshot(qAll, (snapshot) => {
             const userBest = new Map();
@@ -732,7 +797,6 @@
             }
         });
         
-        // Chat with pop animation
         const qChat = query(collection(db, CHAT_COLLECTION), orderBy("timestamp", "asc"), limit(80));
         onSnapshot(qChat, (snapshot) => {
             const messages = [];
@@ -749,7 +813,6 @@
                 }).join('');
             }
             chatArea.scrollTop = chatArea.scrollHeight;
-            // Add pop animation to last message
             setTimeout(() => {
                 let lastMsg = chatArea.lastElementChild;
                 if(lastMsg) lastMsg.classList.add('chat-message-new');
@@ -757,7 +820,6 @@
             }, 50);
         });
         
-        // Active users (including self)
         const qActive = query(collection(db, ACTIVE_USERS_COLLECTION), orderBy("timestamp", "desc"));
         onSnapshot(qActive, (snapshot) => {
             const users = [];
@@ -771,7 +833,6 @@
             }
         });
         
-        // Typing
         const qTyping = query(collection(db, TYPING_COLLECTION), orderBy("timestamp", "desc"));
         onSnapshot(qTyping, (snapshot) => {
             const typing = [];
@@ -785,7 +846,6 @@
         });
     }
     
-    // Ripple effect function
     function addRippleEffect(element, e) {
         const ripple = document.createElement('span');
         ripple.style.position = 'absolute';
@@ -842,7 +902,6 @@
             localStorage.setItem('darkMode', document.body.classList.contains('dark'));
             addRippleEffect(e.target, e);
         });
-        // Add ripple to all buttons
         document.querySelectorAll('.cute-btn, .avatar-btn, .dark-toggle, .input-send button').forEach(btn => {
             btn.addEventListener('click', (e) => addRippleEffect(btn, e));
         });
