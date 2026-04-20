@@ -3,361 +3,936 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Past Papers & Exam Tracker</title>
-<link rel="icon" href="LOGO.png" type="image/png">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-
+<title>StudySync</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Syne:wght@400;600;800&display=swap" rel="stylesheet">
 <style>
-/* Basic Reset */
-* {margin:0; padding:0; box-sizing:border-box;}
-body {
-  font-family: 'Segoe UI', sans-serif;
-  background-color:#f0f4f8;
-  color:#000; /* Fix for light mode text */
-  min-height:100vh;
-  padding:20px;
-  transition: 0.3s;
-}
+  :root {
+    --bg: #0a0a0f;
+    --surface: #13131a;
+    --surface2: #1c1c28;
+    --border: #2a2a3d;
+    --accent: #7c6af7;
+    --accent2: #f7a26a;
+    --green: #4ade80;
+    --red: #f87171;
+    --text: #e8e8f0;
+    --muted: #6b6b8a;
+    --radius: 12px;
+  }
 
-/* Container */
-.container {max-width:1400px; margin:auto; display:flex; flex-direction:column; gap:40px;}
+  * { box-sizing: border-box; margin: 0; padding: 0; }
 
-/* Header */
-.header {display:flex; justify-content:space-between; align-items:center;}
-.header h1 {color:#1f3c88; transition:0.3s;}
-.theme-toggle {cursor:pointer; font-size:20px;}
+  body {
+    font-family: 'Syne', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow-x: hidden;
+  }
 
-/* Form Card */
-.form-card {background:#1f3c88; border-radius:12px; padding:30px; display:flex; flex-wrap:wrap; gap:20px; color:#fff; transition:0.3s;}
-.form-card .form-group {flex:1 1 180px; display:flex; flex-direction:column;}
-.form-card label {margin-bottom:8px; font-weight:bold; color:#fff;}
-.form-card select, .form-card input {padding:10px; border:none; border-radius:6px; font-size:14px;}
-.form-card select {cursor:pointer;}
-.form-card button {padding:10px 24px; border:none; border-radius:6px; cursor:pointer; font-weight:bold; transition:0.2s;}
+  body::before {
+    content: '';
+    position: fixed;
+    top: -40%;
+    left: -20%;
+    width: 70%;
+    height: 70%;
+    background: radial-gradient(circle, rgba(124,106,247,0.08) 0%, transparent 70%);
+    pointer-events: none;
+    z-index: 0;
+  }
 
-/* Buttons */
-#submitButton {background:#27ae60; color:#fff;}
-#submitButton:hover {background:#1e8449; transform:translateY(-2px);}
-.youtube-button {background:#FF0000; color:#fff; display:flex; align-items:center; gap:8px;}
-.youtube-button:hover {background:#cc0000; transform:translateY(-2px);}
+  body::after {
+    content: '';
+    position: fixed;
+    bottom: -30%;
+    right: -10%;
+    width: 60%;
+    height: 60%;
+    background: radial-gradient(circle, rgba(247,162,106,0.06) 0%, transparent 70%);
+    pointer-events: none;
+    z-index: 0;
+  }
 
-/* History Table */
-.history-card {background:#2c3e50; padding:20px; border-radius:12px; overflow-x:auto; color:#fff; transition:0.3s;}
-.history-card table {width:100%; border-collapse:collapse;}
-.history-card th, .history-card td {padding:12px; text-align:left; color:#fff;}
-.history-card tr:nth-child(even) {background:rgba(255,255,255,0.05);}
-.delete-item {color:#e74c3c; cursor:pointer;}
+  #app {
+    position: relative;
+    z-index: 1;
+    width: 100%;
+    max-width: 480px;
+    padding: 20px;
+  }
 
-/* Exam Tracker */
-.tracker {display:flex; flex-wrap:wrap; gap:20px;}
-.exam-card {flex:1 1 200px; background:#34495e; padding:20px; border-radius:12px; transition:0.2s; cursor:pointer; color:#fff;}
-.exam-card:hover {transform:translateY(-5px); background:#3d5a80;}
-.exam-card h3 {margin-bottom:10px; font-size:16px;}
-.exam-card p {font-size:14px; opacity:0.8;}
+  /* ── SCREENS ── */
+  .screen { display: none; animation: fadeUp 0.4s ease; }
+  .screen.active { display: block; }
 
-/* Mini Calendar Widget */
-.calendar-widget {
-  width: 280px;
-  background: #1f3c88;
-  padding: 15px;
-  border-radius: 12px;
-  margin: auto;
-  box-shadow: 0 5px 15px rgba(0,0,0,0.3);
-  color:#fff;
-  transition:0.3s;
-}
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(18px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
 
-.calendar-title {
-  text-align: center;
-  margin-bottom: 10px;
-  font-weight: bold;
-}
+  /* ── SETUP SCREEN ── */
+  .logo {
+    font-size: 11px;
+    font-family: 'Space Mono', monospace;
+    letter-spacing: 4px;
+    color: var(--accent);
+    text-transform: uppercase;
+    margin-bottom: 6px;
+  }
 
-#miniCalendar {
-  display: grid;
-  grid-template-columns: repeat(7, 1fr);
-  gap: 5px;
-}
+  h1 {
+    font-size: clamp(32px, 8vw, 46px);
+    font-weight: 800;
+    line-height: 1.05;
+    margin-bottom: 8px;
+    background: linear-gradient(135deg, var(--text) 40%, var(--accent));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
 
-#miniCalendar div {
-  width: 32px;
-  height: 32px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  border-radius: 6px;
-  font-size: 13px;
-}
+  .tagline {
+    font-size: 14px;
+    color: var(--muted);
+    margin-bottom: 36px;
+    line-height: 1.5;
+  }
 
-#miniCalendar .today {
-  background: #27ae60;
-}
+  label {
+    display: block;
+    font-size: 11px;
+    font-family: 'Space Mono', monospace;
+    letter-spacing: 2px;
+    color: var(--muted);
+    text-transform: uppercase;
+    margin-bottom: 8px;
+  }
 
-#miniCalendar .exam-day {
-  background: #f39c12;
-  color: #000;
-  font-weight: bold;
-}
+  input[type="text"] {
+    width: 100%;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 14px 16px;
+    font-family: 'Syne', sans-serif;
+    font-size: 15px;
+    color: var(--text);
+    outline: none;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    margin-bottom: 18px;
+  }
 
-/* Responsive */
-@media(max-width:900px) { .form-card {flex-direction:column;} .exam-card{flex:1 1 100%;} }
+  input[type="text"]:focus {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px rgba(124,106,247,0.15);
+  }
 
-/* DARK MODE */
-body.dark {
-  background-color: #121212;
-  color: #fff;
-}
+  input[type="text"]::placeholder { color: var(--muted); }
 
-body.dark .header h1 {
-  color: #fff;
-}
+  .room-row {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 24px;
+  }
 
-body.dark .form-card {
-  background: #1e1e1e;
-}
+  .room-row input { margin-bottom: 0; flex: 1; }
 
-body.dark .history-card {
-  background: #1e1e1e;
-}
+  .btn-gen {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    color: var(--muted);
+    font-size: 18px;
+    padding: 0 14px;
+    cursor: pointer;
+    transition: all 0.2s;
+    white-space: nowrap;
+  }
+  .btn-gen:hover { border-color: var(--accent); color: var(--accent); }
 
-body.dark .exam-card {
-  background: #2a2a2a;
-}
+  .btn-primary {
+    width: 100%;
+    background: var(--accent);
+    border: none;
+    border-radius: var(--radius);
+    padding: 16px;
+    font-family: 'Syne', sans-serif;
+    font-size: 15px;
+    font-weight: 600;
+    color: #fff;
+    cursor: pointer;
+    transition: all 0.2s;
+    letter-spacing: 0.5px;
+  }
 
-body.dark .exam-card:hover {
-  background: #333;
-}
+  .btn-primary:hover { background: #9180ff; transform: translateY(-1px); box-shadow: 0 8px 24px rgba(124,106,247,0.3); }
+  .btn-primary:active { transform: translateY(0); }
+  .btn-primary:disabled { opacity: 0.4; cursor: not-allowed; transform: none; box-shadow: none; }
 
-body.dark .calendar-widget {
-  background: #1e1e1e;
-}
+  /* ── MAIN SCREEN ── */
+  .top-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 24px;
+  }
 
-body.dark input,
-body.dark select {
-  background: #2a2a2a;
-  color: #fff;
-}
+  .room-badge {
+    font-family: 'Space Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 1.5px;
+    color: var(--muted);
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 5px 12px;
+  }
+
+  .room-badge span { color: var(--accent); }
+
+  .leave-btn {
+    background: none;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    color: var(--muted);
+    font-family: 'Space Mono', monospace;
+    font-size: 11px;
+    padding: 5px 10px;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .leave-btn:hover { border-color: var(--red); color: var(--red); }
+
+  /* MEMBERS */
+  .section-label {
+    font-size: 11px;
+    font-family: 'Space Mono', monospace;
+    letter-spacing: 2px;
+    color: var(--muted);
+    text-transform: uppercase;
+    margin-bottom: 12px;
+  }
+
+  .members-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-bottom: 24px;
+  }
+
+  .member-card {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 12px 14px;
+    transition: border-color 0.3s;
+  }
+
+  .member-card.studying { border-color: rgba(74,222,128,0.4); background: rgba(74,222,128,0.04); }
+  .member-card.me { border-color: rgba(124,106,247,0.3); }
+
+  .avatar {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    font-weight: 800;
+    flex-shrink: 0;
+    position: relative;
+  }
+
+  .avatar.purple { background: rgba(124,106,247,0.2); color: var(--accent); }
+  .avatar.orange { background: rgba(247,162,106,0.2); color: var(--accent2); }
+  .avatar.green  { background: rgba(74,222,128,0.2); color: var(--green); }
+  .avatar.pink   { background: rgba(248,113,113,0.2); color: var(--red); }
+
+  .status-dot {
+    position: absolute;
+    bottom: 0; right: 0;
+    width: 10px; height: 10px;
+    border-radius: 50%;
+    border: 2px solid var(--surface);
+    background: var(--muted);
+    transition: background 0.3s;
+  }
+  .status-dot.online  { background: var(--green); }
+  .status-dot.studying { background: var(--accent2); animation: pulse 1.5s infinite; }
+
+  @keyframes pulse {
+    0%, 100% { box-shadow: 0 0 0 0 rgba(247,162,106,0.5); }
+    50%       { box-shadow: 0 0 0 4px rgba(247,162,106,0); }
+  }
+
+  .member-info { flex: 1; }
+
+  .member-name {
+    font-size: 14px;
+    font-weight: 600;
+    line-height: 1.2;
+  }
+
+  .member-status {
+    font-size: 11px;
+    font-family: 'Space Mono', monospace;
+    color: var(--muted);
+    margin-top: 2px;
+  }
+
+  .member-status.studying-text { color: var(--accent2); }
+  .member-status.idle-text     { color: var(--muted); }
+
+  .member-timer {
+    font-family: 'Space Mono', monospace;
+    font-size: 13px;
+    color: var(--green);
+  }
+
+  /* BIG BUTTON */
+  .study-block {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 24px;
+    margin-bottom: 20px;
+    text-align: center;
+  }
+
+  .big-study-btn {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    border: 2px solid var(--border);
+    background: var(--surface2);
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 16px;
+    transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .big-study-btn::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: 50%;
+    background: radial-gradient(circle at 40% 35%, rgba(124,106,247,0.2), transparent 60%);
+    opacity: 0;
+    transition: opacity 0.3s;
+  }
+
+  .big-study-btn:hover { transform: scale(1.06); border-color: var(--accent); }
+  .big-study-btn:hover::before { opacity: 1; }
+
+  .big-study-btn.active {
+    border-color: var(--accent2);
+    background: rgba(247,162,106,0.08);
+    transform: scale(1.03);
+    box-shadow: 0 0 40px rgba(247,162,106,0.2);
+    animation: activePulse 2s infinite;
+  }
+
+  @keyframes activePulse {
+    0%, 100% { box-shadow: 0 0 30px rgba(247,162,106,0.15); }
+    50%       { box-shadow: 0 0 50px rgba(247,162,106,0.35); }
+  }
+
+  .btn-icon { font-size: 32px; margin-bottom: 4px; transition: transform 0.3s; }
+  .big-study-btn:hover .btn-icon { transform: scale(1.15); }
+
+  .btn-label {
+    font-size: 11px;
+    font-family: 'Space Mono', monospace;
+    letter-spacing: 1.5px;
+    color: var(--muted);
+    text-transform: uppercase;
+    transition: color 0.3s;
+  }
+
+  .big-study-btn.active .btn-label { color: var(--accent2); }
+
+  .my-timer {
+    font-family: 'Space Mono', monospace;
+    font-size: 28px;
+    font-weight: 700;
+    color: var(--text);
+    letter-spacing: 2px;
+    margin-bottom: 4px;
+    min-height: 36px;
+  }
+
+  .my-timer.running { color: var(--green); }
+
+  .study-status-text {
+    font-size: 13px;
+    color: var(--muted);
+  }
+
+  /* NOTIFICATIONS */
+  .notif-area {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    overflow: hidden;
+  }
+
+  .notif-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 14px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .notif-title {
+    font-size: 11px;
+    font-family: 'Space Mono', monospace;
+    letter-spacing: 2px;
+    color: var(--muted);
+    text-transform: uppercase;
+  }
+
+  .notif-badge {
+    background: var(--accent);
+    color: #fff;
+    font-size: 10px;
+    font-family: 'Space Mono', monospace;
+    padding: 2px 7px;
+    border-radius: 10px;
+    display: none;
+  }
+  .notif-badge.visible { display: block; }
+
+  .notif-list {
+    max-height: 180px;
+    overflow-y: auto;
+  }
+
+  .notif-item {
+    display: flex;
+    gap: 10px;
+    padding: 10px 14px;
+    border-bottom: 1px solid rgba(42,42,61,0.5);
+    animation: slideIn 0.3s ease;
+  }
+
+  @keyframes slideIn {
+    from { opacity: 0; transform: translateX(-10px); }
+    to   { opacity: 1; transform: translateX(0); }
+  }
+
+  .notif-icon { font-size: 16px; flex-shrink: 0; margin-top: 1px; }
+
+  .notif-text {
+    font-size: 13px;
+    color: var(--text);
+    line-height: 1.4;
+  }
+
+  .notif-time {
+    font-family: 'Space Mono', monospace;
+    font-size: 10px;
+    color: var(--muted);
+    margin-top: 2px;
+  }
+
+  .notif-empty {
+    padding: 20px;
+    text-align: center;
+    font-size: 12px;
+    font-family: 'Space Mono', monospace;
+    color: var(--muted);
+  }
+
+  /* TOAST */
+  .toast {
+    position: fixed;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%) translateY(-80px);
+    background: var(--surface2);
+    border: 1px solid var(--accent);
+    border-radius: 100px;
+    padding: 10px 20px;
+    font-size: 13px;
+    color: var(--text);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    z-index: 9999;
+    transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+    white-space: nowrap;
+  }
+  .toast.show { transform: translateX(-50%) translateY(0); }
+
+  /* SCROLLBAR */
+  ::-webkit-scrollbar { width: 4px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+
+  .hint {
+    font-size: 11px;
+    color: var(--muted);
+    font-family: 'Space Mono', monospace;
+    text-align: center;
+    margin-top: 12px;
+    line-height: 1.5;
+  }
+
+  .copy-btn {
+    background: none;
+    border: none;
+    color: var(--accent);
+    cursor: pointer;
+    font-family: 'Space Mono', monospace;
+    font-size: 11px;
+    padding: 0;
+    text-decoration: underline dotted;
+  }
+  .copy-btn:hover { color: #9180ff; }
 </style>
 </head>
 <body>
 
-<div class="container">
-  <div class="header">
-    <h1>Past Papers & Exam Tracker</h1>
-    <div class="theme-toggle" id="themeToggle">🌙</div>
+<div id="app">
+
+  <!-- SETUP SCREEN -->
+  <div class="screen active" id="screen-setup">
+    <div class="logo">StudySync</div>
+    <h1>Study together,<br>stay in sync.</h1>
+    <p class="tagline">Join a room with your friend. Get notified when they're ready to grind.</p>
+
+    <label>Your name</label>
+    <input type="text" id="input-name" placeholder="e.g. Arpan" maxlength="20" autocomplete="off">
+
+    <label>Room code</label>
+    <div class="room-row">
+      <input type="text" id="input-room" placeholder="e.g. CHEM-0427" maxlength="20" autocomplete="off" style="text-transform:uppercase">
+      <button class="btn-gen" onclick="genRoom()" title="Generate code">🎲</button>
+    </div>
+
+    <button class="btn-primary" id="join-btn" onclick="joinRoom()">Join Room →</button>
+    <p class="hint">Share the same room code with your friend to connect.</p>
   </div>
 
-  <!-- Form Card -->
-  <div class="form-card">
-    <div class="form-group">
-      <label for="subjectCode">Subject</label>
-      <select id="subjectCode">
-        <option value="9702">🍏 Physics</option>
-        <option value="9701">🧪 Chemistry</option>
-        <option value="9618">💻 Computer Science</option>
-        <option value="9608">💻 Computer (before 2021)</option>
-        <option value="9709">📐 Mathematics</option>
-        <option value="8021">📖 English General Paper</option>
-      </select>
+  <!-- MAIN SCREEN -->
+  <div class="screen" id="screen-main">
+    <div class="top-bar">
+      <div class="room-badge">Room: <span id="room-display">—</span></div>
+      <button class="leave-btn" onclick="leaveRoom()">Leave</button>
     </div>
 
-    <div class="form-group">
-      <label for="component">Component</label>
-      <input type="text" id="component" placeholder="Enter component">
+    <div class="section-label">Members</div>
+    <div class="members-list" id="members-list"></div>
+
+    <div class="study-block">
+      <button class="big-study-btn" id="study-btn" onclick="toggleStudy()">
+        <div class="btn-icon" id="btn-icon">📖</div>
+        <div class="btn-label" id="btn-label">Start</div>
+      </button>
+      <div class="my-timer" id="my-timer">—</div>
+      <div class="study-status-text" id="study-status-text">Tap to start your session</div>
     </div>
 
-    <div class="form-group">
-      <label for="session">Session</label>
-      <select id="session">
-        <option value="m">Feb/March</option>
-        <option value="s">May/June</option>
-        <option value="w">Oct/Nov</option>
-      </select>
+    <div class="notif-area">
+      <div class="notif-header">
+        <div class="notif-title">Activity Feed</div>
+        <div class="notif-badge" id="notif-badge">0</div>
+      </div>
+      <div class="notif-list" id="notif-list">
+        <div class="notif-empty" id="notif-empty">No activity yet...</div>
+      </div>
     </div>
 
-    <div class="form-group">
-      <label for="year">Year</label>
-      <select id="year"></select>
-    </div>
-
-    <div class="form-group">
-      <label for="paperType">Paper Type</label>
-      <select id="paperType">
-        <option value="qp">Question Paper</option>
-        <option value="ms">Marking Scheme</option>
-        <option value="in">Insert</option>
-        <option value="sf">Source File</option>
-      </select>
-    </div>
-
-    <div class="form-group" style="display:flex; gap:10px; align-items:center;">
-      <button class="youtube-button" onclick="searchYoutube()"><i class="fa-brands fa-youtube"></i> YouTube</button>
-      <button id="submitButton" onclick="openPastPaper()">Open Paper</button>
-    </div>
+    <p class="hint" id="copy-hint">
+      Invite your friend: <button class="copy-btn" onclick="copyRoom()">copy room code</button>
+    </p>
   </div>
 
-  <!-- History -->
-  <div class="history-card">
-    <h2>Search History</h2>
-    <table>
-      <thead>
-        <tr><th>Subject</th><th>Component</th><th>Session</th><th>Year</th><th>Type</th><th>Delete</th></tr>
-      </thead>
-      <tbody id="historyTableBody">
-        <tr><td colspan="6" style="text-align:center;">No history yet</td></tr>
-      </tbody>
-    </table>
-  </div>
-
-  <!-- Exam Tracker -->
-  <div id="urgentExams" style="background:#c0392b; padding:15px; border-radius:10px; display:none;">
-  <strong>⚠ Very Close Exams:</strong>
-  <div id="urgentList"></div>
-  </div>
-  <div class="tracker" id="examTracker"></div>
-
-  <!-- Mini Calendar -->
-  <div class="calendar-widget">
-    <div class="calendar-title">This Month</div>
-    <div id="miniCalendar"></div>
-  </div>
 </div>
 
+<!-- Toast -->
+<div class="toast" id="toast"></div>
+
 <script>
-// Populate years
-const yearSelect = document.getElementById('year');
-const currentYear = new Date().getFullYear();
-for(let y=currentYear+1; y>=2000; y--){
-  let opt = document.createElement('option');
-  opt.value = y.toString().slice(-2);
-  opt.textContent = y;
-  yearSelect.appendChild(opt);
+// ── CONFIG ──
+const API_KEY_PLACEHOLDER = ""; // Handled by Anthropic proxy
+const POLL_INTERVAL = 3000; // ms
+
+// ── STATE ──
+let myName = "";
+let roomCode = "";
+let isStudying = false;
+let studyStart = null;
+let timerInterval = null;
+let pollInterval = null;
+let lastSeenVersion = 0;
+let newNotifCount = 0;
+
+// Storage keys
+const roomKey  = () => `room:${roomCode}`;
+
+// ── STORAGE HELPERS (using Claude's persistent storage API) ──
+async function storageGet(key) {
+  try {
+    const r = await window.storage.get(key, true); // shared=true
+    return r ? JSON.parse(r.value) : null;
+  } catch { return null; }
 }
 
-// History functions
-function saveToHistory(item){
-  let history = JSON.parse(localStorage.getItem('searchHistory')||'[]');
-  history.unshift({...item, timestamp:new Date().toISOString()});
-  localStorage.setItem('searchHistory', JSON.stringify(history.slice(0,10)));
-  updateHistory();
-}
-function updateHistory(){
-  const tbody = document.getElementById('historyTableBody');
-  const history = JSON.parse(localStorage.getItem('searchHistory')||'[]');
-  if(!history.length){tbody.innerHTML=`<tr><td colspan="6" style="text-align:center;">No history yet</td></tr>`; return;}
-  tbody.innerHTML = history.map((h,i)=>`
-    <tr onclick="openPaper('${h.subjectCode}','${h.component}','${h.session}','${h.year}','${h.paperType}')">
-      <td>${getSubjectName(h.subjectCode)}</td>
-      <td>${h.component}</td>
-      <td>${h.session.toUpperCase()}</td>
-      <td>20${h.year}</td>
-      <td>${h.paperType.toUpperCase()}</td>
-      <td><span class="delete-item" onclick="deleteItem(${i},event)">✖</span></td>
-    </tr>
-  `).join('');
-}
-function deleteItem(i,e){e.stopPropagation(); let h=JSON.parse(localStorage.getItem('searchHistory')||'[]'); h.splice(i,1); localStorage.setItem('searchHistory',JSON.stringify(h)); updateHistory();}
-function getSubjectName(code){
-  const map={'9702':'Physics','9701':'Chemistry','9618':'Computer Science','9608':'Computer (before 2021)','9709':'Mathematics','8021':'English General Paper'};
-  return map[code]||code;
+async function storageSet(key, val) {
+  try {
+    await window.storage.set(key, JSON.stringify(val), true); // shared=true
+    return true;
+  } catch { return false; }
 }
 
-// Open past paper
-function openPastPaper(){
-  const s=document.getElementById('subjectCode').value;
-  const c=document.getElementById('component').value;
-  const ses=document.getElementById('session').value;
-  const y=document.getElementById('year').value;
-  const p=document.getElementById('paperType').value;
-  saveToHistory({subjectCode:s, component:c, session:ses, year:y, paperType:p});
-  const url = `https://pastpapers.papacambridge.com/directories/CAIE/CAIE-pastpapers/upload/${s}_${ses}${y}_${p}_${c}.pdf`;
-  window.open(url,'_blank');
-  updateHistory();
-}
-function openPaper(s,c,ses,y,p){const url=`https://pastpapers.papacambridge.com/directories/CAIE/CAIE-pastpapers/upload/${s}_${ses}${y}_${p}_${c}.pdf`; window.open(url,'_blank');}
+// ── ROOM DATA STRUCTURE ──
+// { version: n, members: { name: { name, studying, studyStart, lastSeen } }, events: [{id, type, name, ts}] }
 
-// YouTube search
-function searchYoutube(){
-  const subj = document.getElementById('subjectCode').value;
-  const comp = document.getElementById('component').value;
-  const ses = document.getElementById('session').value;
-  const year = document.getElementById('year').value;
-  let sessionText = ses==='w'?'o/n':ses==='s'?'m/j':'f/m';
-  const q = `${subj}/${comp}/${sessionText}/${year}`;
-  window.open(`https://www.youtube.com/results?search_query=${encodeURIComponent(q)}`, '_blank');
+async function getRoomData() {
+  return await storageGet(roomKey()) || {
+    version: 0, members: {}, events: []
+  };
 }
 
-// Load history
-updateHistory();
+async function setRoomData(data) {
+  data.version = (data.version || 0) + 1;
+  await storageSet(roomKey(), data);
+  return data;
+}
 
-// Exam Tracker data
-const exams=[
-  {subject:'EGP',component:'P1',date:'2026-04-27',session:'s'},
-  {subject:'EGP',component:'P2',date:'2026-05-04',session:'s'},
-  {subject:'Mathematics',component:'P4',date:'2026-05-06',session:'s'},
-  {subject:'Chemistry',component:'P4',date:'2026-05-06',session:'s'},
-  {subject:'Physics',component:'P4',date:'2026-05-11',session:'s'},
-  {subject:'Mathematics',component:'P3',date:'2026-05-15',session:'s'},
-  {subject:'Chemistry',component:'P5',date:'2026-05-18',session:'s'},
-  {subject:'Computer',component:'P3',date:'2026-05-19',session:'s'},
-  {subject:'Physics',component:'P5',date:'2026-05-20',session:'s'},
-  {subject:'Computer',component:'P4',date:'2026-05-21',session:'s'}
-];
+// ── UI HELPERS ──
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+}
 
-// Populate exam cards
-const tracker=document.getElementById('examTracker');
-const todayDate = new Date();
-exams.forEach(ex=>{
-  const examDate = new Date(ex.date);
-  const diffTime = examDate - todayDate;
-  const diffDays = Math.ceil(diffTime / (1000*60*60*24));
-  const card = document.createElement('div'); card.className='exam-card';
-  if(diffDays <= 3) card.style.background="#e74c3c";
-  else if(diffDays <= 7) card.style.background="#e67e22";
-  else if(diffDays <= 14) {card.style.background="#f1c40f"; card.style.color="#000";}
-  else card.style.background="#2ecc71";
-  card.innerHTML=`<h3>${ex.subject}</h3><p>${ex.component}</p><p>${ex.date} (${ex.session.toUpperCase()})</p><p><strong>${diffDays>=0?diffDays+' day(s) left':'Completed'}</strong></p>`;
-  tracker.appendChild(card);
+function showToast(msg, icon = "✨") {
+  const t = document.getElementById('toast');
+  t.innerHTML = `${icon} ${msg}`;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 3000);
+}
+
+function fmtTime(secs) {
+  const h = Math.floor(secs / 3600);
+  const m = Math.floor((secs % 3600) / 60);
+  const s = secs % 60;
+  if (h > 0) return `${h}h ${String(m).padStart(2,'0')}m`;
+  return `${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+}
+
+function timeAgo(ts) {
+  const diff = Math.floor((Date.now() - ts) / 1000);
+  if (diff < 5)  return 'just now';
+  if (diff < 60) return `${diff}s ago`;
+  if (diff < 3600) return `${Math.floor(diff/60)}m ago`;
+  return `${Math.floor(diff/3600)}h ago`;
+}
+
+function genRoom() {
+  const subjects = ['PHYS','CHEM','MATH','COMP','ENG','BIO','HIST'];
+  const sub = subjects[Math.floor(Math.random() * subjects.length)];
+  const num = Math.floor(1000 + Math.random() * 9000);
+  document.getElementById('input-room').value = `${sub}-${num}`;
+}
+
+function copyRoom() {
+  navigator.clipboard.writeText(roomCode).then(() => showToast(`Copied "${roomCode}"`, "📋"));
+}
+
+// ── JOIN / LEAVE ──
+async function joinRoom() {
+  const nameEl = document.getElementById('input-name');
+  const roomEl = document.getElementById('input-room');
+  myName = nameEl.value.trim();
+  roomCode = roomEl.value.trim().toUpperCase();
+
+  if (!myName) { showToast("Enter your name first!", "⚠️"); return; }
+  if (!roomCode) { showToast("Enter a room code!", "⚠️"); return; }
+
+  const btn = document.getElementById('join-btn');
+  btn.disabled = true;
+  btn.textContent = "Joining...";
+
+  let data = await getRoomData();
+  data.members[myName] = { name: myName, studying: false, studyStart: null, lastSeen: Date.now() };
+  data.events = data.events || [];
+  data.events.push({ id: Date.now(), type: 'join', name: myName, ts: Date.now() });
+  if (data.events.length > 50) data.events = data.events.slice(-50);
+  await setRoomData(data);
+  lastSeenVersion = data.version;
+
+  document.getElementById('room-display').textContent = roomCode;
+  showScreen('screen-main');
+  renderRoom(data);
+  startPolling();
+  showToast(`Joined room ${roomCode}`, "🚀");
+
+  btn.disabled = false;
+  btn.textContent = "Join Room →";
+}
+
+async function leaveRoom() {
+  if (!confirm("Leave the room?")) return;
+  stopPolling();
+  if (timerInterval) clearInterval(timerInterval);
+
+  let data = await getRoomData();
+  if (data.members[myName]) {
+    delete data.members[myName];
+    data.events = data.events || [];
+    data.events.push({ id: Date.now(), type: 'leave', name: myName, ts: Date.now() });
+    await setRoomData(data);
+  }
+
+  isStudying = false;
+  studyStart = null;
+  lastSeenVersion = 0;
+  newNotifCount = 0;
+  document.getElementById('notif-list').innerHTML = '<div class="notif-empty">No activity yet...</div>';
+  showScreen('screen-setup');
+}
+
+// ── STUDY TOGGLE ──
+async function toggleStudy() {
+  isStudying = !isStudying;
+  studyStart = isStudying ? Date.now() : null;
+
+  const btn = document.getElementById('study-btn');
+  const icon = document.getElementById('btn-icon');
+  const lbl  = document.getElementById('btn-label');
+  const st   = document.getElementById('study-status-text');
+  const timer = document.getElementById('my-timer');
+
+  if (isStudying) {
+    btn.classList.add('active');
+    icon.textContent = '⏸';
+    lbl.textContent = 'Stop';
+    st.textContent = 'Session in progress...';
+    timer.classList.add('running');
+    // Start local timer
+    if (timerInterval) clearInterval(timerInterval);
+    timerInterval = setInterval(() => {
+      if (studyStart) {
+        const secs = Math.floor((Date.now() - studyStart) / 1000);
+        timer.textContent = fmtTime(secs);
+      }
+    }, 1000);
+    timer.textContent = '00:00';
+  } else {
+    btn.classList.remove('active');
+    icon.textContent = '📖';
+    lbl.textContent = 'Start';
+    st.textContent = 'Tap to start your session';
+    timer.classList.remove('running');
+    if (timerInterval) clearInterval(timerInterval);
+    timerInterval = null;
+    const elapsed = studyStart ? fmtTime(Math.floor((Date.now() - studyStart) / 1000)) : '0:00';
+    timer.textContent = elapsed;
+  }
+
+  // Push to shared storage
+  let data = await getRoomData();
+  if (data.members[myName]) {
+    data.members[myName].studying = isStudying;
+    data.members[myName].studyStart = studyStart;
+    data.members[myName].lastSeen = Date.now();
+  }
+  data.events = data.events || [];
+  data.events.push({
+    id: Date.now(),
+    type: isStudying ? 'start' : 'stop',
+    name: myName,
+    ts: Date.now()
+  });
+  if (data.events.length > 50) data.events = data.events.slice(-50);
+  await setRoomData(data);
+}
+
+// ── RENDER ──
+function renderRoom(data) {
+  const list = document.getElementById('members-list');
+  const colors = ['purple','orange','green','pink'];
+  const members = Object.values(data.members || {});
+
+  list.innerHTML = '';
+
+  if (members.length === 0) {
+    list.innerHTML = '<div style="font-size:13px;color:var(--muted);font-family:Space Mono,monospace;padding:12px 0;">Waiting for members...</div>';
+    return;
+  }
+
+  members.forEach((m, i) => {
+    const isMe = m.name === myName;
+    const isOnline = Date.now() - (m.lastSeen || 0) < 12000;
+    const colorClass = colors[i % colors.length];
+    const elapsed = m.studying && m.studyStart ? Math.floor((Date.now() - m.studyStart) / 1000) : 0;
+
+    const card = document.createElement('div');
+    card.className = `member-card${m.studying ? ' studying' : ''}${isMe ? ' me' : ''}`;
+    card.innerHTML = `
+      <div class="avatar ${colorClass}">
+        ${m.name.charAt(0).toUpperCase()}
+        <div class="status-dot ${m.studying ? 'studying' : (isOnline ? 'online' : '')}"></div>
+      </div>
+      <div class="member-info">
+        <div class="member-name">${m.name}${isMe ? ' <span style="font-size:10px;color:var(--muted)">(you)</span>' : ''}</div>
+        <div class="member-status ${m.studying ? 'studying-text' : 'idle-text'}">
+          ${m.studying ? '📖 studying' : (isOnline ? '● online' : '○ away')}
+        </div>
+      </div>
+      ${m.studying && elapsed > 0 ? `<div class="member-timer">${fmtTime(elapsed)}</div>` : ''}
+    `;
+    list.appendChild(card);
+  });
+}
+
+function renderEvents(data, isNew = false) {
+  const events = (data.events || []).slice().reverse(); // newest first
+  const listEl = document.getElementById('notif-list');
+  const emptyEl = document.getElementById('notif-empty');
+
+  if (events.length === 0) {
+    listEl.innerHTML = '<div class="notif-empty">No activity yet...</div>';
+    return;
+  }
+
+  // Clear empty msg
+  const existing = listEl.querySelectorAll('.notif-item');
+  const existingIds = new Set([...existing].map(e => e.dataset.id));
+
+  // Prepend new events
+  events.forEach(ev => {
+    if (existingIds.has(String(ev.id))) return;
+
+    const isOwnEvent = ev.name === myName;
+    const icons = { join: '👋', leave: '🚪', start: '📖', stop: '✅' };
+    const msgs = {
+      join:  `${ev.name} joined the room`,
+      leave: `${ev.name} left the room`,
+      start: `${ev.name} started studying!`,
+      stop:  `${ev.name} ended their session`
+    };
+
+    const item = document.createElement('div');
+    item.className = 'notif-item';
+    item.dataset.id = ev.id;
+    item.innerHTML = `
+      <div class="notif-icon">${icons[ev.type] || '•'}</div>
+      <div>
+        <div class="notif-text">${msgs[ev.type] || ev.type}</div>
+        <div class="notif-time">${timeAgo(ev.ts)}</div>
+      </div>
+    `;
+
+    const firstItem = listEl.querySelector('.notif-item');
+    if (firstItem) listEl.insertBefore(item, firstItem);
+    else listEl.appendChild(item);
+
+    // Remove empty placeholder
+    const ep = listEl.querySelector('.notif-empty');
+    if (ep) ep.remove();
+
+    // Toast for friends starting (not yourself)
+    if (isNew && ev.type === 'start' && !isOwnEvent) {
+      showToast(`${ev.name} just started studying! 📖`, "🔔");
+      newNotifCount++;
+      updateNotifBadge();
+      // Browser notification if permitted
+      sendBrowserNotif(ev.name);
+    }
+    if (isNew && ev.type === 'join' && !isOwnEvent) {
+      showToast(`${ev.name} joined the room!`, "👋");
+    }
+  });
+}
+
+function updateNotifBadge() {
+  const badge = document.getElementById('notif-badge');
+  if (newNotifCount > 0) {
+    badge.textContent = newNotifCount;
+    badge.classList.add('visible');
+  } else {
+    badge.classList.remove('visible');
+  }
+}
+
+// Browser Notifications
+function sendBrowserNotif(friendName) {
+  if (!("Notification" in window)) return;
+  if (Notification.permission === "granted") {
+    new Notification("StudySync 📖", { body: `${friendName} just started studying! Join them!`, icon: "" });
+  } else if (Notification.permission !== "denied") {
+    Notification.requestPermission().then(p => {
+      if (p === "granted") {
+        new Notification("StudySync 📖", { body: `${friendName} just started studying!` });
+      }
+    });
+  }
+}
+
+// ── POLLING ──
+function startPolling() {
+  // Request notification permission early
+  if ("Notification" in window && Notification.permission === "default") {
+    Notification.requestPermission();
+  }
+
+  pollInterval = setInterval(async () => {
+    const data = await getRoomData();
+    if (!data) return;
+
+    // Update my lastSeen
+    if (data.members[myName]) {
+      data.members[myName].lastSeen = Date.now();
+      // Don't bump version just for heartbeat — write quietly
+      await storageSet(roomKey(), JSON.stringify(data));
+    }
+
+    if (data.version !== lastSeenVersion) {
+      const isNew = lastSeenVersion > 0;
+      lastSeenVersion = data.version;
+
+      // Sync my study state from storage (in case another tab changed it)
+      renderRoom(data);
+      renderEvents(data, isNew);
+    }
+  }, POLL_INTERVAL);
+}
+
+function stopPolling() {
+  if (pollInterval) clearInterval(pollInterval);
+  pollInterval = null;
+}
+
+// ── INIT ──
+document.getElementById('input-room').addEventListener('input', e => {
+  e.target.value = e.target.value.toUpperCase();
 });
 
-// Urgent Exams
-const urgentContainer=document.getElementById('urgentExams');
-const urgentList=document.getElementById('urgentList');
-const urgent=exams.filter(e=>{
-  const days=Math.ceil((new Date(e.date)-todayDate)/(1000*60*60*24));
-  return days>=0 && days<=3;
+document.getElementById('input-name').addEventListener('keydown', e => {
+  if (e.key === 'Enter') document.getElementById('input-room').focus();
 });
-if(urgent.length){urgentContainer.style.display="block"; urgentList.innerHTML=urgent.map(e=>{
-  const days=Math.ceil((new Date(e.date)-todayDate)/(1000*60*60*24));
-  return `<div>${e.subject} ${e.component} - ${days} day(s)</div>`;
-}).join('');}
 
-// Mini Calendar
-const miniCal=document.getElementById('miniCalendar');
-const today=new Date();
-const month=today.getMonth();
-const year=today.getFullYear();
-const firstDay=new Date(year,month,1).getDay();
-const daysInMonth=new Date(year,month+1,0).getDate();
-for(let i=0;i<firstDay;i++){miniCal.appendChild(document.createElement('div'));}
-for(let day=1;day<=daysInMonth;day++){
-  const dayDiv=document.createElement('div');
-  const dateStr=`${year}-${String(month+1).padStart(2,'0')}-${String(day).padStart(2,'0')}`;
-  dayDiv.textContent=day;
-  if(exams.some(e=>e.date===dateStr)) dayDiv.classList.add('exam-day');
-  if(day===today.getDate()) dayDiv.classList.add('today');
-  miniCal.appendChild(dayDiv);
-}
-
-// Theme toggle
-const toggle=document.getElementById('themeToggle');
-// load saved theme
-if(localStorage.getItem("theme")==="dark"){document.body.classList.add("dark"); toggle.textContent="☀️";}
-toggle.onclick=function(){
-  document.body.classList.toggle('dark');
-  if(document.body.classList.contains('dark')){toggle.textContent="☀️"; localStorage.setItem("theme","dark");}
-  else {toggle.textContent="🌙"; localStorage.setItem("theme","light");}
-}
+document.getElementById('input-room').addEventListener('keydown', e => {
+  if (e.key === 'Enter') joinRoom();
+});
 </script>
 </body>
 </html>
