@@ -1,153 +1,150 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <title>Study Hub</title>
 
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap');
-
 body {
   margin: 0;
-  font-family: Inter;
-  background: #0f1117;
-  color: #eaeaea;
-}
-
-header {
-  text-align: center;
-  padding: 20px;
-  font-size: 24px;
-  font-weight: 600;
+  font-family: Arial, sans-serif;
+  background: #0f172a;
+  color: white;
 }
 
 .container {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-  gap: 15px;
-  padding: 20px;
+  grid-template-columns: 1fr 2fr 1fr;
+  height: 100vh;
 }
 
-.card {
-  background: rgba(255,255,255,0.05);
-  border: 1px solid rgba(255,255,255,0.08);
-  border-radius: 14px;
-  padding: 15px;
-  backdrop-filter: blur(10px);
-}
-
-input {
-  width: 100%;
-  padding: 10px;
-  margin-top: 8px;
-  border-radius: 10px;
-  border: none;
-  background: #1a1d26;
-  color: white;
-}
-
-button {
-  width: 100%;
-  padding: 10px;
-  margin-top: 8px;
-  border: none;
-  border-radius: 10px;
-  background: #6c5ce7;
-  color: white;
-  cursor: pointer;
-}
-
-.chat-box {
-  height: 220px;
+.panel {
+  padding: 12px;
   overflow-y: auto;
-  background: #151822;
-  border-radius: 10px;
-  padding: 10px;
+  border-right: 1px solid #1e293b;
+}
+
+h2 {
+  font-size: 16px;
+  margin-bottom: 10px;
+  color: #60a5fa;
+}
+
+/* CHAT */
+.chat-box {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  height: 100%;
+}
+
+.messages {
+  flex: 1;
+  overflow-y: auto;
+  padding: 10px;
+  background: #111827;
+  border-radius: 8px;
 }
 
 .msg {
+  margin-bottom: 8px;
+  padding: 6px;
+  background: #1f2937;
+  border-radius: 6px;
+  font-size: 14px;
+}
+
+.input-row {
+  display: flex;
+  margin-top: 10px;
+}
+
+input {
+  flex: 1;
   padding: 8px;
-  border-radius: 10px;
-  background: rgba(255,255,255,0.06);
-  max-width: 80%;
+  border-radius: 6px;
+  border: none;
 }
 
-.msg.me {
-  background: #6c5ce7;
-  align-self: flex-end;
+button {
+  margin-left: 6px;
+  padding: 8px 12px;
+  border: none;
+  background: #3b82f6;
+  color: white;
+  border-radius: 6px;
+  cursor: pointer;
 }
 
-.meta {
-  font-size: 10px;
-  opacity: 0.6;
+.small {
+  font-size: 12px;
+  color: #94a3b8;
 }
 
-small {
-  opacity: 0.6;
+/* USERS */
+.user {
+  padding: 6px;
+  background: #1f2937;
+  margin-bottom: 6px;
+  border-radius: 6px;
+}
+
+/* TIMER */
+.timer {
+  text-align: center;
+  font-size: 28px;
+  margin: 10px 0;
+}
+
+.center {
+  text-align: center;
 }
 </style>
 </head>
 
 <body>
 
-<header>📚 Study Hub</header>
-
 <div class="container">
 
-<!-- PROFILE -->
-<div class="card">
-  <h3>👤 Profile</h3>
-  <input id="username" placeholder="Enter name">
+<!-- LEFT: USERS -->
+<div class="panel">
+  <h2>Online Users</h2>
+  <div id="users"></div>
 </div>
 
-<!-- GOAL -->
-<div class="card">
-  <h3>🎯 Goal</h3>
-  <input id="goal" type="number" placeholder="Minutes">
-  <button onclick="setGoal()">Save Goal</button>
+<!-- MIDDLE: CHAT -->
+<div class="panel">
+  <h2>Chat</h2>
+
+  <div class="chat-box">
+    <div id="messages" class="messages"></div>
+    <div id="typing" class="small"></div>
+
+    <div class="input-row">
+      <input id="msgInput" placeholder="Message..." />
+      <button onclick="sendMsg()">Send</button>
+    </div>
+  </div>
 </div>
 
-<!-- POMODORO -->
-<div class="card">
-  <h3>🍅 Pomodoro</h3>
-  <div id="timer" style="font-size:40px;text-align:center;">25:00</div>
-  <button onclick="start()">Start</button>
-  <button onclick="reset()">Reset</button>
-</div>
+<!-- RIGHT: TIMER + LEADERBOARD -->
+<div class="panel">
 
-<!-- STREAK -->
-<div class="card">
-  <h3>🔥 Streak</h3>
-  <div id="streak" style="font-size:30px;text-align:center;">0 days</div>
-</div>
+  <h2>Study Timer</h2>
+  <div class="timer" id="timer">00:00:00</div>
 
-<!-- ONLINE -->
-<div class="card">
-  <h3>🟢 Online Users</h3>
-  <div id="onlineList"></div>
-</div>
+  <div class="center">
+    <button onclick="startTimer()">Start</button>
+    <button onclick="pauseTimer()">Pause</button>
+    <button onclick="endSession()">End</button>
+  </div>
 
-<!-- CHAT -->
-<div class="card">
-  <h3>💬 Chat</h3>
+  <h2>Leaderboard</h2>
+  <div id="leaderboard"></div>
 
-  <div id="typing" style="font-size:12px; opacity:0.6;"></div>
+  <h2>Sessions</h2>
+  <div id="sessions"></div>
 
-  <div id="chat" class="chat-box"></div>
-
-  <input id="message" placeholder="message...">
-
-  <button onclick="send()">Send</button>
-</div>
-
-<!-- LEADERBOARD -->
-<div class="card">
-  <h3>🏆 Leaderboard</h3>
-  <div id="board"></div>
 </div>
 
 </div>
@@ -155,168 +152,190 @@ small {
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.12.0/firebase-app.js";
 import {
-  getFirestore,
-  collection,
-  addDoc,
-  onSnapshot,
-  query,
-  orderBy,
-  doc,
-  setDoc
-} from "https://www.gstatic.com/firebasejs/12.12.0/firebase-firestore.js";
+  getDatabase, ref, set, push, onValue, onDisconnect
+} from "https://www.gstatic.com/firebasejs/12.12.0/firebase-database.js";
 
+import {
+  getAuth, signInAnonymously, onAuthStateChanged
+} from "https://www.gstatic.com/firebasejs/12.12.0/firebase-auth.js";
+
+/* ===== FIREBASE CONFIG ===== */
 const firebaseConfig = {
   apiKey: "AIzaSyC_uTFuqqywIyPMPjH4sNcXDbC__0vhTOE",
   authDomain: "styd-d1945.firebaseapp.com",
   projectId: "styd-d1945",
   storageBucket: "styd-d1945.firebasestorage.app",
   messagingSenderId: "60953296553",
-  appId: "1:60953296553:web:ac86bfccdd16c915aff3b8"
+  appId: "1:60953296553:web:ac86bfccdd16c915aff3b8",
+  measurementId: "G-K8ZQJ0PEN5"
 };
 
 const app = initializeApp(firebaseConfig);
-const db = getFirestore(app);
+const db = getDatabase(app);
+const auth = getAuth(app);
 
-/* ---------------- HELPERS ---------------- */
-function user() {
-  return document.getElementById("username").value || "anon";
-}
+let uid = null;
+let name = "User-" + Math.floor(Math.random()*9999);
 
-function time(ts) {
-  return new Date(ts).toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'});
-}
+/* ===== AUTH ===== */
+signInAnonymously(auth);
 
-/* ---------------- ONLINE ---------------- */
-setInterval(async () => {
-  if (!user()) return;
+onAuthStateChanged(auth, (user) => {
+  if (user) {
+    uid = user.uid;
 
-  await setDoc(doc(db, "presence", user()), {
-    name: user(),
-    lastSeen: Date.now(),
-    typing: false
-  });
-}, 5000);
+    // presence system
+    set(ref(db, "online/" + uid), {
+      name,
+      status: "online"
+    });
 
-onSnapshot(collection(db, "presence"), (snap) => {
-  let list = document.getElementById("onlineList");
-  list.innerHTML = "";
-
-  snap.forEach(d => {
-    let u = d.data();
-    if (Date.now() - u.lastSeen < 10000) {
-      list.innerHTML += "🟢 " + u.name + "<br>";
-    }
-  });
+    onDisconnect(ref(db, "online/" + uid)).remove();
+  }
 });
 
-/* ---------------- CHAT ---------------- */
-const chatQuery = query(collection(db, "chat"), orderBy("time"));
+/* ===== CHAT ===== */
+function sendMsg() {
+  const text = document.getElementById("msgInput").value;
+  if (!text) return;
 
-onSnapshot(chatQuery, (snap) => {
-  let chat = document.getElementById("chat");
-  chat.innerHTML = "";
-
-  snap.forEach(d => {
-    let m = d.data();
-
-    let div = document.createElement("div");
-    div.className = "msg " + (m.name === user() ? "me" : "");
-
-    div.innerHTML = `
-      <div class="meta">${m.name} • ${time(m.time)}</div>
-      <div>${m.message}</div>
-    `;
-
-    chat.appendChild(div);
+  push(ref(db, "messages"), {
+    text,
+    name,
+    time: Date.now()
   });
 
-  chat.scrollTop = chat.scrollHeight;
+  setTyping(false);
+  document.getElementById("msgInput").value = "";
+}
+
+window.sendMsg = sendMsg;
+
+/* messages */
+onValue(ref(db, "messages"), (snap) => {
+  const box = document.getElementById("messages");
+  box.innerHTML = "";
+  snap.forEach(c => {
+    const m = c.val();
+    const d = new Date(m.time).toLocaleTimeString();
+    box.innerHTML += `
+      <div class="msg">
+        <b>${m.name}</b>: ${m.text}
+        <div class="small">${d}</div>
+      </div>
+    `;
+  });
 });
 
 /* typing */
 let typingTimeout;
-
-document.getElementById("message").addEventListener("input", async () => {
-  await setDoc(doc(db, "presence", user()), {
-    name: user(),
-    typing: true,
-    lastSeen: Date.now()
-  }, { merge: true });
-
+document.getElementById("msgInput").addEventListener("input", () => {
+  setTyping(true);
   clearTimeout(typingTimeout);
-
-  typingTimeout = setTimeout(() => {
-    setDoc(doc(db, "presence", user()), {
-      typing: false
-    }, { merge: true });
-  }, 1200);
+  typingTimeout = setTimeout(() => setTyping(false), 1000);
 });
 
-/* show typing */
-onSnapshot(collection(db, "presence"), (snap) => {
-  let typing = [];
-
-  snap.forEach(d => {
-    let u = d.data();
-    if (u.typing && u.name !== user()) typing.push(u.name);
-  });
-
-  document.getElementById("typing").innerText =
-    typing.length ? typing.join(", ") + " typing..." : "";
-});
-
-/* send */
-window.send = async function() {
-  let msg = document.getElementById("message").value;
-
-  if (!msg.trim()) return;
-
-  await addDoc(collection(db, "chat"), {
-    name: user(),
-    message: msg,
-    time: Date.now()
-  });
-
-  document.getElementById("message").value = "";
-};
-
-/* ---------------- TIMER ---------------- */
-let t = 1500, i;
-
-window.start = () => {
-  i = setInterval(() => {
-    t--;
-    let m = Math.floor(t/60), s = t%60;
-    document.getElementById("timer").innerText =
-      `${m}:${s<10?"0":""}${s}`;
-    if (t <= 0) clearInterval(i);
-  },1000);
-};
-
-window.reset = () => {
-  clearInterval(i);
-  t = 1500;
-};
-
-/* ---------------- GOAL ---------------- */
-window.setGoal = () => {
-  localStorage.setItem("goal", document.getElementById("goal").value);
-};
-
-/* ---------------- STREAK ---------------- */
-let last = localStorage.getItem("last") || "";
-let streak = parseInt(localStorage.getItem("streak") || 0);
-
-let today = new Date().toDateString();
-
-if (last !== today) {
-  streak++;
-  localStorage.setItem("streak", streak);
-  localStorage.setItem("last", today);
+function setTyping(state) {
+  set(ref(db, "typing/" + uid), state ? name : null);
 }
 
-document.getElementById("streak").innerText = streak + " days";
+onValue(ref(db, "typing"), (snap) => {
+  let txt = "";
+  snap.forEach(c => {
+    if (c.val()) txt += c.val() + " is typing... ";
+  });
+  document.getElementById("typing").innerText = txt;
+});
 
+/* online users */
+onValue(ref(db, "online"), (snap) => {
+  const box = document.getElementById("users");
+  box.innerHTML = "";
+  snap.forEach(c => {
+    box.innerHTML += `<div class="user">${c.val().name}</div>`;
+  });
+});
+
+/* ===== TIMER ===== */
+let startTime = 0;
+let elapsed = 0;
+let running = false;
+let interval;
+
+function format(ms) {
+  let s = Math.floor(ms/1000);
+  let h = Math.floor(s/3600);
+  let m = Math.floor((s%3600)/60);
+  let sec = s%60;
+  return `${String(h).padStart(2,"0")}:${String(m).padStart(2,"0")}:${String(sec).padStart(2,"0")}`;
+}
+
+function updateTimer() {
+  document.getElementById("timer").innerText = format(elapsed);
+}
+
+function startTimer() {
+  if (running) return;
+  running = true;
+  startTime = Date.now() - elapsed;
+
+  interval = setInterval(() => {
+    elapsed = Date.now() - startTime;
+    updateTimer();
+  }, 1000);
+}
+
+function pauseTimer() {
+  running = false;
+  clearInterval(interval);
+}
+
+function endSession() {
+  pauseTimer();
+
+  push(ref(db, "sessions"), {
+    name,
+    time: elapsed,
+    date: Date.now()
+  });
+
+  elapsed = 0;
+  updateTimer();
+}
+
+window.startTimer = startTimer;
+window.pauseTimer = pauseTimer;
+window.endSession = endSession;
+
+/* sessions */
+onValue(ref(db, "sessions"), (snap) => {
+  const box = document.getElementById("sessions");
+  box.innerHTML = "";
+  let total = {};
+
+  snap.forEach(c => {
+    const s = c.val();
+    const mins = Math.floor(s.time/60000);
+
+    total[s.name] = (total[s.name] || 0) + s.time;
+
+    box.innerHTML += `
+      <div class="msg">
+        ${s.name} studied ${mins} min
+      </div>
+    `;
+  });
+
+  /* leaderboard */
+  const lb = document.getElementById("leaderboard");
+  lb.innerHTML = "";
+
+  Object.entries(total)
+    .sort((a,b)=>b[1]-a[1])
+    .forEach(([n,t])=>{
+      lb.innerHTML += `<div class="user">${n}: ${Math.floor(t/60000)} min</div>`;
+    });
+});
 </script>
 
 </body>
