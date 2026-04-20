@@ -1,121 +1,14 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Study Hub Pro</title>
-    <style>
-        :root { --glass: rgba(255, 255, 255, 0.05); --border: rgba(255, 255, 255, 0.1); --accent: #a29bfe; --bg1: #0f2027; --bg2: #203a43; --bg3: #2c5364; }
-        body { font-family: -apple-system, sans-serif; background: linear-gradient(135deg, var(--bg1), var(--bg2), var(--bg3)); color: #fff; min-height: 100vh; margin: 0; padding: 20px; display: flex; justify-content: center; align-items: flex-start; }
-        .grid-container { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; max-width: 800px; width: 100%; }
-        @media (max-width: 768px) { .grid-container { grid-template-columns: 1fr; } }
-        
-        .glass-card { background: var(--glass); backdrop-filter: blur(15px); border: 1px solid var(--border); border-radius: 20px; padding: 25px; box-shadow: 0 8px 32px rgba(0,0,0,0.3); margin-bottom: 20px; }
-        h3 { margin-top: 0; font-size: 0.9rem; text-transform: uppercase; letter-spacing: 2px; color: #b2bec3; border-bottom: 1px solid var(--border); padding-bottom: 10px; }
-        
-        input { width: 100%; padding: 12px; background: rgba(0,0,0,0.2); border: 1px solid var(--border); border-radius: 10px; color: white; box-sizing: border-box; margin-bottom: 10px; }
-        button { padding: 12px; border: none; border-radius: 10px; background: rgba(255,255,255,0.1); color: white; cursor: pointer; border: 1px solid var(--border); }
-        button.primary { background: var(--accent); color: #000; border: none; width: 100%; }
-        
-        #timer { font-size: 5rem; text-align: center; font-variant-numeric: tabular-nums; font-weight: 200; margin: 10px 0; }
-        .scroll-box { height: 160px; overflow-y: auto; padding-right: 5px; font-size: 0.9rem; }
-        .avatar-selector { display: flex; gap: 10px; justify-content: center; margin-bottom: 10px; }
-        .avatar-btn { cursor: pointer; font-size: 1.5rem; background: transparent; border: 1px solid var(--border); padding: 5px; border-radius: 8px; }
-    </style>
-</head>
+<html>
 <body>
+    <h1 id="header">Waiting...</h1>
+    <button id="btn">Click me</button>
 
-<div class="grid-container">
-    <div>
-        <div class="glass-card">
-            <h3>Your Profile</h3>
-            <div class="avatar-selector" id="avatar-container">
-                <button class="avatar-btn" onclick="setAvatar('👨‍🔬')">👨‍🔬</button>
-                <button class="avatar-btn" onclick="setAvatar('👩‍💻')">👩‍💻</button>
-                <button class="avatar-btn" onclick="setAvatar('🚀')">🚀</button>
-                <button class="avatar-btn" onclick="setAvatar('📚')">📚</button>
-            </div>
-            <input id="username" placeholder="Enter name...">
-        </div>
-
-        <div class="glass-card">
-            <h3>Focus Core</h3>
-            <div id="timer">00:00</div>
-            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
-                <button onclick="toggleTimer()" id="toggleBtn">Start</button>
-                <button class="primary" onclick="saveSession()">Finish</button>
-            </div>
-        </div>
-    </div>
-
-    <div>
-        <div class="glass-card">
-            <h3>Leaderboard</h3>
-            <div class="scroll-box" id="leaderboard"></div>
-        </div>
-        <div class="glass-card">
-            <h3>Chat</h3>
-            <div class="scroll-box" id="chat" style="margin-bottom: 10px;"></div>
-            <input id="message" placeholder="Type..." onkeydown="if(event.key==='Enter') sendMessage()">
-        </div>
-    </div>
-</div>
-
-<script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/12.12.0/firebase-app.js";
-    import { getFirestore, collection, addDoc, onSnapshot, query, orderBy, serverTimestamp } from "https://www.gstatic.com/firebasejs/12.12.0/firebase-firestore.js";
-
-    const firebaseConfig = { /* PASTE CONFIG */ };
-    const db = getFirestore(initializeApp(firebaseConfig));
-
-    // Profile Logic
-    const nameInput = document.getElementById('username');
-    nameInput.value = localStorage.getItem("username") || "Guest";
-    nameInput.oninput = (e) => localStorage.setItem("username", e.target.value);
-    
-    window.setAvatar = (emoji) => localStorage.setItem("avatar", emoji);
-
-    // Core Logic
-    let seconds = 0, interval = null;
-    window.toggleTimer = () => {
-        if (interval) { clearInterval(interval); interval = null; document.getElementById('toggleBtn').innerText = "Start"; }
-        else { interval = setInterval(() => { seconds++; document.getElementById('timer').innerText = new Date(seconds * 1000).toISOString().substr(14, 5); }, 1000); document.getElementById('toggleBtn').innerText = "Pause"; }
-    };
-
-    window.saveSession = async () => {
-        await addDoc(collection(db, "sessions"), { 
-            name: nameInput.value, 
-            avatar: localStorage.getItem("avatar") || "👤",
-            time: seconds, 
-            timestamp: serverTimestamp() 
+    <script>
+        document.getElementById('btn').addEventListener('click', () => {
+            document.getElementById('header').innerText = "IT WORKS!";
+            alert("The JavaScript is running!");
         });
-        seconds = 0; document.getElementById('timer').innerText = "00:00";
-    };
-
-    window.sendMessage = async () => {
-        const msg = document.getElementById('message');
-        if(!msg.value) return;
-        await addDoc(collection(db, "chat"), { 
-            user: nameInput.value, 
-            avatar: localStorage.getItem("avatar") || "👤",
-            text: msg.value, 
-            timestamp: serverTimestamp() 
-        });
-        msg.value = "";
-    };
-
-    // Listeners
-    onSnapshot(query(collection(db, "sessions"), orderBy("timestamp", "desc")), (snap) => {
-        document.getElementById('leaderboard').innerHTML = snap.docs.map(d => `
-            <div style="padding: 8px 0; border-bottom: 1px solid rgba(255,255,255,0.05);">
-                ${d.data().avatar} <b>${d.data().name}</b>: ${Math.floor(d.data().time/60)}m
-            </div>`).join('');
-    });
-
-    onSnapshot(query(collection(db, "chat"), orderBy("timestamp", "asc")), (snap) => {
-        document.getElementById('chat').innerHTML = snap.docs.map(d => `
-            <div style="margin-bottom: 8px;">${d.data().avatar} <b>${d.data().user}:</b> ${d.data().text}</div>`).join('');
-    });
-</script>
+    </script>
 </body>
 </html>
