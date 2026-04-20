@@ -2,44 +2,37 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Co-Study Pro</title>
+    <title>Co-Study Simple</title>
     <style>
         body { font-family: sans-serif; background: #1e1e2f; color: white; text-align: center; padding: 20px; }
-        .container { max-width: 600px; margin: auto; background: #2c2c54; padding: 20px; border-radius: 15px; }
-        .hidden { display: none; }
-        button { padding: 10px 20px; margin: 5px; border-radius: 8px; border: none; background: #6c5ce7; color: white; cursor: pointer; }
-        #timer { font-size: 3rem; margin: 20px; }
-        .history-box { height: 150px; overflow-y: auto; border: 1px solid #444; padding: 10px; margin: 10px 0; text-align: left; background: #1e1e2f; }
+        .container { max-width: 500px; margin: auto; background: #2c2c54; padding: 20px; border-radius: 15px; }
+        input, button { padding: 10px; margin: 5px; border-radius: 8px; border: none; }
+        #timer { font-size: 3rem; margin: 20px; color: #fab1a0; }
+        .chat-box { height: 150px; overflow-y: auto; border: 1px solid #444; padding: 10px; margin: 10px 0; text-align: left; background: #1e1e2f; }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <div id="auth-section">
-        <h1>📚 Co-Study Pro</h1>
-        <button id="loginBtn">Login with Google to Start</button>
-    </div>
+    <h1>📚 Co-Study Simple</h1>
+    <input id="username" placeholder="Enter your name" oninput="saveName(this.value)">
+    
+    <div id="timer">00:00:00</div>
+    <button onclick="toggleTimer()" id="toggleBtn">Start</button>
+    <button onclick="saveSession()">Save Session</button>
 
-    <div id="app-section" class="hidden">
-        <h2>Welcome, <span id="userName"></span>!</h2>
-        
-        <div id="timer">00:00:00</div>
-        <button onclick="toggleTimer()" id="toggleBtn">Start</button>
-        <button onclick="saveSession()">Save Session</button>
-        <button onclick="logout()">Logout</button>
+    <h3>🏆 Leaderboard</h3>
+    <div class="chat-box" id="leaderboard"></div>
 
-        <h3>🔥 Your History</h3>
-        <div class="history-box" id="myHistory"></div>
-
-        <h3>🏆 Leaderboard</h3>
-        <div class="history-box" id="leaderboard"></div>
-    </div>
+    <h3>💬 Chat</h3>
+    <div class="chat-box" id="chat"></div>
+    <input id="message" placeholder="Type a message...">
+    <button onclick="sendMessage()">Send</button>
 </div>
 
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/12.12.0/firebase-app.js";
-    import { getAuth, signInWithPopup, GoogleAuthProvider, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/12.12.0/firebase-auth.js";
-    import { getFirestore, collection, addDoc, query, orderBy, onSnapshot, where } from "https://www.gstatic.com/firebasejs/12.12.0/firebase-firestore.js";
+    import { getFirestore, collection, addDoc, onSnapshot, query, orderBy, limit } from "https://www.gstatic.com/firebasejs/12.12.0/firebase-firestore.js";
 
     const firebaseConfig = {
         apiKey: "AIzaSyC_uTFuqqywIyPMPjH4sNcXDbC__0vhTOE",
@@ -52,77 +45,56 @@
     };
 
     const app = initializeApp(firebaseConfig);
-    const auth = getAuth(app);
     const db = getFirestore(app);
-    const provider = new GoogleAuthProvider();
 
-    // App State
-    let seconds = 0;
-    let timerInterval = null;
-    let currentUser = null;
+    // --- USERNAME PERSISTENCE ---
+    window.saveName = (val) => localStorage.setItem("username", val);
+    document.getElementById("username").value = localStorage.getItem("username") || "";
 
-    // --- AUTH ---
-    document.getElementById('loginBtn').onclick = () => signInWithPopup(auth, provider);
-    window.logout = () => signOut(auth);
-
-    onAuthStateChanged(auth, (user) => {
-        if (user) {
-            currentUser = user;
-            document.getElementById('auth-section').classList.add('hidden');
-            document.getElementById('app-section').classList.remove('hidden');
-            document.getElementById('userName').innerText = user.displayName;
-            loadData();
-        } else {
-            document.getElementById('auth-section').classList.remove('hidden');
-            document.getElementById('app-section').classList.add('hidden');
-        }
-    });
-
-    // --- TIMER ---
+    // --- TIMER LOGIC ---
+    let seconds = 0, timerInterval = null;
     window.toggleTimer = () => {
+        const btn = document.getElementById('toggleBtn');
         if (timerInterval) {
             clearInterval(timerInterval);
             timerInterval = null;
-            document.getElementById('toggleBtn').innerText = "Resume";
+            btn.innerText = "Resume";
         } else {
             timerInterval = setInterval(() => {
                 seconds++;
                 document.getElementById('timer').innerText = new Date(seconds * 1000).toISOString().substr(11, 8);
             }, 1000);
-            document.getElementById('toggleBtn').innerText = "Pause";
+            btn.innerText = "Pause";
         }
     };
 
     window.saveSession = async () => {
-        if (seconds === 0) return;
-        await addDoc(collection(db, "sessions"), {
-            uid: currentUser.uid,
-            name: currentUser.displayName,
-            seconds: seconds,
-            timestamp: new Date()
-        });
+        const name = localStorage.getItem("username") || "Anonymous";
+        await addDoc(collection(db, "sessions"), { name, time: seconds, timestamp: new Date() });
         seconds = 0;
         document.getElementById('timer').innerText = "00:00:00";
     };
 
-    // --- DATA LOADING ---
-    function loadData() {
-        // My History
-        const qMy = query(collection(db, "sessions"), where("uid", "==", currentUser.uid), orderBy("timestamp", "desc"));
-        onSnapshot(qMy, (snap) => {
-            const div = document.getElementById('myHistory');
-            div.innerHTML = "";
-            snap.forEach(d => div.innerHTML += `<div>Studied: ${Math.floor(d.data().seconds/60)} mins</div>`);
-        });
+    // --- REALTIME UPDATES ---
+    onSnapshot(query(collection(db, "sessions"), orderBy("timestamp", "desc"), limit(5)), (snap) => {
+        const div = document.getElementById('leaderboard');
+        div.innerHTML = "";
+        snap.forEach(d => div.innerHTML += `<div><b>${d.data().name}</b>: ${Math.floor(d.data().time/60)}m</div>`);
+    });
 
-        // Global Leaderboard
-        const qGlobal = query(collection(db, "sessions"), orderBy("timestamp", "desc"));
-        onSnapshot(qGlobal, (snap) => {
-            const div = document.getElementById('leaderboard');
-            div.innerHTML = "";
-            snap.forEach(d => div.innerHTML += `<div><b>${d.data().name}</b>: ${Math.floor(d.data().seconds/60)} mins</div>`);
-        });
-    }
+    window.sendMessage = async () => {
+        const msg = document.getElementById("message").value;
+        const name = localStorage.getItem("username") || "Anonymous";
+        await addDoc(collection(db, "chat"), { text: msg, user: name, timestamp: new Date() });
+        document.getElementById("message").value = "";
+    };
+
+    onSnapshot(query(collection(db, "chat"), orderBy("timestamp", "asc")), (snap) => {
+        const div = document.getElementById('chat');
+        div.innerHTML = "";
+        snap.forEach(d => div.innerHTML += `<div><b>${d.data().user}:</b> ${d.data().text}</div>`);
+        div.scrollTop = div.scrollHeight;
+    });
 </script>
 </body>
 </html>
