@@ -2,73 +2,157 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Study Tracker</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Study Dashboard</title>
+
 <style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap');
+
 body {
-  font-family: Arial;
-  background: linear-gradient(135deg, #1e1e2f, #2c2c54);
-  color: white;
-  text-align: center;
+  margin: 0;
+  font-family: Inter, sans-serif;
+  background: #0f1117;
+  color: #e6e6e6;
 }
+
+/* HEADER */
+header {
+  padding: 20px;
+  text-align: center;
+  font-size: 24px;
+  font-weight: 600;
+}
+
+/* GRID */
 .container {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 15px;
   padding: 20px;
 }
-button {
+
+/* CARD */
+.card {
+  background: rgba(255,255,255,0.05);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 15px;
+  padding: 15px;
+  backdrop-filter: blur(10px);
+}
+
+h3 {
+  margin-top: 0;
+}
+
+/* INPUT */
+input {
+  width: 100%;
   padding: 10px;
-  margin: 5px;
+  margin-top: 8px;
   border-radius: 10px;
   border: none;
+  outline: none;
+  background: #1a1d26;
+  color: white;
+}
+
+/* BUTTON */
+button {
+  margin-top: 10px;
+  width: 100%;
+  padding: 10px;
+  border: none;
+  border-radius: 10px;
   background: #6c5ce7;
   color: white;
   cursor: pointer;
+  transition: 0.2s;
 }
-input {
-  padding: 10px;
-  border-radius: 10px;
-  border: none;
+button:hover {
+  background: #7d6cf0;
 }
+
+/* TIMER */
+.timer {
+  font-size: 40px;
+  text-align: center;
+  margin: 10px 0;
+}
+
+/* LISTS */
+ul {
+  list-style: none;
+  padding: 0;
+}
+li {
+  padding: 6px;
+  border-bottom: 1px solid rgba(255,255,255,0.1);
+}
+
+/* CHAT */
 .chat-box {
-  height: 150px;
+  height: 180px;
   overflow-y: auto;
-  border: 1px solid white;
-  margin: 10px;
   padding: 10px;
+  background: #151822;
+  border-radius: 10px;
+  font-size: 14px;
+}
+
+small {
+  opacity: 0.6;
 }
 </style>
 </head>
 
 <body>
+
+<header>📚 Study Dashboard</header>
+
 <div class="container">
-<h1>📚 Study Tracker</h1>
 
-<!-- USER -->
-<input id="username" placeholder="Enter name">
+  <!-- USER -->
+  <div class="card">
+    <h3>👤 Profile</h3>
+    <input id="username" placeholder="Your name">
+    <small>Used for leaderboard & chat</small>
+  </div>
 
-<!-- GOAL -->
-<h3>🎯 Study Goal (minutes)</h3>
-<input id="goal" type="number">
-<button onclick="setGoal()">Set Goal</button>
-<p id="goalStatus"></p>
+  <!-- GOAL -->
+  <div class="card">
+    <h3>🎯 Daily Goal</h3>
+    <input id="goal" type="number" placeholder="Minutes">
+    <button onclick="setGoal()">Save Goal</button>
+    <p id="goalStatus"></p>
+  </div>
 
-<!-- TIMER -->
-<h3>🍅 Pomodoro</h3>
-<p id="timer">25:00</p>
-<button onclick="startPomodoro()">Start</button>
-<button onclick="resetPomodoro()">Reset</button>
+  <!-- TIMER -->
+  <div class="card">
+    <h3>🍅 Pomodoro</h3>
+    <div class="timer" id="timer">25:00</div>
+    <button onclick="startPomodoro()">Start</button>
+    <button onclick="resetPomodoro()">Reset</button>
+  </div>
 
-<!-- STREAK -->
-<h3>🔥 Streak</h3>
-<p id="streak">0 days</p>
+  <!-- STREAK -->
+  <div class="card">
+    <h3>🔥 Streak</h3>
+    <div class="timer" id="streak">0 days</div>
+  </div>
 
-<!-- LEADERBOARD -->
-<h3>🏆 Leaderboard</h3>
-<ul id="leaderboard"></ul>
+  <!-- LEADERBOARD -->
+  <div class="card">
+    <h3>🏆 Leaderboard</h3>
+    <ul id="leaderboard"></ul>
+  </div>
 
-<!-- CHAT -->
-<h3>💬 Chat</h3>
-<div class="chat-box" id="chat"></div>
-<input id="message">
-<button onclick="sendMessage()">Send</button>
+  <!-- CHAT -->
+  <div class="card">
+    <h3>💬 Study Chat</h3>
+    <div class="chat-box" id="chat"></div>
+    <input id="message" placeholder="Message">
+    <button onclick="sendMessage()">Send</button>
+  </div>
 
 </div>
 
@@ -90,50 +174,48 @@ const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
 /* ---------------- GOAL ---------------- */
-window.setGoal = function() {
-  let goal = document.getElementById("goal").value;
-  localStorage.setItem("goal", goal);
-  document.getElementById("goalStatus").innerText = "Goal: " + goal + " mins";
+window.setGoal = function () {
+  let g = document.getElementById("goal").value;
+  localStorage.setItem("goal", g);
+  document.getElementById("goalStatus").innerText = "Goal: " + g + " min/day";
 };
 
-/* ---------------- POMODORO ---------------- */
+/* ---------------- TIMER ---------------- */
 let time = 1500;
 let interval;
 
-function updateTimer() {
+function renderTimer() {
   let m = Math.floor(time / 60);
   let s = time % 60;
   document.getElementById("timer").innerText =
-    m + ":" + (s < 10 ? "0" : "") + s;
+    `${m}:${s < 10 ? "0" : ""}${s}`;
 }
 
-window.startPomodoro = function() {
+window.startPomodoro = function () {
   interval = setInterval(() => {
     time--;
-    updateTimer();
-
+    renderTimer();
     if (time <= 0) {
       clearInterval(interval);
       alert("Session done!");
-      updateStudyTime();
+      addStudy();
     }
   }, 1000);
 };
 
-window.resetPomodoro = function() {
+window.resetPomodoro = function () {
   clearInterval(interval);
   time = 1500;
-  updateTimer();
+  renderTimer();
 };
 
-/* ---------------- STUDY TIME + LEADERBOARD ---------------- */
-async function updateStudyTime() {
+/* ---------------- FIREBASE LEADERBOARD ---------------- */
+async function addStudy() {
   let user = document.getElementById("username").value || "anon";
 
   await addDoc(collection(db, "leaderboard"), {
     name: user,
-    time: 25,
-    date: new Date().toDateString()
+    time: 25
   });
 
   loadLeaderboard();
@@ -141,43 +223,39 @@ async function updateStudyTime() {
 }
 
 async function loadLeaderboard() {
-  const q = query(collection(db, "leaderboard"), orderBy("time", "desc"));
-  const snapshot = await getDocs(q);
+  let q = query(collection(db, "leaderboard"), orderBy("time", "desc"));
+  let snap = await getDocs(q);
 
   let list = document.getElementById("leaderboard");
   list.innerHTML = "";
 
-  snapshot.forEach(doc => {
-    let data = doc.data();
+  snap.forEach(d => {
     let li = document.createElement("li");
-    li.innerText = data.name + " - " + data.time + " mins";
+    li.innerText = `${d.data().name} — ${d.data().time} min`;
     list.appendChild(li);
   });
 }
-
 loadLeaderboard();
 
 /* ---------------- STREAK ---------------- */
 function updateStreak() {
-  let last = localStorage.getItem("lastStudy");
+  let last = localStorage.getItem("last");
   let today = new Date().toDateString();
-  let streak = parseInt(localStorage.getItem("streak") || "0");
+  let s = parseInt(localStorage.getItem("streak") || 0);
 
-  if (last !== today) {
-    streak++;
-  }
+  if (last !== today) s++;
 
-  localStorage.setItem("streak", streak);
-  localStorage.setItem("lastStudy", today);
+  localStorage.setItem("streak", s);
+  localStorage.setItem("last", today);
 
-  document.getElementById("streak").innerText = streak + " days";
+  document.getElementById("streak").innerText = s + " days";
 }
 
 document.getElementById("streak").innerText =
   (localStorage.getItem("streak") || 0) + " days";
 
 /* ---------------- CHAT ---------------- */
-window.sendMessage = async function() {
+window.sendMessage = async function () {
   let msg = document.getElementById("message").value;
   let user = document.getElementById("username").value || "anon";
 
@@ -190,31 +268,17 @@ window.sendMessage = async function() {
 };
 
 async function loadChat() {
-  const snapshot = await getDocs(collection(db, "chat"));
-
+  let snap = await getDocs(collection(db, "chat"));
   let chat = document.getElementById("chat");
   chat.innerHTML = "";
 
-  snapshot.forEach(doc => {
-    let data = doc.data();
+  snap.forEach(d => {
     let p = document.createElement("p");
-    p.innerText = data.name + ": " + data.message;
+    p.innerText = `${d.data().name}: ${d.data().message}`;
     chat.appendChild(p);
   });
 }
-
 setInterval(loadChat, 2000);
-
-/* ---------------- IDLE REMINDER ---------------- */
-let lastMove = Date.now();
-
-document.onmousemove = () => lastMove = Date.now();
-
-setInterval(() => {
-  if (Date.now() - lastMove > 60000) {
-    alert("⏰ Get back to studying!");
-  }
-}, 10000);
 
 </script>
 </body>
