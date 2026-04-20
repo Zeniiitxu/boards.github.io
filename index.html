@@ -2,111 +2,97 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Co-Study Hub</title>
     <style>
-        :root { --bg: #fdf6f7; --me: #a29bfe; --them: #fab1a0; --accent: #81ecec; }
-        body { font-family: 'Segoe UI', sans-serif; background: var(--bg); padding: 20px; color: #2d3436; }
-        .container { max-width: 500px; margin: auto; }
+        :root { --primary: #7c4dff; --bg: #f5f7fa; --bubble-me: #7c4dff; --bubble-other: #e0e0e0; }
+        body { font-family: 'Segoe UI', sans-serif; background: var(--bg); margin: 0; padding: 20px; }
+        .container { max-width: 500px; margin: auto; background: white; padding: 20px; border-radius: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); }
         
-        /* Glassmorphism Card */
-        .card { background: white; padding: 20px; border-radius: 20px; box-shadow: 0 10px 20px rgba(0,0,0,0.05); margin-bottom: 20px; }
+        #timer { font-size: 3rem; font-weight: bold; color: var(--primary); text-align: center; }
+        .chat-box { height: 300px; overflow-y: auto; background: #f9f9f9; padding: 15px; border-radius: 15px; margin: 10px 0; border: 1px solid #eee; }
+        .bubble { padding: 10px 15px; border-radius: 18px; margin: 8px 0; max-width: 80%; word-wrap: break-word; }
+        .my-bubble { background: var(--bubble-me); color: white; align-self: flex-end; margin-left: auto; }
+        .other-bubble { background: var(--bubble-other); color: #333; align-self: flex-start; }
         
-        /* Chat UI */
-        .chat-box { height: 250px; overflow-y: auto; background: #fff; padding: 15px; border-radius: 15px; display: flex; flex-direction: column; }
-        .bubble { padding: 10px 15px; border-radius: 20px; margin: 5px; max-width: 70%; }
-        .my-bubble { align-self: flex-end; background: var(--me); color: white; }
-        .other-bubble { align-self: flex-start; background: var(--them); color: white; }
-        
-        /* Status Indicators */
-        .online-dot { width: 10px; height: 10px; background: #55efc4; border-radius: 50%; display: inline-block; }
-        
-        /* Music Widgets */
-        .music-player { display: flex; gap: 10px; margin-top: 10px; }
+        input, button { width: 100%; padding: 12px; margin: 5px 0; border-radius: 10px; border: 1px solid #ddd; box-sizing: border-box; }
+        button { background: var(--primary); color: white; border: none; font-weight: bold; cursor: pointer; }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <h1>📚 Co-Study Hub</h1>
-    <input id="username" placeholder="Your Name" oninput="saveName(this.value)" style="width: 100%; padding: 10px; margin-bottom: 10px; border-radius: 10px; border: 1px solid #ccc;">
+    <input id="username" placeholder="Enter your name to start...">
+    <div id="timer">00:00</div>
+    <button id="toggleBtn" onclick="toggleTimer()">Start Focus</button>
 
-    <div class="card">
-        <div id="timer" style="font-size: 3rem; font-weight: bold; color: var(--me);">00:00</div>
-        <button onclick="toggleTimer()" id="toggleBtn">Start Session</button>
-    </div>
-
-    <div class="music-player">
-        <iframe src="https://open.spotify.com/embed/playlist/37i9dQZF1DWZeKCadgRdKQ" width="100%" height="80" frameborder="0"></iframe>
-    </div>
-
-    <h3>🏆 Top Students</h3>
-    <div id="leaderboard"></div>
-
-    <h3>💬 Chat <small id="typing-status" style="color: grey; font-size: 12px;"></small></h3>
+    <h3>Study Chat</h3>
     <div class="chat-box" id="chat"></div>
-    <input id="message" placeholder="Type a message..." onkeyup="checkTyping(event)">
+    <input id="message" placeholder="Type a message...">
+    <button onclick="sendMessage()">Send</button>
 </div>
 
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/12.12.0/firebase-app.js";
-    import { getFirestore, collection, addDoc, onSnapshot, query, orderBy, limit, doc, setDoc } from "https://www.gstatic.com/firebasejs/12.12.0/firebase-firestore.js";
+    import { getFirestore, collection, addDoc, onSnapshot, query, orderBy, serverTimestamp } from "https://www.gstatic.com/firebasejs/12.12.0/firebase-firestore.js";
 
-    const firebaseConfig = { /* PASTE YOUR CONFIG HERE */ };
+    // 1. YOUR CONFIG (Make sure this matches your Firebase project exactly)
+    const firebaseConfig = {
+        apiKey: "AIzaSyC_uTFuqqywIyPMPjH4sNcXDbC__0vhTOE",
+        authDomain: "styd-d1945.firebaseapp.com",
+        projectId: "styd-d1945",
+        storageBucket: "styd-d1945.firebasestorage.app",
+        messagingSenderId: "60953296553",
+        appId: "1:60953296553:web:ac86bfccdd16c915aff3b8",
+        measurementId: "G-K8ZQJ0PEN5"
+    };
+
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
 
-    // --- USERNAME & PRESENCE ---
-    window.saveName = (val) => {
-        localStorage.setItem("username", val);
-        setDoc(doc(db, "presence", val), { online: true, lastSeen: new Date() });
-    };
+    // 2. PERSISTENCE: Save name automatically
+    const nameInput = document.getElementById('username');
+    nameInput.value = localStorage.getItem("username") || "";
+    nameInput.oninput = (e) => localStorage.setItem("username", e.target.value);
 
-    // --- TIMER & STREAKS ---
+    // 3. TIMER
     let seconds = 0, timerInterval = null;
     window.toggleTimer = () => {
+        const btn = document.getElementById('toggleBtn');
         if (timerInterval) {
             clearInterval(timerInterval);
             timerInterval = null;
-            document.getElementById('toggleBtn').innerText = "Start";
+            btn.innerText = "Start Focus";
         } else {
-            timerInterval = setInterval(() => { seconds++; document.getElementById('timer').innerText = new Date(seconds * 1000).toISOString().substr(14, 5); }, 1000);
-            document.getElementById('toggleBtn').innerText = "Pause";
+            timerInterval = setInterval(() => {
+                seconds++;
+                document.getElementById('timer').innerText = new Date(seconds * 1000).toISOString().substr(14, 5);
+            }, 1000);
+            btn.innerText = "Pause";
         }
     };
 
-    // --- CHAT WITH BUBBLES ---
+    // 4. CHAT
     window.sendMessage = async () => {
         const msg = document.getElementById("message").value;
-        const name = localStorage.getItem("username") || "Anon";
+        const name = localStorage.getItem("username") || "Guest";
         if (!msg) return;
-        await addDoc(collection(db, "chat"), { text: msg, user: name, timestamp: new Date() });
-        document.getElementById("message").value = "";
+        
+        try {
+            await addDoc(collection(db, "chat"), { text: msg, user: name, timestamp: serverTimestamp() });
+            document.getElementById("message").value = "";
+        } catch (e) {
+            alert("Error sending: " + e.message);
+        }
     };
-
-    // --- TYPING INDICATOR LOGIC ---
-    window.checkTyping = (e) => {
-        if(e.key === "Enter") sendMessage();
-        // Here you could add a function to update a 'typing' field in Firestore
-    };
-
-    // --- DATA LOADING ---
-    onSnapshot(query(collection(db, "sessions"), orderBy("timestamp", "desc")), (snap) => {
-        const div = document.getElementById('leaderboard');
-        div.innerHTML = "";
-        snap.forEach(d => {
-            const data = d.data();
-            div.innerHTML += `<div>🔥 ${data.name}: ${Math.floor(data.time/60)}m</div>`;
-        });
-    });
 
     onSnapshot(query(collection(db, "chat"), orderBy("timestamp", "asc")), (snap) => {
         const chat = document.getElementById('chat');
         chat.innerHTML = "";
         snap.forEach(d => {
-            const isMe = d.data().user === localStorage.getItem("username");
-            chat.innerHTML += `<div class="bubble ${isMe ? 'my-bubble' : 'other-bubble'}">
-                <b>${d.data().user}</b>: ${d.data().text}
-            </div>`;
+            const data = d.data();
+            const isMe = data.user === localStorage.getItem("username");
+            chat.innerHTML += `<div class="bubble ${isMe ? 'my-bubble' : 'other-bubble'}"><b>${data.user}:</b> ${data.text}</div>`;
         });
         chat.scrollTop = chat.scrollHeight;
     });
