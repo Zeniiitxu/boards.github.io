@@ -1,326 +1,115 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>Study Hub</title>
-
-<style>
-body {
-  margin: 0;
-  font-family: Arial, sans-serif;
-  background: #0f172a;
-  color: white;
-}
-
-header {
-  text-align: center;
-  padding: 12px;
-  font-size: 20px;
-  font-weight: bold;
-  background: #111827;
-}
-
-.container {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  padding: 10px;
-}
-
-.card {
-  background: #1f2937;
-  border-radius: 12px;
-  padding: 10px;
-  box-shadow: 0 0 10px rgba(0,0,0,0.3);
-}
-
-.row {
-  display: flex;
-  gap: 10px;
-  flex-wrap: wrap;
-}
-
-button {
-  padding: 10px;
-  border: none;
-  border-radius: 8px;
-  background: #3b82f6;
-  color: white;
-  cursor: pointer;
-}
-
-button:disabled {
-  background: gray;
-}
-
-input {
-  width: 100%;
-  padding: 10px;
-  border-radius: 8px;
-  border: none;
-  margin-top: 5px;
-}
-
-#chatBox {
-  height: 200px;
-  overflow-y: auto;
-  background: #111827;
-  padding: 8px;
-  border-radius: 8px;
-}
-
-.msg {
-  margin: 5px 0;
-  font-size: 14px;
-}
-
-.small {
-  font-size: 12px;
-  color: #9ca3af;
-}
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Co-Study Tracker</title>
+    <style>
+        body { font-family: 'Segoe UI', sans-serif; background: #1e1e2f; color: white; text-align: center; padding: 20px; }
+        .container { max-width: 500px; margin: auto; background: #2c2c54; padding: 20px; border-radius: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+        input, button { padding: 12px; margin: 8px; border-radius: 8px; border: none; }
+        button { background: #6c5ce7; color: white; cursor: pointer; transition: 0.3s; }
+        button:hover { background: #a29bfe; }
+        .chat-box { height: 200px; overflow-y: auto; border: 1px solid #444; margin: 10px 0; padding: 10px; text-align: left; background: #1e1e2f; border-radius: 5px; }
+        #timer { font-size: 3rem; margin: 15px 0; font-weight: bold; color: #fab1a0; }
+    </style>
 </head>
-
 <body>
 
-<header>📚 Study Hub</header>
-
 <div class="container">
+    <h1>📚 Co-Study App</h1>
+    <input id="username" placeholder="Enter your name">
+    
+    <div id="timer">25:00</div>
+    <button onclick="startPomodoro()">Start Focus</button>
+    <button onclick="resetPomodoro()">Reset</button>
 
-<!-- TIMER -->
-<div class="card">
-  <h3>⏱ Study Timer</h3>
-  <h2 id="time">00:00</h2>
-  <div class="row">
-    <button onclick="startTimer()">Start</button>
-    <button onclick="pauseTimer()">Pause</button>
-    <button onclick="stopTimer()">Stop</button>
-  </div>
-</div>
+    <h3>🏆 Leaderboard (Live)</h3>
+    <ul id="leaderboard" style="list-style: none; padding: 0;"></ul>
 
-<!-- CHAT -->
-<div class="card">
-  <h3>💬 Chat</h3>
-  <div id="chatBox"></div>
-  <input id="msg" placeholder="Type message..." oninput="typing()"/>
-  <button onclick="sendMsg()">Send</button>
-  <div id="typing" class="small"></div>
-</div>
-
-<!-- USERS -->
-<div class="card">
-  <h3>🟢 Online Users</h3>
-  <div id="users"></div>
-</div>
-
-<!-- LEADERBOARD -->
-<div class="card">
-  <h3>🏆 Leaderboard</h3>
-  <div id="leaderboard"></div>
-</div>
-
-<!-- SESSIONS -->
-<div class="card">
-  <h3>📊 My Sessions</h3>
-  <div id="sessions"></div>
-</div>
-
+    <h3>💬 Study Chat</h3>
+    <div class="chat-box" id="chat"></div>
+    <input id="message" placeholder="Type a message...">
+    <button onclick="sendMessage()">Send</button>
 </div>
 
 <script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/12.12.0/firebase-app.js";
-import {
-  getAuth,
-  signInAnonymously,
-  onAuthStateChanged
-} from "https://www.gstatic.com/firebasejs/12.12.0/firebase-auth.js";
+    // 1. IMPORT FIREBASE
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/12.12.0/firebase-app.js";
+    import { getFirestore, collection, addDoc, onSnapshot, query, orderBy, limit } from "https://www.gstatic.com/firebasejs/12.12.0/firebase-firestore.js";
 
-import {
-  getDatabase,
-  ref,
-  push,
-  set,
-  onValue,
-  serverTimestamp,
-  update
-} from "https://www.gstatic.com/firebasejs/12.12.0/firebase-database.js";
+    // Your provided credentials
+    const firebaseConfig = {
+        apiKey: "AIzaSyC_uTFuqqywIyPMPjH4sNcXDbC__0vhTOE",
+        authDomain: "styd-d1945.firebaseapp.com",
+        projectId: "styd-d1945",
+        storageBucket: "styd-d1945.firebasestorage.app",
+        messagingSenderId: "60953296553",
+        appId: "1:60953296553:web:ac86bfccdd16c915aff3b8",
+        measurementId: "G-K8ZQJ0PEN5"
+    };
 
-/* 🔥 YOUR FIREBASE CONFIG */
-const firebaseConfig = {
-  apiKey: "AIzaSyC_uTFuqqywIyPMPjH4sNcXDbC__0vhTOE",
-  authDomain: "styd-d1945.firebaseapp.com",
-  projectId: "styd-d1945",
-  storageBucket: "styd-d1945.firebasestorage.app",
-  messagingSenderId: "60953296553",
-  appId: "1:60953296553:web:ac86bfccdd16c915aff3b8",
-  measurementId: "G-K8ZQJ0PEN5"
-};
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
 
-const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
-const db = getDatabase(app);
+    // 2. TIMER LOGIC
+    let time = 1500;
+    let interval;
 
-let uid = null;
+    window.startPomodoro = function() {
+        if (interval) return;
+        interval = setInterval(() => {
+            time--;
+            document.getElementById("timer").innerText = 
+                `${Math.floor(time/60)}:${(time%60).toString().padStart(2, '0')}`;
+            if (time <= 0) {
+                clearInterval(interval);
+                interval = null;
+                alert("Session Complete!");
+                saveSession();
+            }
+        }, 1000);
+    };
 
-/* AUTH (no username needed) */
-signInAnonymously(auth);
+    window.resetPomodoro = function() {
+        clearInterval(interval);
+        interval = null;
+        time = 1500;
+        document.getElementById("timer").innerText = "25:00";
+    };
 
-onAuthStateChanged(auth, (user) => {
-  if (user) {
-    uid = user.uid;
-    set(ref(db, "online/" + uid), true);
-  }
-});
+    async function saveSession() {
+        const name = document.getElementById("username").value || "Anonymous";
+        await addDoc(collection(db, "stats"), { name, time: 25, timestamp: new Date() });
+    }
 
-/* CHAT */
-function sendMsg() {
-  const text = document.getElementById("msg").value;
-  if (!text) return;
-
-  push(ref(db, "messages"), {
-    uid,
-    text,
-    time: Date.now()
-  });
-
-  document.getElementById("msg").value = "";
-}
-
-window.sendMsg = sendMsg;
-
-/* LOAD CHAT */
-onValue(ref(db, "messages"), (snap) => {
-  const box = document.getElementById("chatBox");
-  box.innerHTML = "";
-
-  snap.forEach((c) => {
-    const v = c.val();
-    const div = document.createElement("div");
-    div.className = "msg";
-    div.innerHTML = `<b>${v.uid.slice(0,5)}</b>: ${v.text}`;
-    box.appendChild(div);
-  });
-
-  box.scrollTop = box.scrollHeight;
-});
-
-/* TYPING */
-function typing() {
-  set(ref(db, "typing/" + uid), true);
-  setTimeout(() => {
-    set(ref(db, "typing/" + uid), false);
-  }, 1000);
-}
-window.typing = typing;
-
-/* SHOW TYPING */
-onValue(ref(db, "typing"), (snap) => {
-  let typingUsers = [];
-  snap.forEach(s => {
-    if (s.val() && s.key !== uid) typingUsers.push(s.key.slice(0,5));
-  });
-
-  document.getElementById("typing").innerText =
-    typingUsers.length ? `${typingUsers.join(", ")} typing...` : "";
-});
-
-/* ONLINE USERS */
-onValue(ref(db, "online"), (snap) => {
-  const box = document.getElementById("users");
-  box.innerHTML = "";
-  snap.forEach(u => {
-    const div = document.createElement("div");
-    div.innerText = "🟢 " + u.key.slice(0,5);
-    box.appendChild(div);
-  });
-});
-
-/* TIMER */
-let seconds = 0;
-let interval = null;
-let running = false;
-
-function updateTime() {
-  let m = String(Math.floor(seconds / 60)).padStart(2, "0");
-  let s = String(seconds % 60).padStart(2, "0");
-  document.getElementById("time").innerText = `${m}:${s}`;
-}
-
-function startTimer() {
-  if (running) return;
-  running = true;
-
-  interval = setInterval(() => {
-    seconds++;
-    updateTime();
-  }, 1000);
-}
-
-function pauseTimer() {
-  running = false;
-  clearInterval(interval);
-}
-
-function stopTimer() {
-  running = false;
-  clearInterval(interval);
-
-  if (seconds > 0) {
-    push(ref(db, "sessions/" + uid), {
-      time: seconds,
-      date: Date.now()
+    // 3. REAL-TIME LEADERBOARD
+    const q = query(collection(db, "stats"), orderBy("timestamp", "desc"), limit(5));
+    onSnapshot(q, (snapshot) => {
+        const list = document.getElementById("leaderboard");
+        list.innerHTML = "";
+        snapshot.forEach(doc => {
+            list.innerHTML += `<li>✨ ${doc.data().name} studied 25 mins</li>`;
+        });
     });
 
-    update(ref(db, "users/" + uid), {
-      totalTime: seconds
+    // 4. REAL-TIME CHAT
+    window.sendMessage = async function() {
+        const msg = document.getElementById("message").value;
+        const name = document.getElementById("username").value || "Anonymous";
+        if (!msg) return;
+        await addDoc(collection(db, "chat"), { text: msg, user: name, timestamp: new Date() });
+        document.getElementById("message").value = "";
+    };
+
+    onSnapshot(query(collection(db, "chat"), orderBy("timestamp", "asc")), (snapshot) => {
+        const chatBox = document.getElementById("chat");
+        chatBox.innerHTML = "";
+        snapshot.forEach(doc => {
+            chatBox.innerHTML += `<div><b>${doc.data().user}:</b> ${doc.data().text}</div>`;
+        });
+        chatBox.scrollTop = chatBox.scrollHeight;
     });
-  }
-
-  seconds = 0;
-  updateTime();
-}
-
-window.startTimer = startTimer;
-window.pauseTimer = pauseTimer;
-window.stopTimer = stopTimer;
-
-/* SESSIONS */
-onValue(ref(db, "sessions/" + uid), (snap) => {
-  const box = document.getElementById("sessions");
-  box.innerHTML = "";
-
-  snap.forEach(s => {
-    const v = s.val();
-    const div = document.createElement("div");
-    div.className = "small";
-    div.innerText = `⏱ ${Math.floor(v.time/60)}m ${v.time%60}s`;
-    box.appendChild(div);
-  });
-});
-
-/* LEADERBOARD */
-onValue(ref(db, "users"), (snap) => {
-  const box = document.getElementById("leaderboard");
-  box.innerHTML = "";
-
-  let users = [];
-
-  snap.forEach(u => {
-    users.push({
-      id: u.key,
-      time: u.val().totalTime || 0
-    });
-  });
-
-  users.sort((a,b) => b.time - a.time);
-
-  users.forEach(u => {
-    const div = document.createElement("div");
-    div.innerText = `🏆 ${u.id.slice(0,5)} - ${Math.floor(u.time/60)} min`;
-    box.appendChild(div);
-  });
-});
 </script>
 
 </body>
