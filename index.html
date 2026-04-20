@@ -115,6 +115,8 @@
             cursor: pointer;
             font-size: 0.7rem;
             color: var(--text-primary);
+            position: relative;
+            overflow: hidden;
         }
 
         .status-banner {
@@ -127,7 +129,7 @@
             backdrop-filter: blur(4px);
         }
 
-        /* cards */
+        /* cards with hover effect */
         .card {
             background: var(--card-bg);
             backdrop-filter: blur(12px);
@@ -136,8 +138,13 @@
             margin-bottom: 16px;
             border: 1px solid var(--card-border);
             box-shadow: var(--shadow-sm);
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
         }
-        
+        .card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 28px rgba(255, 140, 170, 0.25);
+        }
+
         .card-title {
             display: flex;
             align-items: center;
@@ -171,6 +178,8 @@
             gap: 6px;
             font-weight: 500;
             transition: all 0.2s ease;
+            position: relative;
+            overflow: hidden;
         }
         .avatar-btn span { font-size: 0.7rem; }
         .avatar-btn.active {
@@ -192,7 +201,7 @@
         }
         .minimal-input:focus { outline: none; border-color: var(--pink-primary); }
 
-        /* timer */
+        /* timer with pulse animation */
         .timer-block {
             background: var(--timer-bg);
             border-radius: 48px;
@@ -207,6 +216,15 @@
             font-weight: 700;
             letter-spacing: 3px;
             color: var(--text-primary);
+            transition: all 0.2s ease;
+        }
+        .timer-pulse {
+            animation: timerPulse 1s ease-in-out infinite;
+        }
+        @keyframes timerPulse {
+            0% { transform: scale(1); text-shadow: 0 0 0px rgba(255,140,170,0); }
+            50% { transform: scale(1.02); text-shadow: 0 0 12px rgba(255,140,170,0.5); }
+            100% { transform: scale(1); text-shadow: 0 0 0px rgba(255,140,170,0); }
         }
 
         .button-group {
@@ -225,6 +243,8 @@
             cursor: pointer;
             transition: transform 0.1s ease;
             box-shadow: 0 4px 12px rgba(255, 140, 170, 0.3);
+            position: relative;
+            overflow: hidden;
         }
         .cute-btn.secondary {
             background: linear-gradient(135deg, var(--blue-primary), var(--purple-accent));
@@ -281,7 +301,6 @@
             gap: 10px;
         }
         .longest-block {
-            background: linear-gradient(135deg, var(--pink-primary)15, var(--blue-primary)10);
             background: var(--badge-bg);
             border-radius: 20px;
             padding: 12px 16px;
@@ -291,6 +310,7 @@
             border-left: 5px solid var(--pink-primary);
             transition: transform 0.1s;
         }
+
         .longest-rank {
             font-size: 1.3rem;
             font-weight: bold;
@@ -302,13 +322,21 @@
         .longest-time { font-size: 0.7rem; opacity: 0.7; font-family: monospace; }
         .longest-badge { font-size: 1.2rem; }
 
-        /* chat */
+        /* chat with message pop animation */
         .chat-message {
             background: var(--chat-bubble);
             border-radius: 20px;
             padding: 10px 14px;
             margin-bottom: 8px;
             border-left: 4px solid var(--chat-border-left);
+        }
+        .chat-message-new {
+            animation: messagePop 0.3s ease-out;
+        }
+        @keyframes messagePop {
+            0% { transform: scale(0.95); opacity: 0; margin-left: 10px; }
+            80% { transform: scale(1.02); }
+            100% { transform: scale(1); opacity: 1; margin-left: 0; }
         }
         .chat-meta {
             display: flex;
@@ -343,6 +371,8 @@
             cursor: pointer;
             font-size: 1.1rem;
             color: white;
+            position: relative;
+            overflow: hidden;
         }
 
         .typing-indicator {
@@ -370,7 +400,6 @@
 <div class="app">
     <div class="top-bar">
         <h1>focus.live</h1>
-        <p>cute co-study · real-time chat · global leaderboard</p>
         <div class="header-actions"><button class="dark-toggle" id="darkModeToggle">🎨 dark mode</button></div>
     </div>
     <div class="status-banner" id="connectionStatus">🔄 connecting...</div>
@@ -480,6 +509,7 @@
     const typingIndicatorSpan = document.getElementById('typingIndicatorArea');
     const connectionSpan = document.getElementById('connectionStatus');
     const darkToggle = document.getElementById('darkModeToggle');
+    const chatArea = document.getElementById('chatArea');
     
     function formatTime(secs) {
         let mins = Math.floor(secs / 60);
@@ -493,12 +523,14 @@
         isRunning = true;
         timerInterval = setInterval(() => { if(isRunning) { currentSeconds++; updateTimerUI(); } }, 1000);
         toggleBtn.innerHTML = '⏸ pause';
+        timerDisplay.classList.add('timer-pulse');
     }
     function pauseTimer() {
         if(timerInterval) clearInterval(timerInterval);
         timerInterval = null;
         isRunning = false;
         toggleBtn.innerHTML = '🌸 start';
+        timerDisplay.classList.remove('timer-pulse');
     }
     
     function setAvatar(emoji) {
@@ -546,6 +578,30 @@
         } catch(e) {}
     }
     
+    // Confetti effect function
+    function explodeConfetti() {
+        for(let i = 0; i < 60; i++) {
+            let confetti = document.createElement('div');
+            const emojis = ['🎉', '✨', '🌸', '⭐', '💖', '🎈', '🌟', '💕'];
+            confetti.innerHTML = emojis[Math.floor(Math.random() * emojis.length)];
+            confetti.style.position = 'fixed';
+            confetti.style.left = Math.random() * 100 + '%';
+            confetti.style.top = '-20px';
+            confetti.style.fontSize = (Math.random() * 20 + 15) + 'px';
+            confetti.style.pointerEvents = 'none';
+            confetti.style.zIndex = '9999';
+            confetti.style.transition = 'all 1.2s ease-out';
+            document.body.appendChild(confetti);
+            setTimeout(() => {
+                confetti.style.transform = `translateY(${Math.random() * 500 + 200}px) translateX(${(Math.random() - 0.5) * 250}px) rotate(${Math.random() * 360}deg)`;
+                confetti.style.opacity = '0';
+            }, 10);
+            setTimeout(() => confetti.remove(), 1300);
+        }
+        // Vibrate on mobile
+        if (navigator.vibrate) navigator.vibrate([100, 50, 100]);
+    }
+    
     async function finishSession() {
         if(currentSeconds === 0) { addSystemMessage("🌸 run the timer first!", "⏰"); return; }
         try {
@@ -554,8 +610,8 @@
                 timeSeconds: currentSeconds, timestamp: serverTimestamp(),
                 date: new Date().toISOString().slice(0,10)
             });
-            // Show user's name in system message
             addSystemMessage(`${currentUsername} studied ${formatTime(currentSeconds)}! 🎉`, currentAvatar);
+            explodeConfetti(); // ✨ CONFETTI EFFECT ✨
             currentSeconds = 0;
             updateTimerUI();
             if(isRunning) pauseTimer();
@@ -676,7 +732,7 @@
             }
         });
         
-        // Chat
+        // Chat with pop animation
         const qChat = query(collection(db, CHAT_COLLECTION), orderBy("timestamp", "asc"), limit(80));
         onSnapshot(qChat, (snapshot) => {
             const messages = [];
@@ -693,6 +749,12 @@
                 }).join('');
             }
             chatArea.scrollTop = chatArea.scrollHeight;
+            // Add pop animation to last message
+            setTimeout(() => {
+                let lastMsg = chatArea.lastElementChild;
+                if(lastMsg) lastMsg.classList.add('chat-message-new');
+                setTimeout(() => lastMsg?.classList.remove('chat-message-new'), 300);
+            }, 50);
         });
         
         // Active users (including self)
@@ -723,25 +785,66 @@
         });
     }
     
+    // Ripple effect function
+    function addRippleEffect(element, e) {
+        const ripple = document.createElement('span');
+        ripple.style.position = 'absolute';
+        ripple.style.borderRadius = '50%';
+        ripple.style.backgroundColor = 'rgba(255,255,255,0.6)';
+        ripple.style.width = '20px';
+        ripple.style.height = '20px';
+        ripple.style.transform = 'scale(0)';
+        ripple.style.transition = 'transform 0.4s ease-out, opacity 0.4s';
+        ripple.style.pointerEvents = 'none';
+        const rect = element.getBoundingClientRect();
+        const x = e.clientX - rect.left;
+        const y = e.clientY - rect.top;
+        ripple.style.left = x + 'px';
+        ripple.style.top = y + 'px';
+        ripple.style.position = 'absolute';
+        element.style.position = 'relative';
+        element.style.overflow = 'hidden';
+        element.appendChild(ripple);
+        setTimeout(() => { ripple.style.transform = 'scale(30)'; ripple.style.opacity = '0'; }, 10);
+        setTimeout(() => ripple.remove(), 400);
+    }
+    
     function escapeHtml(str) { if(!str) return ''; return str.replace(/[&<>]/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;'}[m])); }
     
     function bindEvents() {
         document.querySelectorAll('.avatar-btn').forEach(btn => {
-            btn.addEventListener('click', () => setAvatar(btn.getAttribute('data-avatar')));
+            btn.addEventListener('click', (e) => {
+                setAvatar(btn.getAttribute('data-avatar'));
+                addRippleEffect(btn, e);
+            });
         });
         usernameInput.addEventListener('input', (e) => setUsername(e.target.value));
-        toggleBtn.addEventListener('click', () => { isRunning ? pauseTimer() : startTimer(); });
-        finishBtn.addEventListener('click', finishSession);
-        sendChatBtn.addEventListener('click', sendMessage);
+        toggleBtn.addEventListener('click', (e) => { 
+            isRunning ? pauseTimer() : startTimer();
+            addRippleEffect(e.target, e);
+        });
+        finishBtn.addEventListener('click', (e) => {
+            finishSession();
+            addRippleEffect(e.target, e);
+        });
+        sendChatBtn.addEventListener('click', (e) => {
+            sendMessage();
+            addRippleEffect(e.target, e);
+        });
         chatInput.addEventListener('keypress', (e) => { if(e.key === 'Enter') sendMessage(); });
         chatInput.addEventListener('input', () => {
             if(chatInput.value.trim()) startTyping();
             if(typingTimeout) clearTimeout(typingTimeout);
             typingTimeout = setTimeout(() => stopTyping(), 1500);
         });
-        darkToggle.addEventListener('click', () => {
+        darkToggle.addEventListener('click', (e) => {
             document.body.classList.toggle('dark');
             localStorage.setItem('darkMode', document.body.classList.contains('dark'));
+            addRippleEffect(e.target, e);
+        });
+        // Add ripple to all buttons
+        document.querySelectorAll('.cute-btn, .avatar-btn, .dark-toggle, .input-send button').forEach(btn => {
+            btn.addEventListener('click', (e) => addRippleEffect(btn, e));
         });
         if(localStorage.getItem('darkMode') === 'true') document.body.classList.add('dark');
     }
