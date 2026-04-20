@@ -2,223 +2,257 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-    <title>focus.live · real-time co-study with Firebase</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=yes">
+    <title>focus.live · cute co-study</title>
     <style>
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            transition: background-color 0.2s ease, border-color 0.2s ease;
         }
 
         :root {
-            --bg-page: #f7f5f0;
-            --text-primary: #2c2a24;
-            --text-soft: #8a7f6e;
-            --card-bg: #ffffff;
-            --card-border: #eae4d9;
-            --card-title: #b2a187;
-            --btn-bg: #f0ebe3;
-            --btn-active: #e0d6ca;
-            --avatar-bg: #f5f2ec;
-            --avatar-border: #e2d9cf;
-            --avatar-active: #e6dfd4;
-            --input-bg: #fefcf9;
-            --input-border: #e2d9cf;
-            --timer-bg: #faf8f4;
-            --timer-border: #ece3d9;
-            --leader-row-border: #efe6dd;
-            --chat-bubble: #fefcf9;
-            --chat-border-left: #d9cdbc;
-            --scroll-track: #f0eae2;
-            --scroll-thumb: #d1c3b2;
-            --badge-bg: #f0ebe3;
-            --online-green: #4caf50;
-            --typing-bg: #e8e0d6;
+            --bg-gradient-start: #ffe4f0;
+            --bg-gradient-end: #e0f3ff;
+            --text-primary: #4a3b6e;
+            --text-soft: #8b7aa8;
+            --card-bg: rgba(255, 255, 255, 0.85);
+            --card-border: rgba(255, 190, 210, 0.5);
+            --pink-primary: #ffb7d2;
+            --pink-dark: #ff8cb0;
+            --blue-primary: #a8d8ff;
+            --blue-dark: #7bc1f5;
+            --purple-accent: #c5a3ff;
+            --avatar-bg: #fff0f5;
+            --avatar-border: #ffc0d0;
+            --avatar-active: #ffe0ec;
+            --input-bg: #ffffffcc;
+            --input-border: #ffccdd;
+            --timer-bg: #fff5fa;
+            --timer-border: #ffccdd;
+            --leader-row-border: #ffe0ec;
+            --chat-bubble: #ffffffcc;
+            --chat-border-left: #ffb7d2;
+            --scroll-track: #ffe0ec;
+            --scroll-thumb: #ffb7d2;
+            --badge-bg: #ffeef4;
+            --online-green: #6fcf97;
+            --typing-bg: #fff0f7;
+            --shadow-sm: 0 8px 20px rgba(255, 140, 170, 0.15);
         }
 
         body.dark {
-            --bg-page: #1a1c1e;
-            --text-primary: #ece8e0;
-            --text-soft: #a89f8e;
-            --card-bg: #26292c;
-            --card-border: #3a3e42;
-            --card-title: #b8aa92;
-            --btn-bg: #33373b;
-            --btn-active: #40454a;
-            --avatar-bg: #2d3135;
-            --avatar-border: #4a4f55;
-            --avatar-active: #3e4449;
-            --input-bg: #2f3438;
-            --input-border: #4a4f55;
-            --timer-bg: #2b2f33;
-            --timer-border: #3e4348;
-            --leader-row-border: #3a3e42;
-            --chat-bubble: #2f3438;
-            --chat-border-left: #8f7a5c;
-            --scroll-track: #2b2f33;
-            --scroll-thumb: #5f5b52;
-            --badge-bg: #33373b;
-            --typing-bg: #3a3e42;
+            --bg-gradient-start: #2d2b4e;
+            --bg-gradient-end: #1e1b3a;
+            --text-primary: #f0e6ff;
+            --text-soft: #b8a9e0;
+            --card-bg: rgba(45, 40, 70, 0.9);
+            --card-border: rgba(255, 150, 180, 0.3);
+            --pink-primary: #c75c8c;
+            --pink-dark: #b8477a;
+            --blue-primary: #5d9bc2;
+            --blue-dark: #4a7fa0;
+            --purple-accent: #9b7fd4;
+            --avatar-bg: #3a3560;
+            --avatar-border: #6a5a8e;
+            --avatar-active: #4a4570;
+            --input-bg: #3a3560cc;
+            --input-border: #6a5a8e;
+            --timer-bg: #3a3560;
+            --timer-border: #6a5a8e;
+            --leader-row-border: #4a4570;
+            --chat-bubble: #3a3560cc;
+            --chat-border-left: #c75c8c;
+            --scroll-track: #3a3560;
+            --scroll-thumb: #6a5a8e;
+            --badge-bg: #3a3560;
+            --typing-bg: #3a3560;
         }
 
         body {
-            font-family: 'Inter', -apple-system, 'Segoe UI', system-ui, sans-serif;
-            background: var(--bg-page);
+            font-family: 'Quicksand', 'Inter', -apple-system, 'Segoe UI', system-ui, sans-serif;
+            background: linear-gradient(135deg, var(--bg-gradient-start), var(--bg-gradient-end));
             color: var(--text-primary);
-            padding: 1.5rem;
-            line-height: 1.4;
+            padding: 16px;
+            min-height: 100vh;
         }
 
         .app {
-            max-width: 1300px;
+            max-width: 600px;
             margin: 0 auto;
+            width: 100%;
         }
 
+        /* header */
         .top-bar {
-            display: flex;
-            justify-content: space-between;
-            align-items: baseline;
-            flex-wrap: wrap;
-            margin-bottom: 1.5rem;
-            gap: 1rem;
+            text-align: center;
+            margin-bottom: 20px;
         }
-        .title-section h1 {
-            font-size: 1.8rem;
-            font-weight: 500;
-            letter-spacing: -0.3px;
+        .top-bar h1 {
+            font-size: 2rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #ff9bc0, #7bbdf5);
+            background-clip: text;
+            -webkit-background-clip: text;
+            color: transparent;
+            letter-spacing: -0.5px;
         }
-        .title-section p {
-            font-size: 0.8rem;
+        .top-bar p {
+            font-size: 0.7rem;
             color: var(--text-soft);
+            margin-top: 4px;
+        }
+        .header-actions {
+            display: flex;
+            justify-content: flex-end;
+            margin-top: 8px;
         }
         .dark-toggle {
-            background: var(--btn-bg);
+            background: var(--badge-bg);
             border: 1px solid var(--card-border);
             border-radius: 60px;
-            padding: 6px 16px;
+            padding: 6px 14px;
             cursor: pointer;
-            font-size: 0.8rem;
+            font-size: 0.7rem;
+            color: var(--text-primary);
         }
 
         .status-banner {
             background: var(--badge-bg);
             border-radius: 60px;
-            padding: 6px 16px;
-            font-size: 0.75rem;
-            display: inline-block;
-            margin-bottom: 1rem;
+            padding: 6px 14px;
+            font-size: 0.7rem;
+            text-align: center;
+            margin-bottom: 16px;
+            backdrop-filter: blur(4px);
         }
 
-        .study-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-            gap: 1.5rem;
-        }
-
+        /* cards */
         .card {
             background: var(--card-bg);
-            border-radius: 28px;
-            padding: 1.4rem;
+            backdrop-filter: blur(12px);
+            border-radius: 32px;
+            padding: 18px;
+            margin-bottom: 16px;
             border: 1px solid var(--card-border);
+            box-shadow: var(--shadow-sm);
         }
-
+        
         .card-title {
             display: flex;
             align-items: center;
             gap: 8px;
-            font-weight: 500;
-            font-size: 0.8rem;
+            font-weight: 600;
+            font-size: 0.75rem;
             text-transform: uppercase;
             letter-spacing: 1px;
-            color: var(--card-title);
-            margin-bottom: 1.2rem;
-            border-bottom: 1px solid var(--leader-row-border);
-            padding-bottom: 0.6rem;
+            color: var(--text-soft);
+            margin-bottom: 14px;
+            padding-bottom: 8px;
+            border-bottom: 2px solid var(--pink-primary);
         }
 
+        /* avatar grid */
         .avatar-strip {
             display: flex;
             flex-wrap: wrap;
             gap: 8px;
-            margin: 1rem 0;
+            margin: 12px 0;
         }
         .avatar-btn {
             background: var(--avatar-bg);
-            border: 1px solid var(--avatar-border);
+            border: 2px solid var(--avatar-border);
             border-radius: 60px;
-            font-size: 1.1rem;
-            padding: 5px 12px;
+            font-size: 1.2rem;
+            padding: 8px 14px;
             cursor: pointer;
             display: inline-flex;
             align-items: center;
             gap: 6px;
+            font-weight: 500;
+            transition: all 0.2s ease;
         }
-        .avatar-btn span { font-size: 0.65rem; }
+        .avatar-btn span { font-size: 0.7rem; }
         .avatar-btn.active {
             background: var(--avatar-active);
-            border-color: var(--card-title);
+            border-color: var(--pink-dark);
+            transform: scale(0.98);
         }
 
         .minimal-input {
             width: 100%;
-            padding: 10px 14px;
+            padding: 12px 16px;
             background: var(--input-bg);
-            border: 1px solid var(--input-border);
-            border-radius: 40px;
-            font-size: 0.85rem;
+            border: 2px solid var(--input-border);
+            border-radius: 60px;
+            font-size: 0.9rem;
             font-family: inherit;
             color: var(--text-primary);
+            backdrop-filter: blur(4px);
         }
+        .minimal-input:focus { outline: none; border-color: var(--pink-primary); }
 
+        /* timer */
         .timer-block {
             background: var(--timer-bg);
-            border-radius: 32px;
-            padding: 1rem;
+            border-radius: 48px;
+            padding: 20px;
             text-align: center;
-            margin: 1rem 0;
+            margin: 12px 0;
+            border: 2px solid var(--timer-border);
         }
         #timer {
             font-family: monospace;
-            font-size: 3rem;
-            font-weight: 500;
-            letter-spacing: 2px;
+            font-size: 3.5rem;
+            font-weight: 700;
+            letter-spacing: 3px;
+            color: var(--text-primary);
         }
 
         .button-group {
             display: flex;
-            gap: 10px;
-            margin-top: 12px;
+            gap: 12px;
         }
-        .minimal-btn {
+        .cute-btn {
             flex: 1;
-            background: var(--btn-bg);
+            background: linear-gradient(135deg, var(--pink-primary), var(--purple-accent));
             border: none;
-            padding: 8px 0;
-            border-radius: 40px;
-            font-weight: 500;
-            font-size: 0.8rem;
+            padding: 12px 0;
+            border-radius: 60px;
+            font-weight: 700;
+            font-size: 0.85rem;
+            color: white;
             cursor: pointer;
+            transition: transform 0.1s ease;
+            box-shadow: 0 4px 12px rgba(255, 140, 170, 0.3);
         }
-        .minimal-btn.primary { background: var(--btn-active); }
+        .cute-btn.secondary {
+            background: linear-gradient(135deg, var(--blue-primary), var(--purple-accent));
+        }
+        .cute-btn:active { transform: scale(0.97); }
 
         .scroll-area {
-            max-height: 220px;
+            max-height: 200px;
             overflow-y: auto;
-            margin: 0.8rem 0;
+            margin: 10px 0;
             padding-right: 4px;
         }
 
+        /* active users chips */
+        .active-users-wrapper {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
         .active-user-chip {
             display: inline-flex;
             align-items: center;
             gap: 6px;
             background: var(--badge-bg);
-            padding: 4px 12px;
+            padding: 6px 14px;
             border-radius: 60px;
             font-size: 0.75rem;
-            margin: 4px;
+            border: 1px solid var(--card-border);
         }
         .online-dot {
             width: 8px;
@@ -226,23 +260,55 @@
             background: var(--online-green);
             border-radius: 50%;
             display: inline-block;
+            animation: pulse 1.5s infinite;
         }
+        @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
 
+        /* leaderboard rows */
         .leader-row, .longest-row {
             display: flex;
             align-items: center;
             gap: 10px;
-            padding: 6px 0;
+            padding: 8px 0;
             border-bottom: 1px solid var(--leader-row-border);
             font-size: 0.85rem;
         }
 
+        /* longest session blocks */
+        .longest-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        .longest-block {
+            background: linear-gradient(135deg, var(--pink-primary)15, var(--blue-primary)10);
+            background: var(--badge-bg);
+            border-radius: 20px;
+            padding: 12px 16px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            border-left: 5px solid var(--pink-primary);
+            transition: transform 0.1s;
+        }
+        .longest-rank {
+            font-size: 1.3rem;
+            font-weight: bold;
+            min-width: 45px;
+        }
+        .longest-avatar { font-size: 1.8rem; }
+        .longest-info { flex: 1; }
+        .longest-name { font-weight: 700; font-size: 0.9rem; }
+        .longest-time { font-size: 0.7rem; opacity: 0.7; font-family: monospace; }
+        .longest-badge { font-size: 1.2rem; }
+
+        /* chat */
         .chat-message {
             background: var(--chat-bubble);
-            border-radius: 18px;
-            padding: 8px 12px;
+            border-radius: 20px;
+            padding: 10px 14px;
             margin-bottom: 8px;
-            border-left: 3px solid var(--chat-border-left);
+            border-left: 4px solid var(--chat-border-left);
         }
         .chat-meta {
             display: flex;
@@ -251,49 +317,48 @@
             margin-bottom: 4px;
             font-size: 0.7rem;
         }
-        .chat-user { font-weight: 600; }
-        .chat-time { margin-left: auto; font-size: 0.6rem; opacity: 0.7; }
-        .chat-text { font-size: 0.8rem; word-break: break-word; }
+        .chat-user { font-weight: 700; }
+        .chat-time { margin-left: auto; font-size: 0.6rem; opacity: 0.6; }
+        .chat-text { font-size: 0.85rem; word-break: break-word; }
 
         .input-send {
             display: flex;
-            gap: 8px;
-            margin-top: 10px;
+            gap: 10px;
+            margin-top: 12px;
         }
         .input-send input {
             flex: 1;
             background: var(--input-bg);
-            border: 1px solid var(--input-border);
-            border-radius: 40px;
-            padding: 8px 14px;
+            border: 2px solid var(--input-border);
+            border-radius: 60px;
+            padding: 10px 16px;
             font-family: inherit;
-            font-size: 0.8rem;
+            font-size: 0.85rem;
         }
         .input-send button {
-            background: var(--btn-bg);
+            background: linear-gradient(135deg, var(--pink-primary), var(--purple-accent));
             border: none;
-            width: 42px;
-            border-radius: 40px;
+            width: 48px;
+            border-radius: 60px;
             cursor: pointer;
+            font-size: 1.1rem;
+            color: white;
         }
 
         .typing-indicator {
             font-size: 0.7rem;
-            color: var(--text-soft);
-            padding: 6px 0;
-            font-style: italic;
+            padding: 6px 12px;
             background: var(--typing-bg);
-            border-radius: 20px;
-            padding: 4px 12px;
-            margin-top: 6px;
+            border-radius: 60px;
             display: inline-block;
+            margin-top: 8px;
         }
 
         .tiny-note {
-            font-size: 0.65rem;
+            font-size: 0.6rem;
             text-align: center;
-            margin-top: 1.5rem;
-            color: var(--text-soft);
+            margin-top: 20px;
+            opacity: 0.6;
         }
 
         ::-webkit-scrollbar { width: 4px; }
@@ -304,79 +369,71 @@
 <body>
 <div class="app">
     <div class="top-bar">
-        <div class="title-section">
-            <h1>⎯ focus.live ⎯</h1>
-            <p>real-time co-study · global leaderboard · active users · typing indicator</p>
-        </div>
-        <button class="dark-toggle" id="darkModeToggle">🌙 dark mode</button>
+        <h1>focus.live</h1>
+        <p>cute co-study · real-time chat · global leaderboard</p>
+        <div class="header-actions"><button class="dark-toggle" id="darkModeToggle">🎨 dark mode</button></div>
     </div>
-    <div class="status-banner" id="connectionStatus">🔄 connecting to Firebase...</div>
+    <div class="status-banner" id="connectionStatus">🔄 connecting...</div>
 
-    <div class="study-grid">
-        <!-- LEFT COLUMN -->
-        <div>
-            <div class="card">
-                <div class="card-title"><span>🎭</span> alter ego · meme lords</div>
-                <div class="avatar-strip" id="avatarStrip">
-                    <button class="avatar-btn" data-avatar="😺">😺 <span>meow</span></button>
-                    <button class="avatar-btn" data-avatar="🗿">🗿 <span>gigachad</span></button>
-                    <button class="avatar-btn" data-avatar="🫠">🫠 <span>melt</span></button>
-                    <button class="avatar-btn" data-avatar="🤌">🤌 <span>italian</span></button>
-                    <button class="avatar-btn" data-avatar="✨">✨ <span>main</span></button>
-                    <button class="avatar-btn" data-avatar="🐺">🐺 <span>sigma</span></button>
-                    <button class="avatar-btn" data-avatar="🧌">🧌 <span>troll</span></button>
-                    <button class="avatar-btn" data-avatar="👁️👄👁️">👁️👄👁️ <span>stare</span></button>
-                </div>
-                <input type="text" id="usernameField" class="minimal-input" placeholder="your name" autocomplete="off">
-            </div>
-
-            <div class="card">
-                <div class="card-title"><span>⏱️</span> focus timer</div>
-                <div class="timer-block"><div id="timer">00:00</div></div>
-                <div class="button-group">
-                    <button class="minimal-btn" id="timerToggleBtn">▶ start</button>
-                    <button class="minimal-btn primary" id="finishSessionBtn">✓ finish</button>
-                </div>
-                <div style="font-size:0.7rem; margin-top:8px; text-align:center; opacity:0.7;">finish = save to global leaderboard</div>
-            </div>
-
-            <div class="card">
-                <div class="card-title"><span>🏆</span> longest sessions (all time)</div>
-                <div id="longestList" class="scroll-area">loading...</div>
-            </div>
+    <!-- avatar & timer -->
+    <div class="card">
+        <div class="card-title"><span>🎭</span> your alter ego</div>
+        <div class="avatar-strip" id="avatarStrip">
+            <button class="avatar-btn" data-avatar="😺">😺 <span>meow</span></button>
+            <button class="avatar-btn" data-avatar="🗿">🗿 <span>chad</span></button>
+            <button class="avatar-btn" data-avatar="🫠">🫠 <span>melt</span></button>
+            <button class="avatar-btn" data-avatar="🤌">🤌 <span>italian</span></button>
+            <button class="avatar-btn" data-avatar="✨">✨ <span>main</span></button>
+            <button class="avatar-btn" data-avatar="🐺">🐺 <span>sigma</span></button>
+            <button class="avatar-btn" data-avatar="🧸">🧸 <span>bear</span></button>
         </div>
+        <input type="text" id="usernameField" class="minimal-input" placeholder="your cute name" autocomplete="off">
+    </div>
 
-        <!-- RIGHT COLUMN -->
-        <div>
-            <div class="card">
-                <div class="card-title"><span>👥</span> active users · online now</div>
-                <div id="activeUsersList" class="scroll-area" style="max-height: 100px;">loading...</div>
-                <div id="typingIndicatorArea" class="typing-indicator">✨ nobody is typing...</div>
-            </div>
-
-            <div class="card">
-                <div class="card-title"><span>📋</span> global leaderboard (today)</div>
-                <div id="leaderboardArea" class="scroll-area">loading...</div>
-            </div>
-
-            <div class="card">
-                <div class="card-title"><span>💬</span> live chat</div>
-                <div id="chatArea" class="scroll-area"></div>
-                <div class="input-send">
-                    <input type="text" id="chatInputField" placeholder="type a message...">
-                    <button id="sendChatBtn">→</button>
-                </div>
-            </div>
+    <div class="card">
+        <div class="card-title"><span>⏱️</span> focus timer</div>
+        <div class="timer-block"><div id="timer">00:00</div></div>
+        <div class="button-group">
+            <button class="cute-btn" id="timerToggleBtn">🌸 start</button>
+            <button class="cute-btn secondary" id="finishSessionBtn">✨ finish</button>
         </div>
     </div>
-    <div class="tiny-note">⚡ live with Firebase · real-time chat, active users, typing indicator, longest session records</div>
+
+    <!-- active users & typing -->
+    <div class="card">
+        <div class="card-title"><span>👥</span> online now</div>
+        <div id="activeUsersList" class="active-users-wrapper">loading...</div>
+        <div id="typingIndicatorArea" class="typing-indicator">✨ nobody typing...</div>
+    </div>
+
+    <!-- leaderboard -->
+    <div class="card">
+        <div class="card-title"><span>📋</span> today's top focusers</div>
+        <div id="leaderboardArea" class="scroll-area">✨ no sessions yet</div>
+    </div>
+
+    <!-- longest sessions as blocks -->
+    <div class="card">
+        <div class="card-title"><span>🏆</span> longest sessions · all time</div>
+        <div id="longestList" class="longest-grid">loading...</div>
+    </div>
+
+    <!-- chat -->
+    <div class="card">
+        <div class="card-title"><span>💬</span> live chat</div>
+        <div id="chatArea" class="scroll-area"></div>
+        <div class="input-send">
+            <input type="text" id="chatInputField" placeholder="type a sweet message...">
+            <button id="sendChatBtn">→</button>
+        </div>
+    </div>
+    <div class="tiny-note">⚡ everything is live · chat, leaderboard, active users sync in real-time</div>
 </div>
 
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/12.12.0/firebase-app.js";
-    import { getFirestore, collection, doc, addDoc, deleteDoc, query, orderBy, limit, onSnapshot, serverTimestamp, Timestamp, where, getDocs, writeBatch } from "https://www.gstatic.com/firebasejs/12.12.0/firebase-firestore.js";
+    import { getFirestore, collection, doc, addDoc, deleteDoc, query, orderBy, limit, onSnapshot, serverTimestamp, where, getDocs, writeBatch, Timestamp } from "https://www.gstatic.com/firebasejs/12.12.0/firebase-firestore.js";
     
-    // Your Firebase config
     const firebaseConfig = {
         apiKey: "AIzaSyC_uTFuqqywIyPMPjH4sNcXDbC__0vhTOE",
         authDomain: "styd-d1945.firebaseapp.com",
@@ -387,17 +444,14 @@
         measurementId: "G-K8ZQJ0PEN5"
     };
 
-    // Initialize Firebase
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
     
-    // Collections
     const SESSIONS_COLLECTION = "study_sessions";
     const CHAT_COLLECTION = "chat_messages";
     const ACTIVE_USERS_COLLECTION = "active_users";
     const TYPING_COLLECTION = "typing_indicators";
     
-    // User ID (persistent across sessions)
     let currentUserId = localStorage.getItem("focusUserId");
     if (!currentUserId) {
         currentUserId = crypto.randomUUID ? crypto.randomUUID() : Math.random().toString(36).substring(2);
@@ -405,18 +459,15 @@
     }
     
     let currentAvatar = localStorage.getItem("liveAvatar") || "😺";
-    let currentUsername = localStorage.getItem("liveUsername") || "focuser";
+    let currentUsername = localStorage.getItem("liveUsername") || "studycute";
     
-    // Timer state
     let currentSeconds = 0;
     let timerInterval = null;
     let isRunning = false;
-    
-    // Typing debounce
     let typingTimeout = null;
     let isTypingCurrently = false;
     
-    // DOM elements
+    // DOM
     const usernameInput = document.getElementById('usernameField');
     const timerDisplay = document.getElementById('timer');
     const toggleBtn = document.getElementById('timerToggleBtn');
@@ -441,16 +492,15 @@
         if (timerInterval) clearInterval(timerInterval);
         isRunning = true;
         timerInterval = setInterval(() => { if(isRunning) { currentSeconds++; updateTimerUI(); } }, 1000);
-        toggleBtn.innerText = '⏸ pause';
+        toggleBtn.innerHTML = '⏸ pause';
     }
     function pauseTimer() {
         if(timerInterval) clearInterval(timerInterval);
         timerInterval = null;
         isRunning = false;
-        toggleBtn.innerText = '▶ start';
+        toggleBtn.innerHTML = '🌸 start';
     }
     
-    // Avatar & username
     function setAvatar(emoji) {
         currentAvatar = emoji;
         localStorage.setItem("liveAvatar", currentAvatar);
@@ -465,59 +515,51 @@
     }
     function setUsername(name) {
         let trimmed = name.trim();
-        if(trimmed === "") trimmed = "focuser";
+        if(trimmed === "") trimmed = "studycute";
         currentUsername = trimmed;
         localStorage.setItem("liveUsername", currentUsername);
         usernameInput.value = currentUsername;
         updateActiveUser();
     }
     
-    // Update active user (heartbeat)
     async function updateActiveUser() {
         try {
-            const userRef = doc(db, ACTIVE_USERS_COLLECTION, currentUserId);
+            const q = query(collection(db, ACTIVE_USERS_COLLECTION), where("userId", "==", currentUserId));
+            const snap = await getDocs(q);
+            const batch = writeBatch(db);
+            snap.forEach(doc => batch.delete(doc.ref));
+            await batch.commit();
             await addDoc(collection(db, ACTIVE_USERS_COLLECTION), {
-                userId: currentUserId,
-                username: currentUsername,
-                avatar: currentAvatar,
-                lastSeen: serverTimestamp(),
-                timestamp: serverTimestamp()
+                userId: currentUserId, username: currentUsername, avatar: currentAvatar, timestamp: serverTimestamp()
             });
-            // Clean up old active users after 30 seconds
-        } catch(e) { console.warn("active user update", e); }
+        } catch(e) {}
     }
     
-    // Clean up old active users (older than 30 seconds)
     async function cleanupOldActiveUsers() {
         try {
             const thirtySecAgo = new Date(Date.now() - 30000);
-            const q = query(collection(db, ACTIVE_USERS_COLLECTION), where("timestamp", "<", thirtySecAgo));
-            const snapshot = await getDocs(q);
+            const q = query(collection(db, ACTIVE_USERS_COLLECTION), where("timestamp", "<", Timestamp.fromDate(thirtySecAgo)));
+            const snap = await getDocs(q);
             const batch = writeBatch(db);
-            snapshot.docs.forEach(doc => batch.delete(doc.ref));
+            snap.forEach(doc => batch.delete(doc.ref));
             await batch.commit();
         } catch(e) {}
     }
-    setInterval(cleanupOldActiveUsers, 15000);
-    setInterval(updateActiveUser, 20000);
     
-    // Finish session
     async function finishSession() {
-        if(currentSeconds === 0) { addSystemMessage("run the timer first!"); return; }
+        if(currentSeconds === 0) { addSystemMessage("🌸 run the timer first!", "⏰"); return; }
         try {
             await addDoc(collection(db, SESSIONS_COLLECTION), {
-                userId: currentUserId,
-                name: currentUsername,
-                avatar: currentAvatar,
-                timeSeconds: currentSeconds,
-                timestamp: serverTimestamp(),
+                userId: currentUserId, name: currentUsername, avatar: currentAvatar,
+                timeSeconds: currentSeconds, timestamp: serverTimestamp(),
                 date: new Date().toISOString().slice(0,10)
             });
-            addSystemMessage(`🎉 studied ${formatTime(currentSeconds)}!`, currentAvatar);
+            // Show user's name in system message
+            addSystemMessage(`${currentUsername} studied ${formatTime(currentSeconds)}! 🎉`, currentAvatar);
             currentSeconds = 0;
             updateTimerUI();
             if(isRunning) pauseTimer();
-        } catch(e) { console.error(e); alert("Failed to save session"); }
+        } catch(e) { console.error(e); alert("Failed to save"); }
     }
     
     async function sendMessage() {
@@ -525,39 +567,32 @@
         if(!text) return;
         try {
             await addDoc(collection(db, CHAT_COLLECTION), {
-                userId: currentUserId,
-                user: currentUsername,
-                avatar: currentAvatar,
-                text: text,
-                timestamp: serverTimestamp()
+                userId: currentUserId, user: currentUsername, avatar: currentAvatar, text: text, timestamp: serverTimestamp()
             });
             chatInput.value = "";
             stopTyping();
-        } catch(e) { console.error(e); }
+        } catch(e) {}
     }
     
-    async function addSystemMessage(text, avatar = "⚡") {
+    async function addSystemMessage(text, avatar = "🌸") {
         try {
             await addDoc(collection(db, CHAT_COLLECTION), {
-                userId: "system",
-                user: "system",
-                avatar: avatar,
-                text: text,
-                timestamp: serverTimestamp()
+                userId: "system", user: "system", avatar: avatar, text: text, timestamp: serverTimestamp()
             });
         } catch(e) {}
     }
     
-    // Typing indicator
     async function startTyping() {
         if(isTypingCurrently) return;
         isTypingCurrently = true;
         try {
+            const q = query(collection(db, TYPING_COLLECTION), where("userId", "==", currentUserId));
+            const snap = await getDocs(q);
+            const batch = writeBatch(db);
+            snap.forEach(doc => batch.delete(doc.ref));
+            await batch.commit();
             await addDoc(collection(db, TYPING_COLLECTION), {
-                userId: currentUserId,
-                username: currentUsername,
-                avatar: currentAvatar,
-                timestamp: serverTimestamp()
+                userId: currentUserId, username: currentUsername, avatar: currentAvatar, timestamp: serverTimestamp()
             });
         } catch(e) {}
     }
@@ -566,47 +601,43 @@
         isTypingCurrently = false;
         try {
             const q = query(collection(db, TYPING_COLLECTION), where("userId", "==", currentUserId));
-            const snapshot = await getDocs(q);
+            const snap = await getDocs(q);
             const batch = writeBatch(db);
-            snapshot.docs.forEach(doc => batch.delete(doc.ref));
+            snap.forEach(doc => batch.delete(doc.ref));
             await batch.commit();
         } catch(e) {}
     }
     
-    // Clean up old typing indicators (older than 5 seconds)
     async function cleanupOldTyping() {
         try {
             const fiveSecAgo = new Date(Date.now() - 5000);
-            const q = query(collection(db, TYPING_COLLECTION), where("timestamp", "<", fiveSecAgo));
-            const snapshot = await getDocs(q);
+            const q = query(collection(db, TYPING_COLLECTION), where("timestamp", "<", Timestamp.fromDate(fiveSecAgo)));
+            const snap = await getDocs(q);
             const batch = writeBatch(db);
-            snapshot.docs.forEach(doc => batch.delete(doc.ref));
+            snap.forEach(doc => batch.delete(doc.ref));
             await batch.commit();
         } catch(e) {}
     }
-    setInterval(cleanupOldTyping, 4000);
     
-    // Set up real-time listeners
     function setupListeners() {
-        connectionSpan.innerHTML = "✅ connected · live mode";
+        connectionSpan.innerHTML = "✅ live · cute mode";
         
-        // Leaderboard (today's top sessions by user)
+        // Leaderboard today
         const today = new Date().toISOString().slice(0,10);
-        const qSessions = query(collection(db, SESSIONS_COLLECTION), orderBy("timestamp", "desc"), limit(100));
+        const qSessions = query(collection(db, SESSIONS_COLLECTION), orderBy("timestamp", "desc"), limit(200));
         onSnapshot(qSessions, (snapshot) => {
-            const sessions = [];
-            snapshot.forEach(doc => sessions.push(doc.data()));
-            // Group by user, take best session per user today
             const userBest = new Map();
-            sessions.forEach(s => {
-                if(s.date === today || (s.timestamp && new Date(s.timestamp?.toDate?.() || s.timestamp).toISOString().slice(0,10) === today)) {
+            snapshot.forEach(doc => {
+                const s = doc.data();
+                const sessionDate = s.timestamp?.toDate ? s.timestamp.toDate().toISOString().slice(0,10) : s.date;
+                if(sessionDate === today) {
                     if(!userBest.has(s.userId) || userBest.get(s.userId).timeSeconds < s.timeSeconds) {
                         userBest.set(s.userId, { name: s.name, avatar: s.avatar, timeSeconds: s.timeSeconds });
                     }
                 }
             });
-            const leaderboard = Array.from(userBest.values()).sort((a,b) => b.timeSeconds - a.timeSeconds).slice(0,10);
-            if(leaderboard.length === 0) leaderboardDiv.innerHTML = "<div style='padding:12px; text-align:center'>✨ no sessions today</div>";
+            const leaderboard = Array.from(userBest.values()).sort((a,b) => b.timeSeconds - a.timeSeconds).slice(0,8);
+            if(leaderboard.length === 0) leaderboardDiv.innerHTML = "<div style='padding:12px; text-align:center'>✨ no study sessions today</div>";
             else {
                 leaderboardDiv.innerHTML = leaderboard.map((u, i) => {
                     let medal = i===0?"🥇":i===1?"🥈":i===2?"🥉":`${i+1}.`;
@@ -615,9 +646,9 @@
             }
         });
         
-        // Longest sessions (all time, best per user)
-        const qAllSessions = query(collection(db, SESSIONS_COLLECTION), orderBy("timestamp", "desc"), limit(500));
-        onSnapshot(qAllSessions, (snapshot) => {
+        // Longest sessions as BLOCKS
+        const qAll = query(collection(db, SESSIONS_COLLECTION), orderBy("timestamp", "desc"), limit(500));
+        onSnapshot(qAll, (snapshot) => {
             const userBest = new Map();
             snapshot.forEach(doc => {
                 const s = doc.data();
@@ -625,68 +656,75 @@
                     userBest.set(s.userId, { name: s.name, avatar: s.avatar, timeSeconds: s.timeSeconds });
                 }
             });
-            const longest = Array.from(userBest.values()).sort((a,b) => b.timeSeconds - a.timeSeconds).slice(0,10);
-            if(longest.length === 0) longestDiv.innerHTML = "<div style='padding:12px; text-align:center'>🏆 no records yet</div>";
+            const longest = Array.from(userBest.values()).sort((a,b) => b.timeSeconds - a.timeSeconds).slice(0,8);
+            if(longest.length === 0) longestDiv.innerHTML = "<div style='padding:20px; text-align:center'>🏆 no records yet</div>";
             else {
                 longestDiv.innerHTML = longest.map((u, i) => {
-                    return `<div class="longest-row"><div>${i+1}.</div><div>${u.avatar}</div><div style="flex:1">${escapeHtml(u.name)}</div><div>🏆 ${formatTime(u.timeSeconds)}</div></div>`;
+                    let medal = i===0?"👑":i===1?"🥈":i===2?"🥉":"⭐";
+                    return `
+                        <div class="longest-block">
+                            <div class="longest-rank">${medal}</div>
+                            <div class="longest-avatar">${u.avatar}</div>
+                            <div class="longest-info">
+                                <div class="longest-name">${escapeHtml(u.name)}</div>
+                                <div class="longest-time">${formatTime(u.timeSeconds)}</div>
+                            </div>
+                            <div class="longest-badge">🏆</div>
+                        </div>
+                    `;
                 }).join('');
             }
         });
         
-        // Chat messages
-        const qChat = query(collection(db, CHAT_COLLECTION), orderBy("timestamp", "asc"), limit(100));
+        // Chat
+        const qChat = query(collection(db, CHAT_COLLECTION), orderBy("timestamp", "asc"), limit(80));
         onSnapshot(qChat, (snapshot) => {
             const messages = [];
             snapshot.forEach(doc => messages.push({ id: doc.id, ...doc.data() }));
-            if(messages.length === 0) chatArea.innerHTML = "<div style='padding:12px; text-align:center'>💬 no messages yet</div>";
+            if(messages.length === 0) chatArea.innerHTML = "<div style='padding:12px; text-align:center'>💬 be first to chat!</div>";
             else {
                 chatArea.innerHTML = messages.map(m => {
                     let time = "";
-                    if(m.timestamp) {
-                        let date = m.timestamp.toDate ? m.timestamp.toDate() : new Date(m.timestamp);
+                    if(m.timestamp?.toDate) {
+                        let date = m.timestamp.toDate();
                         time = date.toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'});
                     }
-                    return `<div class="chat-message"><div class="chat-meta"><span>${m.avatar || "📝"}</span><span class="chat-user">${escapeHtml(m.user)}</span><span class="chat-time">${time}</span></div><div class="chat-text">${escapeHtml(m.text)}</div></div>`;
+                    return `<div class="chat-message"><div class="chat-meta"><span>${m.avatar || "💬"}</span><span class="chat-user">${escapeHtml(m.user)}</span><span class="chat-time">${time}</span></div><div class="chat-text">${escapeHtml(m.text)}</div></div>`;
                 }).join('');
             }
             chatArea.scrollTop = chatArea.scrollHeight;
         });
         
-        // Active users
+        // Active users (including self)
         const qActive = query(collection(db, ACTIVE_USERS_COLLECTION), orderBy("timestamp", "desc"));
         onSnapshot(qActive, (snapshot) => {
-            const users = new Map();
-            snapshot.forEach(doc => {
-                const u = doc.data();
-                users.set(u.userId, u);
-            });
-            const userList = Array.from(users.values()).filter(u => u.userId !== currentUserId);
-            if(userList.length === 0) activeUsersDiv.innerHTML = "<div style='padding:8px; text-align:center'>👻 no one else online</div>";
+            const users = [];
+            snapshot.forEach(doc => users.push(doc.data()));
+            const unique = new Map();
+            users.forEach(u => unique.set(u.userId, u));
+            const userList = Array.from(unique.values());
+            if(userList.length === 0) activeUsersDiv.innerHTML = "<div style='padding:8px'>👻 no one online</div>";
             else {
                 activeUsersDiv.innerHTML = userList.map(u => `<div class="active-user-chip"><span class="online-dot"></span> ${u.avatar} ${escapeHtml(u.username)}</div>`).join('');
             }
         });
         
-        // Typing indicators
+        // Typing
         const qTyping = query(collection(db, TYPING_COLLECTION), orderBy("timestamp", "desc"));
         onSnapshot(qTyping, (snapshot) => {
-            const typingUsers = [];
-            snapshot.forEach(doc => {
-                const t = doc.data();
-                if(t.userId !== currentUserId) typingUsers.push(t);
-            });
-            if(typingUsers.length === 0) typingIndicatorSpan.innerHTML = "✨ nobody is typing...";
+            const typing = [];
+            snapshot.forEach(doc => typing.push(doc.data()));
+            const others = typing.filter(t => t.userId !== currentUserId);
+            if(others.length === 0) typingIndicatorSpan.innerHTML = "✨ nobody typing...";
             else {
-                let names = typingUsers.map(t => `${t.avatar} ${t.username}`).join(", ");
-                typingIndicatorSpan.innerHTML = `✍️ ${names} ${typingUsers.length === 1 ? "is" : "are"} typing...`;
+                let names = others.map(t => `${t.avatar} ${t.username}`).join(", ");
+                typingIndicatorSpan.innerHTML = `✍️ ${names} ${others.length === 1 ? "is" : "are"} typing...`;
             }
         });
     }
     
     function escapeHtml(str) { if(!str) return ''; return str.replace(/[&<>]/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;'}[m])); }
     
-    // Event binding
     function bindEvents() {
         document.querySelectorAll('.avatar-btn').forEach(btn => {
             btn.addEventListener('click', () => setAvatar(btn.getAttribute('data-avatar')));
@@ -708,17 +746,15 @@
         if(localStorage.getItem('darkMode') === 'true') document.body.classList.add('dark');
     }
     
-    // Initialize
     usernameInput.value = currentUsername;
     highlightAvatar();
     updateTimerUI();
     bindEvents();
     updateActiveUser();
     setupListeners();
-    
-    // Initial cleanup
-    cleanupOldActiveUsers();
-    cleanupOldTyping();
+    setInterval(updateActiveUser, 20000);
+    setInterval(cleanupOldActiveUsers, 15000);
+    setInterval(cleanupOldTyping, 5000);
 </script>
 </body>
 </html>
