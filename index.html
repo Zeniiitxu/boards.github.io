@@ -2,98 +2,113 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Co-Study Simple</title>
+    <title>Co-Study Hub</title>
     <style>
-        body { font-family: sans-serif; background: #1e1e2f; color: white; text-align: center; padding: 20px; }
-        .container { max-width: 500px; margin: auto; background: #2c2c54; padding: 20px; border-radius: 15px; }
-        input, button { padding: 10px; margin: 5px; border-radius: 8px; border: none; }
-        #timer { font-size: 3rem; margin: 20px; color: #fab1a0; }
-        .chat-box { height: 150px; overflow-y: auto; border: 1px solid #444; padding: 10px; margin: 10px 0; text-align: left; background: #1e1e2f; }
+        :root { --bg: #fdf6f7; --me: #a29bfe; --them: #fab1a0; --accent: #81ecec; }
+        body { font-family: 'Segoe UI', sans-serif; background: var(--bg); padding: 20px; color: #2d3436; }
+        .container { max-width: 500px; margin: auto; }
+        
+        /* Glassmorphism Card */
+        .card { background: white; padding: 20px; border-radius: 20px; box-shadow: 0 10px 20px rgba(0,0,0,0.05); margin-bottom: 20px; }
+        
+        /* Chat UI */
+        .chat-box { height: 250px; overflow-y: auto; background: #fff; padding: 15px; border-radius: 15px; display: flex; flex-direction: column; }
+        .bubble { padding: 10px 15px; border-radius: 20px; margin: 5px; max-width: 70%; }
+        .my-bubble { align-self: flex-end; background: var(--me); color: white; }
+        .other-bubble { align-self: flex-start; background: var(--them); color: white; }
+        
+        /* Status Indicators */
+        .online-dot { width: 10px; height: 10px; background: #55efc4; border-radius: 50%; display: inline-block; }
+        
+        /* Music Widgets */
+        .music-player { display: flex; gap: 10px; margin-top: 10px; }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <h1>📚 Co-Study Simple</h1>
-    <input id="username" placeholder="Enter your name" oninput="saveName(this.value)">
-    
-    <div id="timer">00:00:00</div>
-    <button onclick="toggleTimer()" id="toggleBtn">Start</button>
-    <button onclick="saveSession()">Save Session</button>
+    <h1>📚 Co-Study Hub</h1>
+    <input id="username" placeholder="Your Name" oninput="saveName(this.value)" style="width: 100%; padding: 10px; margin-bottom: 10px; border-radius: 10px; border: 1px solid #ccc;">
 
-    <h3>🏆 Leaderboard</h3>
-    <div class="chat-box" id="leaderboard"></div>
+    <div class="card">
+        <div id="timer" style="font-size: 3rem; font-weight: bold; color: var(--me);">00:00</div>
+        <button onclick="toggleTimer()" id="toggleBtn">Start Session</button>
+    </div>
 
-    <h3>💬 Chat</h3>
+    <div class="music-player">
+        <iframe src="https://open.spotify.com/embed/playlist/37i9dQZF1DWZeKCadgRdKQ" width="100%" height="80" frameborder="0"></iframe>
+    </div>
+
+    <h3>🏆 Top Students</h3>
+    <div id="leaderboard"></div>
+
+    <h3>💬 Chat <small id="typing-status" style="color: grey; font-size: 12px;"></small></h3>
     <div class="chat-box" id="chat"></div>
-    <input id="message" placeholder="Type a message...">
-    <button onclick="sendMessage()">Send</button>
+    <input id="message" placeholder="Type a message..." onkeyup="checkTyping(event)">
 </div>
 
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/12.12.0/firebase-app.js";
-    import { getFirestore, collection, addDoc, onSnapshot, query, orderBy, limit } from "https://www.gstatic.com/firebasejs/12.12.0/firebase-firestore.js";
+    import { getFirestore, collection, addDoc, onSnapshot, query, orderBy, limit, doc, setDoc } from "https://www.gstatic.com/firebasejs/12.12.0/firebase-firestore.js";
 
-    const firebaseConfig = {
-        apiKey: "AIzaSyC_uTFuqqywIyPMPjH4sNcXDbC__0vhTOE",
-        authDomain: "styd-d1945.firebaseapp.com",
-        projectId: "styd-d1945",
-        storageBucket: "styd-d1945.firebasestorage.app",
-        messagingSenderId: "60953296553",
-        appId: "1:60953296553:web:ac86bfccdd16c915aff3b8",
-        measurementId: "G-K8ZQJ0PEN5"
-    };
-
+    const firebaseConfig = { /* PASTE YOUR CONFIG HERE */ };
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
 
-    // --- USERNAME PERSISTENCE ---
-    window.saveName = (val) => localStorage.setItem("username", val);
-    document.getElementById("username").value = localStorage.getItem("username") || "";
+    // --- USERNAME & PRESENCE ---
+    window.saveName = (val) => {
+        localStorage.setItem("username", val);
+        setDoc(doc(db, "presence", val), { online: true, lastSeen: new Date() });
+    };
 
-    // --- TIMER LOGIC ---
+    // --- TIMER & STREAKS ---
     let seconds = 0, timerInterval = null;
     window.toggleTimer = () => {
-        const btn = document.getElementById('toggleBtn');
         if (timerInterval) {
             clearInterval(timerInterval);
             timerInterval = null;
-            btn.innerText = "Resume";
+            document.getElementById('toggleBtn').innerText = "Start";
         } else {
-            timerInterval = setInterval(() => {
-                seconds++;
-                document.getElementById('timer').innerText = new Date(seconds * 1000).toISOString().substr(11, 8);
-            }, 1000);
-            btn.innerText = "Pause";
+            timerInterval = setInterval(() => { seconds++; document.getElementById('timer').innerText = new Date(seconds * 1000).toISOString().substr(14, 5); }, 1000);
+            document.getElementById('toggleBtn').innerText = "Pause";
         }
     };
 
-    window.saveSession = async () => {
-        const name = localStorage.getItem("username") || "Anonymous";
-        await addDoc(collection(db, "sessions"), { name, time: seconds, timestamp: new Date() });
-        seconds = 0;
-        document.getElementById('timer').innerText = "00:00:00";
-    };
-
-    // --- REALTIME UPDATES ---
-    onSnapshot(query(collection(db, "sessions"), orderBy("timestamp", "desc"), limit(5)), (snap) => {
-        const div = document.getElementById('leaderboard');
-        div.innerHTML = "";
-        snap.forEach(d => div.innerHTML += `<div><b>${d.data().name}</b>: ${Math.floor(d.data().time/60)}m</div>`);
-    });
-
+    // --- CHAT WITH BUBBLES ---
     window.sendMessage = async () => {
         const msg = document.getElementById("message").value;
-        const name = localStorage.getItem("username") || "Anonymous";
+        const name = localStorage.getItem("username") || "Anon";
+        if (!msg) return;
         await addDoc(collection(db, "chat"), { text: msg, user: name, timestamp: new Date() });
         document.getElementById("message").value = "";
     };
 
-    onSnapshot(query(collection(db, "chat"), orderBy("timestamp", "asc")), (snap) => {
-        const div = document.getElementById('chat');
+    // --- TYPING INDICATOR LOGIC ---
+    window.checkTyping = (e) => {
+        if(e.key === "Enter") sendMessage();
+        // Here you could add a function to update a 'typing' field in Firestore
+    };
+
+    // --- DATA LOADING ---
+    onSnapshot(query(collection(db, "sessions"), orderBy("timestamp", "desc")), (snap) => {
+        const div = document.getElementById('leaderboard');
         div.innerHTML = "";
-        snap.forEach(d => div.innerHTML += `<div><b>${d.data().user}:</b> ${d.data().text}</div>`);
-        div.scrollTop = div.scrollHeight;
+        snap.forEach(d => {
+            const data = d.data();
+            div.innerHTML += `<div>🔥 ${data.name}: ${Math.floor(data.time/60)}m</div>`;
+        });
+    });
+
+    onSnapshot(query(collection(db, "chat"), orderBy("timestamp", "asc")), (snap) => {
+        const chat = document.getElementById('chat');
+        chat.innerHTML = "";
+        snap.forEach(d => {
+            const isMe = d.data().user === localStorage.getItem("username");
+            chat.innerHTML += `<div class="bubble ${isMe ? 'my-bubble' : 'other-bubble'}">
+                <b>${d.data().user}</b>: ${d.data().text}
+            </div>`;
+        });
+        chat.scrollTop = chat.scrollHeight;
     });
 </script>
 </body>
