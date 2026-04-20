@@ -3,140 +3,150 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>Study Hub Pro</title>
+<title>Study Hub</title>
 
 <style>
 body {
   margin: 0;
-  font-family: Arial;
-  background: #0b1220;
+  font-family: Arial, sans-serif;
+  background: #0f172a;
   color: white;
+}
+
+header {
+  text-align: center;
+  padding: 12px;
+  font-size: 20px;
+  font-weight: bold;
+  background: #111827;
 }
 
 .container {
-  display: grid;
-  grid-template-columns: 1fr 2fr 1fr;
-  height: 100vh;
-}
-
-.panel {
-  padding: 12px;
-  overflow-y: auto;
-  border-right: 1px solid #1e293b;
-}
-
-h2 { color: #60a5fa; font-size: 14px; }
-
-.msg, .user {
-  background: #1f2937;
-  padding: 6px;
-  margin-bottom: 6px;
-  border-radius: 6px;
-  font-size: 13px;
-}
-
-.messages {
-  height: 75vh;
-  overflow-y: auto;
-  background: #111827;
-  padding: 10px;
-  border-radius: 8px;
-}
-
-.input {
   display: flex;
-  margin-top: 8px;
+  flex-direction: column;
+  gap: 10px;
+  padding: 10px;
 }
 
-input {
-  flex: 1;
-  padding: 8px;
-  border-radius: 6px;
-  border: none;
+.card {
+  background: #1f2937;
+  border-radius: 12px;
+  padding: 10px;
+  box-shadow: 0 0 10px rgba(0,0,0,0.3);
+}
+
+.row {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
 }
 
 button {
-  margin-left: 6px;
-  padding: 8px;
-  background: #3b82f6;
+  padding: 10px;
   border: none;
+  border-radius: 8px;
+  background: #3b82f6;
   color: white;
-  border-radius: 6px;
   cursor: pointer;
 }
 
+button:disabled {
+  background: gray;
+}
+
+input {
+  width: 100%;
+  padding: 10px;
+  border-radius: 8px;
+  border: none;
+  margin-top: 5px;
+}
+
+#chatBox {
+  height: 200px;
+  overflow-y: auto;
+  background: #111827;
+  padding: 8px;
+  border-radius: 8px;
+}
+
+.msg {
+  margin: 5px 0;
+  font-size: 14px;
+}
+
 .small {
-  font-size: 11px;
-  color: #94a3b8;
+  font-size: 12px;
+  color: #9ca3af;
 }
-
-.timer {
-  font-size: 28px;
-  text-align: center;
-  margin: 10px 0;
-}
-
-.center { text-align:center; }
 </style>
 </head>
 
 <body>
 
+<header>📚 Study Hub</header>
+
 <div class="container">
 
-<!-- USERS -->
-<div class="panel">
-  <h2>Online Users</h2>
-  <div id="users"></div>
+<!-- TIMER -->
+<div class="card">
+  <h3>⏱ Study Timer</h3>
+  <h2 id="time">00:00</h2>
+  <div class="row">
+    <button onclick="startTimer()">Start</button>
+    <button onclick="pauseTimer()">Pause</button>
+    <button onclick="stopTimer()">Stop</button>
+  </div>
 </div>
 
 <!-- CHAT -->
-<div class="panel">
-  <h2>Chat</h2>
-
-  <div class="messages" id="messages"></div>
+<div class="card">
+  <h3>💬 Chat</h3>
+  <div id="chatBox"></div>
+  <input id="msg" placeholder="Type message..." oninput="typing()"/>
+  <button onclick="sendMsg()">Send</button>
   <div id="typing" class="small"></div>
-
-  <div class="input">
-    <input id="msg" placeholder="Message..." />
-    <button onclick="sendMsg()">Send</button>
-  </div>
 </div>
 
-<!-- TIMER + STATS -->
-<div class="panel">
+<!-- USERS -->
+<div class="card">
+  <h3>🟢 Online Users</h3>
+  <div id="users"></div>
+</div>
 
-  <h2>Study Timer</h2>
-  <div class="timer" id="timer">00:00:00</div>
+<!-- LEADERBOARD -->
+<div class="card">
+  <h3>🏆 Leaderboard</h3>
+  <div id="leaderboard"></div>
+</div>
 
-  <div class="center">
-    <button onclick="start()">Start</button>
-    <button onclick="pause()">Pause</button>
-    <button onclick="end()">End</button>
-  </div>
-
-  <h2>Leaderboard</h2>
-  <div id="board"></div>
-
-  <h2>Your Sessions</h2>
+<!-- SESSIONS -->
+<div class="card">
+  <h3>📊 My Sessions</h3>
   <div id="sessions"></div>
-
 </div>
 
 </div>
 
 <script type="module">
-
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.12.0/firebase-app.js";
 import {
-  getDatabase, ref, set, push, onValue, onDisconnect
-} from "https://www.gstatic.com/firebasejs/12.12.0/firebase-database.js";
-
-import {
-  getAuth, signInAnonymously, onAuthStateChanged
+  getAuth,
+  signInAnonymously,
+  onAuthStateChanged
 } from "https://www.gstatic.com/firebasejs/12.12.0/firebase-auth.js";
 
-/* CONFIG */
+import {
+  getDatabase,
+  ref,
+  push,
+  set,
+  onValue,
+  serverTimestamp,
+  update
+} from "https://www.gstatic.com/firebasejs/12.12.0/firebase-database.js";
+
+/* 🔥 YOUR FIREBASE CONFIG */
 const firebaseConfig = {
   apiKey: "AIzaSyC_uTFuqqywIyPMPjH4sNcXDbC__0vhTOE",
   authDomain: "styd-d1945.firebaseapp.com",
@@ -148,35 +158,19 @@ const firebaseConfig = {
 };
 
 const app = initializeApp(firebaseConfig);
-const db = getDatabase(app);
 const auth = getAuth(app);
+const db = getDatabase(app);
 
 let uid = null;
-let name = null;
 
-/* AUTH */
+/* AUTH (no username needed) */
 signInAnonymously(auth);
 
 onAuthStateChanged(auth, (user) => {
-  if (!user) return;
-
-  uid = user.uid;
-
-  /* load or create profile */
-  const profileRef = ref(db, "users/" + uid);
-
-  onValue(profileRef, (snap) => {
-    if (!snap.exists()) {
-      name = "User-" + uid.slice(0,5);
-      set(profileRef, { name, totalTime: 0 });
-    } else {
-      name = snap.val().name;
-    }
-
-    set(ref(db, "online/" + uid), { name });
-
-    onDisconnect(ref(db, "online/" + uid)).remove();
-  });
+  if (user) {
+    uid = user.uid;
+    set(ref(db, "online/" + uid), true);
+  }
 });
 
 /* CHAT */
@@ -185,153 +179,149 @@ function sendMsg() {
   if (!text) return;
 
   push(ref(db, "messages"), {
-    text,
     uid,
-    name,
+    text,
     time: Date.now()
   });
 
   document.getElementById("msg").value = "";
 }
+
 window.sendMsg = sendMsg;
 
+/* LOAD CHAT */
 onValue(ref(db, "messages"), (snap) => {
-  const box = document.getElementById("messages");
+  const box = document.getElementById("chatBox");
   box.innerHTML = "";
 
-  snap.forEach(c => {
-    const m = c.val();
-    const t = new Date(m.time).toLocaleTimeString();
-
-    box.innerHTML += `
-      <div class="msg">
-        <b>${m.name}</b>: ${m.text}
-        <div class="small">${t}</div>
-      </div>
-    `;
+  snap.forEach((c) => {
+    const v = c.val();
+    const div = document.createElement("div");
+    div.className = "msg";
+    div.innerHTML = `<b>${v.uid.slice(0,5)}</b>: ${v.text}`;
+    box.appendChild(div);
   });
+
+  box.scrollTop = box.scrollHeight;
+});
+
+/* TYPING */
+function typing() {
+  set(ref(db, "typing/" + uid), true);
+  setTimeout(() => {
+    set(ref(db, "typing/" + uid), false);
+  }, 1000);
+}
+window.typing = typing;
+
+/* SHOW TYPING */
+onValue(ref(db, "typing"), (snap) => {
+  let typingUsers = [];
+  snap.forEach(s => {
+    if (s.val() && s.key !== uid) typingUsers.push(s.key.slice(0,5));
+  });
+
+  document.getElementById("typing").innerText =
+    typingUsers.length ? `${typingUsers.join(", ")} typing...` : "";
 });
 
 /* ONLINE USERS */
 onValue(ref(db, "online"), (snap) => {
   const box = document.getElementById("users");
   box.innerHTML = "";
-  snap.forEach(c => {
-    box.innerHTML += `<div class="user">${c.val().name}</div>`;
+  snap.forEach(u => {
+    const div = document.createElement("div");
+    div.innerText = "🟢 " + u.key.slice(0,5);
+    box.appendChild(div);
   });
-});
-
-/* TYPING */
-let typingTimeout;
-
-document.getElementById("msg").addEventListener("input", () => {
-  set(ref(db, "typing/" + uid), name);
-
-  clearTimeout(typingTimeout);
-  typingTimeout = setTimeout(() => {
-    set(ref(db, "typing/" + uid), null);
-  }, 1000);
-});
-
-onValue(ref(db, "typing"), (snap) => {
-  let t = "";
-  snap.forEach(c => {
-    if (c.val()) t += c.val() + " is typing... ";
-  });
-  document.getElementById("typing").innerText = t;
 });
 
 /* TIMER */
-let startTime = 0;
-let elapsed = 0;
+let seconds = 0;
+let interval = null;
 let running = false;
-let interval;
 
-function fmt(ms) {
-  let s = Math.floor(ms/1000);
-  let h = Math.floor(s/3600);
-  let m = Math.floor((s%3600)/60);
-  let sec = s%60;
-  return `${String(h).padStart(2,"0")}:${String(m).padStart(2,"0")}:${String(sec).padStart(2,"0")}`;
+function updateTime() {
+  let m = String(Math.floor(seconds / 60)).padStart(2, "0");
+  let s = String(seconds % 60).padStart(2, "0");
+  document.getElementById("time").innerText = `${m}:${s}`;
 }
 
-function update() {
-  document.getElementById("timer").innerText = fmt(elapsed);
-}
-
-function start() {
+function startTimer() {
   if (running) return;
   running = true;
-  startTime = Date.now() - elapsed;
 
   interval = setInterval(() => {
-    elapsed = Date.now() - startTime;
-    update();
+    seconds++;
+    updateTime();
   }, 1000);
 }
 
-function pause() {
+function pauseTimer() {
   running = false;
   clearInterval(interval);
 }
 
-function end() {
-  pause();
+function stopTimer() {
+  running = false;
+  clearInterval(interval);
 
-  const session = {
-    uid,
-    name,
-    time: elapsed,
-    date: Date.now()
-  };
-
-  push(ref(db, "sessions"), session);
-
-  /* update user total time */
-  const userRef = ref(db, "users/" + uid);
-
-  onValue(userRef, (snap) => {
-    const data = snap.val();
-    set(userRef, {
-      ...data,
-      totalTime: (data.totalTime || 0) + elapsed
+  if (seconds > 0) {
+    push(ref(db, "sessions/" + uid), {
+      time: seconds,
+      date: Date.now()
     });
-  }, { onlyOnce: true });
 
-  elapsed = 0;
-  update();
+    update(ref(db, "users/" + uid), {
+      totalTime: seconds
+    });
+  }
+
+  seconds = 0;
+  updateTime();
 }
 
-window.start = start;
-window.pause = pause;
-window.end = end;
+window.startTimer = startTimer;
+window.pauseTimer = pauseTimer;
+window.stopTimer = stopTimer;
 
-/* GLOBAL SESSIONS */
-onValue(ref(db, "sessions"), (snap) => {
+/* SESSIONS */
+onValue(ref(db, "sessions/" + uid), (snap) => {
   const box = document.getElementById("sessions");
-  const board = document.getElementById("board");
-
   box.innerHTML = "";
-  board.innerHTML = "";
 
-  let totals = {};
-
-  snap.forEach(c => {
-    const s = c.val();
-    const min = Math.floor(s.time/60000);
-
-    box.innerHTML += `<div class="msg">${s.name} studied ${min} min</div>`;
-
-    totals[s.uid] = (totals[s.uid] || 0) + s.time;
+  snap.forEach(s => {
+    const v = s.val();
+    const div = document.createElement("div");
+    div.className = "small";
+    div.innerText = `⏱ ${Math.floor(v.time/60)}m ${v.time%60}s`;
+    box.appendChild(div);
   });
-
-  Object.entries(totals)
-    .sort((a,b)=>b[1]-a[1])
-    .forEach(([id,time])=>{
-      board.innerHTML += `<div class="user">${id.slice(0,5)}: ${Math.floor(time/60000)} min</div>`;
-    });
 });
 
+/* LEADERBOARD */
+onValue(ref(db, "users"), (snap) => {
+  const box = document.getElementById("leaderboard");
+  box.innerHTML = "";
+
+  let users = [];
+
+  snap.forEach(u => {
+    users.push({
+      id: u.key,
+      time: u.val().totalTime || 0
+    });
+  });
+
+  users.sort((a,b) => b.time - a.time);
+
+  users.forEach(u => {
+    const div = document.createElement("div");
+    div.innerText = `🏆 ${u.id.slice(0,5)} - ${Math.floor(u.time/60)} min`;
+    box.appendChild(div);
+  });
+});
 </script>
+
 </body>
 </html>
