@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes"/>
-  <title>CineVault | Premium Ad-Free Streaming</title>
+  <title>CineVault | Ad-Free Streaming with Watch History</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700;14..32,800&family=Playfair+Display:wght@700;800;900&display=swap" rel="stylesheet">
   <style>
@@ -367,9 +367,22 @@
       text-transform: uppercase;
     }
 
-    /* ============================================
-       CUSTOM PLAYER MODAL - REDESIGNED
-    ============================================ */
+    /* Resume Badge */
+    .resume-badge {
+      position: absolute;
+      bottom: 60px;
+      left: 10px;
+      right: 10px;
+      background: rgba(229,9,20,0.9);
+      padding: 4px 8px;
+      border-radius: 4px;
+      font-size: 10px;
+      font-weight: 600;
+      text-align: center;
+      backdrop-filter: blur(4px);
+    }
+
+    /* Custom Player Modal */
     .modal {
       position: fixed;
       inset: 0;
@@ -412,7 +425,6 @@
       }
     }
 
-    /* Custom Player */
     .custom-player {
       position: relative;
       background: #000;
@@ -433,7 +445,6 @@
       border: none;
     }
 
-    /* Loading Overlay */
     .player-loading {
       position: absolute;
       top: 0;
@@ -468,7 +479,6 @@
       to { transform: rotate(360deg); }
     }
 
-    /* Player Controls Bar */
     .player-controls {
       position: absolute;
       bottom: 0;
@@ -502,24 +512,6 @@
       border-radius: 2px;
       position: relative;
       transition: width 0.1s linear;
-    }
-
-    .progress-fill::after {
-      content: '';
-      position: absolute;
-      right: -6px;
-      top: 50%;
-      transform: translateY(-50%);
-      width: 12px;
-      height: 12px;
-      background: var(--primary);
-      border-radius: 50%;
-      opacity: 0;
-      transition: opacity 0.2s;
-    }
-
-    .progress-bar:hover .progress-fill::after {
-      opacity: 1;
     }
 
     .control-buttons {
@@ -590,7 +582,6 @@
       font-family: monospace;
     }
 
-    /* Modal Info Section */
     .modal-info {
       padding: 20px 24px;
       background: var(--bg-surface);
@@ -617,7 +608,6 @@
       line-height: 1.6;
     }
 
-    /* TV Episode Controls */
     .episode-panel {
       padding: 16px 24px;
       background: var(--bg-dark);
@@ -676,19 +666,12 @@
       font-weight: 500;
     }
 
-    .episode-btn:hover {
+    .episode-btn:hover, .episode-btn.active {
       background: var(--primary);
       color: white;
       border-color: var(--primary);
     }
 
-    .episode-btn.active {
-      background: var(--primary);
-      color: white;
-      border-color: var(--primary);
-    }
-
-    /* Modal Close Button */
     .modal-close {
       position: absolute;
       top: 20px;
@@ -713,6 +696,148 @@
       transform: rotate(90deg);
     }
 
+    /* Watch History Sidebar */
+    .history-sidebar {
+      position: fixed;
+      right: -400px;
+      top: 0;
+      width: 400px;
+      height: 100vh;
+      background: var(--bg-surface);
+      z-index: 1500;
+      transition: right 0.3s ease;
+      box-shadow: -5px 0 30px rgba(0,0,0,0.5);
+      display: flex;
+      flex-direction: column;
+    }
+
+    .history-sidebar.open {
+      right: 0;
+    }
+
+    .history-header {
+      padding: 20px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .history-header h3 {
+      font-size: 18px;
+      font-weight: 600;
+    }
+
+    .history-close {
+      background: none;
+      border: none;
+      color: white;
+      font-size: 24px;
+      cursor: pointer;
+      padding: 0 8px;
+    }
+
+    .history-list {
+      flex: 1;
+      overflow-y: auto;
+      padding: 20px;
+    }
+
+    .history-item {
+      display: flex;
+      gap: 12px;
+      margin-bottom: 16px;
+      cursor: pointer;
+      padding: 12px;
+      border-radius: 8px;
+      transition: background 0.2s;
+    }
+
+    .history-item:hover {
+      background: var(--bg-dark);
+    }
+
+    .history-poster {
+      width: 60px;
+      height: 90px;
+      object-fit: cover;
+      border-radius: 4px;
+    }
+
+    .history-info {
+      flex: 1;
+    }
+
+    .history-title {
+      font-size: 14px;
+      font-weight: 600;
+      margin-bottom: 4px;
+    }
+
+    .history-meta {
+      font-size: 11px;
+      color: var(--text-muted);
+      margin-bottom: 6px;
+    }
+
+    .history-progress {
+      height: 3px;
+      background: var(--border);
+      border-radius: 2px;
+      overflow: hidden;
+      margin-top: 6px;
+    }
+
+    .history-progress-fill {
+      height: 100%;
+      background: var(--primary);
+      width: 0%;
+    }
+
+    .clear-history {
+      padding: 16px;
+      border-top: 1px solid var(--border);
+      text-align: center;
+    }
+
+    .clear-btn {
+      background: rgba(229,9,20,0.2);
+      border: 1px solid var(--primary);
+      color: var(--primary);
+      padding: 10px;
+      width: 100%;
+      border-radius: 8px;
+      cursor: pointer;
+      font-family: 'Inter', sans-serif;
+      transition: all 0.2s;
+    }
+
+    .clear-btn:hover {
+      background: var(--primary);
+      color: white;
+    }
+
+    .history-toggle {
+      position: fixed;
+      right: 20px;
+      bottom: 80px;
+      width: 50px;
+      height: 50px;
+      background: var(--primary);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      z-index: 1100;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+      transition: transform 0.2s;
+    }
+
+    .history-toggle:hover {
+      transform: scale(1.1);
+    }
+
     /* Skeleton Loading */
     .skeleton {
       background: linear-gradient(90deg, var(--bg-card) 25%, var(--bg-surface) 50%, var(--bg-card) 75%);
@@ -731,7 +856,6 @@
       aspect-ratio: 2/3;
     }
 
-    /* Footer */
     .footer {
       text-align: center;
       padding: 40px;
@@ -769,23 +893,15 @@
         grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
         gap: 12px;
       }
-      .control-buttons {
-        gap: 10px;
+      .history-sidebar {
+        width: 100%;
+        right: -100%;
       }
-      .play-pause {
-        width: 36px;
-        height: 36px;
-        font-size: 16px;
-      }
-      .volume-control {
-        display: none;
-      }
-      .modal-close {
-        top: 10px;
-        right: 10px;
-        width: 36px;
-        height: 36px;
-        font-size: 16px;
+      .history-toggle {
+        bottom: 20px;
+        right: 20px;
+        width: 45px;
+        height: 45px;
       }
     }
   </style>
@@ -799,6 +915,7 @@
       <a class="nav-link active" onclick="switchTab('movie')">Movies</a>
       <a class="nav-link" onclick="switchTab('tv')">TV Shows</a>
       <a class="nav-link" onclick="switchTab('trending')">Trending</a>
+      <a class="nav-link" onclick="switchTab('history')">📜 History</a>
     </div>
     <div class="search-container">
       <div class="search-box">
@@ -876,12 +993,40 @@
       <div class="movie-grid" id="searchGrid"></div>
     </div>
   </div>
+
+  <div id="historyView" style="display: none;">
+    <div class="section">
+      <div class="section-header">
+        <h2 class="section-title">📜 Your <span>Watch History</span></h2>
+      </div>
+      <div class="movie-grid" id="historyGrid"></div>
+    </div>
+  </div>
 </main>
 
 <footer class="footer">
-  <p>CineVault | Premium Ad-Free Streaming Experience</p>
+  <p>CineVault | Premium Ad-Free Streaming with Watch History</p>
   <p>Powered by VidKing API & TMDB</p>
 </footer>
+
+<!-- History Sidebar Toggle -->
+<div class="history-toggle" id="historyToggleBtn">
+  📜
+</div>
+
+<!-- History Sidebar -->
+<div class="history-sidebar" id="historySidebar">
+  <div class="history-header">
+    <h3>📜 Watch History</h3>
+    <button class="history-close" id="historyCloseBtn">✕</button>
+  </div>
+  <div class="history-list" id="historyList">
+    <div style="text-align:center;color:var(--text-muted);padding:40px;">No watch history yet</div>
+  </div>
+  <div class="clear-history">
+    <button class="clear-btn" id="clearHistoryBtn">Clear All History</button>
+  </div>
+</div>
 
 <!-- Custom Player Modal -->
 <div class="modal" id="playerModal">
@@ -894,7 +1039,6 @@
         </div>
       </div>
       
-      <!-- Custom Controls -->
       <div class="player-controls">
         <div class="progress-bar" id="progressBar">
           <div class="progress-fill" id="progressFill"></div>
@@ -951,6 +1095,156 @@
   let searchTimeout = null;
   let isPlaying = true;
   let currentVolume = 100;
+  let watchStartTime = null;
+  let watchInterval = null;
+  
+  // ============================================
+  // WATCH HISTORY MANAGEMENT
+  // ============================================
+  function getWatchHistory() {
+    const history = localStorage.getItem('cinevault_watch_history');
+    return history ? JSON.parse(history) : [];
+  }
+  
+  function saveWatchHistory(history) {
+    localStorage.setItem('cinevault_watch_history', JSON.stringify(history));
+  }
+  
+  function addToWatchHistory(media, season = null, episode = null) {
+    let history = getWatchHistory();
+    const now = new Date();
+    
+    const historyItem = {
+      id: media.id,
+      type: media.type,
+      title: media.title,
+      poster: media.item?.poster_path,
+      year: media.type === 'movie' 
+        ? (media.item?.release_date || '').slice(0, 4)
+        : (media.item?.first_air_date || '').slice(0, 4),
+      rating: media.item?.vote_average,
+      season: season,
+      episode: episode,
+      lastWatched: now.toISOString(),
+      timestamp: now.getTime()
+    };
+    
+    // Remove existing entry if present
+    const existingIndex = history.findIndex(item => item.id === media.id);
+    if (existingIndex !== -1) {
+      history.splice(existingIndex, 1);
+    }
+    
+    // Add to beginning
+    history.unshift(historyItem);
+    
+    // Keep only last 50 items
+    if (history.length > 50) {
+      history = history.slice(0, 50);
+    }
+    
+    saveWatchHistory(history);
+    updateHistoryUI();
+  }
+  
+  function removeFromHistory(id) {
+    let history = getWatchHistory();
+    history = history.filter(item => item.id !== id);
+    saveWatchHistory(history);
+    updateHistoryUI();
+  }
+  
+  function clearAllHistory() {
+    if (confirm('Are you sure you want to clear all watch history?')) {
+      saveWatchHistory([]);
+      updateHistoryUI();
+    }
+  }
+  
+  function updateHistoryUI() {
+    const history = getWatchHistory();
+    const historyList = document.getElementById('historyList');
+    const historyGrid = document.getElementById('historyGrid');
+    
+    if (history.length === 0) {
+      const emptyMsg = '<div style="text-align:center;color:var(--text-muted);padding:40px;">No watch history yet<br><small>Start watching to see your history here!</small></div>';
+      if (historyList) historyList.innerHTML = emptyMsg;
+      if (historyGrid) historyGrid.innerHTML = emptyMsg;
+      return;
+    }
+    
+    // Update sidebar
+    if (historyList) {
+      historyList.innerHTML = history.map(item => `
+        <div class="history-item" onclick="resumeWatching(${item.id}, '${item.type}')">
+          <img class="history-poster" src="https://image.tmdb.org/t/p/w92${item.poster}" 
+               onerror="this.src='https://placehold.co/92x138/1a1a1a/666?text=No+Poster'">
+          <div class="history-info">
+            <div class="history-title">${escapeHtml(item.title)}</div>
+            <div class="history-meta">${item.year || 'N/A'} • ${item.type.toUpperCase()}</div>
+            ${item.season ? `<div class="history-meta">S${item.season} E${item.episode}</div>` : ''}
+            <div class="history-progress">
+              <div class="history-progress-fill" style="width: 0%"></div>
+            </div>
+            <div class="history-meta">${formatRelativeTime(item.timestamp)}</div>
+          </div>
+        </div>
+      `).join('');
+    }
+    
+    // Update full history view
+    if (historyGrid && document.getElementById('historyView').style.display !== 'none') {
+      historyGrid.innerHTML = history.map(item => {
+        const card = document.createElement('div');
+        card.className = 'movie-card';
+        card.onclick = () => resumeWatching(item.id, item.type);
+        card.innerHTML = `
+          <img class="movie-poster" src="https://image.tmdb.org/t/p/w342${item.poster}" 
+               onerror="this.src='https://placehold.co/342x513/1a1a1a/666?text=${escapeHtml(item.title)}'">
+          <div class="movie-type">${item.type.toUpperCase()}</div>
+          <div class="movie-info">
+            <div class="movie-title">${escapeHtml(item.title)}</div>
+            <div class="movie-year">${item.year || 'N/A'}</div>
+          </div>
+          <div class="resume-badge">Last watched ${formatRelativeTime(item.timestamp)}</div>
+        `;
+        return card.outerHTML;
+      }).join('');
+    }
+  }
+  
+  function formatRelativeTime(timestamp) {
+    const now = Date.now();
+    const diff = now - timestamp;
+    const minutes = Math.floor(diff / 60000);
+    const hours = Math.floor(diff / 3600000);
+    const days = Math.floor(diff / 86400000);
+    
+    if (minutes < 1) return 'just now';
+    if (minutes < 60) return `${minutes} min ago`;
+    if (hours < 24) return `${hours} hour${hours > 1 ? 's' : ''} ago`;
+    if (days < 7) return `${days} day${days > 1 ? 's' : ''} ago`;
+    return new Date(timestamp).toLocaleDateString();
+  }
+  
+  function resumeWatching(id, type) {
+    // Find the item in history and resume
+    const history = getWatchHistory();
+    const item = history.find(h => h.id === id);
+    if (item) {
+      // Fetch full details and open player
+      fetchTMDB(`/${type}/${id}`).then(data => {
+        openPlayer(id, type, data, item.season, item.episode);
+      });
+    }
+  }
+  
+  function escapeHtml(text) {
+    if (!text) return '';
+    const div = document.createElement('div');
+    div.textContent = text;
+    return div.innerHTML;
+  }
   
   // ============================================
   // API HELPERS
@@ -982,13 +1276,6 @@
   // ============================================
   // UI COMPONENTS
   // ============================================
-  function escapeHtml(text) {
-    if (!text) return '';
-    const div = document.createElement('div');
-    div.textContent = text;
-    return div.innerHTML;
-  }
-  
   function createMovieCard(item, type) {
     const card = document.createElement('div');
     card.className = 'movie-card';
@@ -1000,6 +1287,10 @@
       : (item.first_air_date || '').slice(0, 4);
     const poster = getImageUrl(item.poster_path);
     const rating = item.vote_average ? item.vote_average.toFixed(1) : null;
+    
+    // Check if in watch history
+    const history = getWatchHistory();
+    const watched = history.some(h => h.id === item.id);
     
     card.innerHTML = `
       ${poster 
@@ -1015,6 +1306,7 @@
         <div class="movie-title">${escapeHtml(title)}</div>
         <div class="movie-year">${year || 'N/A'}</div>
       </div>
+      ${watched ? `<div class="resume-badge">⏵ Resume Watching</div>` : ''}
     `;
     return card;
   }
@@ -1098,10 +1390,18 @@
     event.target.classList.add('active');
     
     document.getElementById('homeView').style.display = 'none';
-    document.getElementById('categoryView').style.display = 'block';
+    document.getElementById('categoryView').style.display = 'none';
     document.getElementById('searchView').style.display = 'none';
+    document.getElementById('historyView').style.display = 'none';
     document.getElementById('heroContainer').style.display = 'none';
     
+    if (tab === 'history') {
+      document.getElementById('historyView').style.display = 'block';
+      updateHistoryUI();
+      return;
+    }
+    
+    document.getElementById('categoryView').style.display = 'block';
     const titles = { movie: '🎬 Popular Movies', tv: '📺 Popular TV Shows', trending: '🔥 Trending Now' };
     document.getElementById('categoryTitle').innerHTML = titles[tab];
     
@@ -1127,6 +1427,7 @@
     document.getElementById('homeView').style.display = 'block';
     document.getElementById('categoryView').style.display = 'none';
     document.getElementById('searchView').style.display = 'none';
+    document.getElementById('historyView').style.display = 'none';
     document.getElementById('heroContainer').style.display = 'block';
     document.getElementById('searchInput').value = '';
   }
@@ -1144,6 +1445,7 @@
     document.getElementById('homeView').style.display = 'none';
     document.getElementById('categoryView').style.display = 'none';
     document.getElementById('heroContainer').style.display = 'none';
+    document.getElementById('historyView').style.display = 'none';
     document.getElementById('searchView').style.display = 'block';
     document.getElementById('searchTerm').textContent = query;
     
@@ -1175,59 +1477,30 @@
     else loading.classList.remove('active');
   }
   
-  function updatePlayPauseButton() {
-    const btn = document.getElementById('playPauseBtn');
-    btn.textContent = isPlaying ? '⏸' : '▶';
-  }
-  
-  function togglePlayPause() {
-    const iframe = document.getElementById('playerFrame');
-    if (iframe.contentWindow) {
-      try {
-        if (isPlaying) {
-          iframe.contentWindow.postMessage('{"event":"command","func":"pauseVideo","args":""}', '*');
-        } else {
-          iframe.contentWindow.postMessage('{"event":"command","func":"playVideo","args":""}', '*');
+  function startWatchTimer() {
+    if (watchInterval) clearInterval(watchInterval);
+    watchStartTime = Date.now();
+    watchInterval = setInterval(() => {
+      if (currentMedia && document.getElementById('playerModal').classList.contains('active')) {
+        // Auto-save after 2 minutes of watching
+        const watchDuration = (Date.now() - watchStartTime) / 1000;
+        if (watchDuration > 120) {
+          addToWatchHistory(currentMedia, currentSeason, currentEpisode);
+          clearInterval(watchInterval);
+          watchInterval = null;
         }
-        isPlaying = !isPlaying;
-        updatePlayPauseButton();
-      } catch(e) {
-        console.log('Cannot control iframe directly');
       }
-    }
-  }
-  
-  function updateVolume(value) {
-    currentVolume = Math.min(100, Math.max(0, value));
-    const volumeFill = document.getElementById('volumeFill');
-    volumeFill.style.width = `${currentVolume}%`;
-    
-    const iframe = document.getElementById('playerFrame');
-    if (iframe.contentWindow) {
-      try {
-        iframe.contentWindow.postMessage(`{"event":"command","func":"setVolume","args":[${currentVolume}]}`, '*');
-      } catch(e) {}
-    }
-  }
-  
-  function toggleFullscreen() {
-    const container = document.querySelector('.modal-container');
-    if (!document.fullscreenElement) {
-      container.requestFullscreen().catch(err => console.log(err));
-    } else {
-      document.exitFullscreen();
-    }
+    }, 30000);
   }
   
   // ============================================
   // PLAYER OPEN/CLOSE
   // ============================================
-  async function openPlayer(id, type, item) {
+  async function openPlayer(id, type, item, resumeSeason = null, resumeEpisode = null) {
     currentMedia = { id, type, title: type === 'movie' ? item.title : item.name, item };
-    currentSeason = 1;
-    currentEpisode = 1;
+    currentSeason = resumeSeason || 1;
+    currentEpisode = resumeEpisode || 1;
     isPlaying = true;
-    updatePlayPauseButton();
     
     document.getElementById('modalTitle').textContent = type === 'movie' ? item.title : item.name;
     document.getElementById('modalYear').textContent = (type === 'movie' ? item.release_date : item.first_air_date || '').slice(0, 4) || 'N/A';
@@ -1239,35 +1512,39 @@
     if (type === 'movie') {
       document.getElementById('episodePanel').classList.remove('show');
       document.getElementById('playerFrame').src = getVidKingUrl('movie', id);
+      // Add to history after opening
+      setTimeout(() => addToWatchHistory(currentMedia), 5000);
     } else {
       document.getElementById('episodePanel').classList.add('show');
-      await loadTVSeasons(id);
+      await loadTVSeasons(id, resumeSeason, resumeEpisode);
       document.getElementById('playerFrame').src = getVidKingUrl('tv', id, currentSeason, currentEpisode);
+      setTimeout(() => addToWatchHistory(currentMedia, currentSeason, currentEpisode), 5000);
     }
     
     document.getElementById('playerModal').classList.add('active');
     document.body.style.overflow = 'hidden';
     
     setTimeout(() => setPlayerLoading(false), 2000);
+    startWatchTimer();
   }
   
-  async function loadTVSeasons(tvId) {
+  async function loadTVSeasons(tvId, resumeSeason = null, resumeEpisode = null) {
     try {
       const details = await fetchTMDB(`/tv/${tvId}`);
       const seasons = (details.seasons || []).filter(s => s.season_number > 0);
       
       const seasonSelect = document.getElementById('seasonSelect');
       seasonSelect.innerHTML = seasons.map(s => 
-        `<option value="${s.season_number}">Season ${s.season_number}</option>`
+        `<option value="${s.season_number}" ${resumeSeason === s.season_number ? 'selected' : ''}>Season ${s.season_number}</option>`
       ).join('');
       
-      await loadEpisodes(tvId, 1);
+      await loadEpisodes(tvId, resumeSeason || 1, resumeEpisode);
     } catch (error) {
       console.error('Error loading seasons:', error);
     }
   }
   
-  async function loadEpisodes(tvId, season) {
+  async function loadEpisodes(tvId, season, resumeEpisode = null) {
     currentSeason = season;
     try {
       const seasonData = await fetchTMDB(`/tv/${tvId}/season/${season}`);
@@ -1278,7 +1555,9 @@
       
       episodes.slice(0, 30).forEach((ep, index) => {
         const btn = document.createElement('button');
-        btn.className = 'episode-btn' + (index + 1 === currentEpisode ? ' active' : '');
+        const isActive = (resumeEpisode && ep.episode_number === resumeEpisode) || 
+                        (!resumeEpisode && index === 0);
+        btn.className = 'episode-btn' + (isActive ? ' active' : '');
         btn.textContent = `Episode ${ep.episode_number}`;
         btn.onclick = () => {
           document.querySelectorAll('.episode-btn').forEach(b => b.classList.remove('active'));
@@ -1287,6 +1566,7 @@
           setPlayerLoading(true);
           document.getElementById('playerFrame').src = getVidKingUrl('tv', tvId, currentSeason, currentEpisode);
           setTimeout(() => setPlayerLoading(false), 1500);
+          addToWatchHistory(currentMedia, currentSeason, currentEpisode);
         };
         episodeGrid.appendChild(btn);
       });
@@ -1304,26 +1584,79 @@
     setPlayerLoading(true);
     document.getElementById('playerFrame').src = getVidKingUrl('tv', currentMedia.id, currentSeason, currentEpisode);
     setTimeout(() => setPlayerLoading(false), 1500);
+    addToWatchHistory(currentMedia, currentSeason, currentEpisode);
   }
   
   function closePlayer() {
+    if (watchInterval) {
+      clearInterval(watchInterval);
+      watchInterval = null;
+    }
     document.getElementById('playerModal').classList.remove('active');
     document.getElementById('playerFrame').src = '';
     document.body.style.overflow = '';
+    updateHistoryUI();
+  }
+  
+  // ============================================
+  // HISTORY SIDEBAR
+  // ============================================
+  function toggleHistorySidebar() {
+    document.getElementById('historySidebar').classList.toggle('open');
   }
   
   // ============================================
   // EVENT LISTENERS
   // ============================================
-  document.getElementById('playPauseBtn').onclick = togglePlayPause;
-  document.getElementById('fullscreenBtn').onclick = toggleFullscreen;
-  document.getElementById('volumeBtn').onclick = () => updateVolume(currentVolume === 0 ? 100 : 0);
+  document.getElementById('playPauseBtn').onclick = () => {
+    const iframe = document.getElementById('playerFrame');
+    if (iframe.contentWindow) {
+      try {
+        if (isPlaying) {
+          iframe.contentWindow.postMessage('{"event":"command","func":"pauseVideo","args":""}', '*');
+        } else {
+          iframe.contentWindow.postMessage('{"event":"command","func":"playVideo","args":""}', '*');
+        }
+        isPlaying = !isPlaying;
+        document.getElementById('playPauseBtn').textContent = isPlaying ? '⏸' : '▶';
+      } catch(e) {}
+    }
+  };
+  
+  document.getElementById('fullscreenBtn').onclick = () => {
+    const container = document.querySelector('.modal-container');
+    if (!document.fullscreenElement) {
+      container.requestFullscreen().catch(err => console.log(err));
+    } else {
+      document.exitFullscreen();
+    }
+  };
+  
+  document.getElementById('volumeBtn').onclick = () => {
+    currentVolume = currentVolume === 0 ? 100 : 0;
+    const volumeFill = document.getElementById('volumeFill');
+    volumeFill.style.width = `${currentVolume}%`;
+    const iframe = document.getElementById('playerFrame');
+    if (iframe.contentWindow) {
+      try {
+        iframe.contentWindow.postMessage(`{"event":"command","func":"setVolume","args":[${currentVolume}]}`, '*');
+      } catch(e) {}
+    }
+  };
   
   const volumeSlider = document.getElementById('volumeSlider');
   volumeSlider.onclick = (e) => {
     const rect = volumeSlider.getBoundingClientRect();
     const percent = (e.clientX - rect.left) / rect.width;
-    updateVolume(percent * 100);
+    currentVolume = percent * 100;
+    const volumeFill = document.getElementById('volumeFill');
+    volumeFill.style.width = `${currentVolume}%`;
+    const iframe = document.getElementById('playerFrame');
+    if (iframe.contentWindow) {
+      try {
+        iframe.contentWindow.postMessage(`{"event":"command","func":"setVolume","args":[${currentVolume}]}`, '*');
+      } catch(e) {}
+    }
   };
   
   document.addEventListener('keydown', (e) => {
@@ -1331,11 +1664,11 @@
     if (document.getElementById('playerModal').classList.contains('active')) {
       if (e.key === ' ' || e.key === 'Space') {
         e.preventDefault();
-        togglePlayPause();
+        document.getElementById('playPauseBtn').click();
       }
       if (e.key === 'f' || e.key === 'F') {
         e.preventDefault();
-        toggleFullscreen();
+        document.getElementById('fullscreenBtn').click();
       }
     }
   });
@@ -1344,11 +1677,16 @@
     if (e.target === document.getElementById('playerModal')) closePlayer();
   });
   
+  document.getElementById('historyToggleBtn').onclick = toggleHistorySidebar;
+  document.getElementById('historyCloseBtn').onclick = toggleHistorySidebar;
+  document.getElementById('clearHistoryBtn').onclick = clearAllHistory;
+  
   // ============================================
   // INIT
   // ============================================
   loadHero();
   loadHome();
+  updateHistoryUI();
 </script>
 </body>
 </html>
