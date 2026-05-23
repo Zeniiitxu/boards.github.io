@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>CineFlix - Stream Movies & TV Shows</title>
+  <title>CineFlix - Personalized Recommendations</title>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
   <style>
     * {
@@ -19,7 +19,6 @@
       overflow-x: hidden;
     }
 
-    /* Header */
     .header {
       position: fixed;
       top: 0;
@@ -39,6 +38,7 @@
       align-items: center;
       justify-content: space-between;
       gap: 30px;
+      flex-wrap: wrap;
     }
 
     .logo {
@@ -54,6 +54,7 @@
     .nav {
       display: flex;
       gap: 30px;
+      flex-wrap: wrap;
     }
 
     .nav a {
@@ -92,7 +93,6 @@
       color: #666;
     }
 
-    /* Hero */
     .hero {
       position: relative;
       height: 85vh;
@@ -142,17 +142,15 @@
       margin-bottom: 20px;
     }
 
-    .hero-rating {
-      display: flex;
-      align-items: center;
-      gap: 5px;
-    }
-
     .hero-overview {
       color: #b3b3b3;
       font-size: 14px;
       line-height: 1.6;
       margin-bottom: 24px;
+      display: -webkit-box;
+      -webkit-line-clamp: 3;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
     }
 
     .btn-play {
@@ -175,7 +173,6 @@
       background: #b20710;
     }
 
-    /* Sections */
     .section {
       padding: 40px 40px 0;
       max-width: 1400px;
@@ -198,7 +195,6 @@
       color: #e50914;
     }
 
-    /* Movie Grid */
     .movie-grid {
       display: grid;
       grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
@@ -211,6 +207,7 @@
       border-radius: 8px;
       overflow: hidden;
       background: #1a1a1a;
+      position: relative;
     }
 
     .movie-card:hover {
@@ -253,11 +250,19 @@
       color: #ffc107;
     }
 
-    .movie-card {
-      position: relative;
+    .resume-badge {
+      position: absolute;
+      bottom: 70px;
+      left: 10px;
+      right: 10px;
+      background: #e50914;
+      padding: 4px 8px;
+      border-radius: 4px;
+      font-size: 10px;
+      font-weight: 600;
+      text-align: center;
     }
 
-    /* Modal */
     .modal {
       position: fixed;
       inset: 0;
@@ -321,6 +326,11 @@
       display: flex;
       align-items: center;
       justify-content: center;
+      transition: background 0.2s;
+    }
+
+    .modal-close:hover {
+      background: #e50914;
     }
 
     .loading-spinner {
@@ -349,19 +359,29 @@
       margin-top: 40px;
     }
 
+    .skeleton {
+      background: linear-gradient(90deg, #1a1a1a 25%, #2a2a2a 50%, #1a1a1a 75%);
+      background-size: 200% 100%;
+      animation: shimmer 1.5s infinite;
+      border-radius: 8px;
+    }
+
+    .skeleton-poster {
+      width: 100%;
+      aspect-ratio: 2/3;
+    }
+
+    @keyframes shimmer {
+      0% { background-position: 200% 0; }
+      100% { background-position: -200% 0; }
+    }
+
     @media (max-width: 768px) {
       .header {
         padding: 12px 20px;
       }
-      .header-content {
-        flex-wrap: wrap;
-      }
-      .search-box {
-        order: 3;
-        width: 100%;
-      }
       .search-box input {
-        width: 100%;
+        width: 150px;
       }
       .hero-title {
         font-size: 32px;
@@ -373,23 +393,9 @@
         grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
         gap: 12px;
       }
-    }
-
-    .skeleton {
-      background: linear-gradient(90deg, #1a1a1a 25%, #2a2a2a 50%, #1a1a1a 75%);
-      background-size: 200% 100%;
-      animation: shimmer 1.5s infinite;
-      border-radius: 8px;
-    }
-
-    @keyframes shimmer {
-      0% { background-position: 200% 0; }
-      100% { background-position: -200% 0; }
-    }
-
-    .skeleton-poster {
-      width: 100%;
-      aspect-ratio: 2/3;
+      .nav {
+        gap: 15px;
+      }
     }
   </style>
 </head>
@@ -406,14 +412,13 @@
     </div>
     <div class="search-box">
       <span>🔍</span>
-      <input type="text" id="searchInput" placeholder="Search movies, shows..." onkeyup="handleSearch(this.value)">
+      <input type="text" id="searchInput" placeholder="Search..." onkeyup="handleSearch(this.value)">
     </div>
   </div>
 </header>
 
-<!-- Hero Section -->
 <div id="heroSection">
-  <div class="hero" id="hero" style="background-size: cover;">
+  <div class="hero" id="hero">
     <div class="hero-overlay"></div>
     <div class="hero-content">
       <div class="hero-badge">🔥 TRENDING NOW</div>
@@ -428,9 +433,49 @@
   </div>
 </div>
 
-<!-- Main Content -->
 <main id="mainContent">
   <div id="homeView">
+    <!-- Recommendation Section 1: Watch It Again -->
+    <div class="section" id="watchAgainSection" style="display: none;">
+      <div class="section-header">
+        <h2 class="section-title">🔄 Watch It <span>Again</span></h2>
+      </div>
+      <div class="movie-grid" id="watchAgainGrid"></div>
+    </div>
+
+    <!-- Recommendation Section 2: Because You Watched -->
+    <div class="section" id="becauseYouWatchedSection" style="display: none;">
+      <div class="section-header">
+        <h2 class="section-title">🎯 Because You Watched <span id="lastWatchedTitle"></span></h2>
+      </div>
+      <div class="movie-grid" id="becauseYouWatchedGrid"></div>
+    </div>
+
+    <!-- Recommendation Section 3: More Like This -->
+    <div class="section" id="moreLikeThisSection" style="display: none;">
+      <div class="section-header">
+        <h2 class="section-title">🎬 More Like <span>Your Favorites</span></h2>
+      </div>
+      <div class="movie-grid" id="moreLikeThisGrid"></div>
+    </div>
+
+    <!-- Recommendation Section 4: Top Picks For You -->
+    <div class="section" id="topPicksSection" style="display: none;">
+      <div class="section-header">
+        <h2 class="section-title">⭐ Top Picks <span>For You</span></h2>
+      </div>
+      <div class="movie-grid" id="topPicksGrid"></div>
+    </div>
+
+    <!-- Recommendation Section 5: Trending In Your Genres -->
+    <div class="section" id="trendingInGenresSection" style="display: none;">
+      <div class="section-header">
+        <h2 class="section-title">📈 Trending In <span id="favGenreName">Your Genres</span></h2>
+      </div>
+      <div class="movie-grid" id="trendingInGenresGrid"></div>
+    </div>
+
+    <!-- Regular Sections -->
     <div class="section">
       <div class="section-header">
         <h2 class="section-title">🔥 Trending <span>Now</span></h2>
@@ -471,11 +516,10 @@
 </main>
 
 <footer class="footer">
-  <p>CineFlix | Stream Movies & TV Shows for Free</p>
-  <p>Powered by TMDB & VidKing</p>
+  <p>CineFlix | Personalized Recommendations Powered by AI</p>
+  <p>Your watch history helps us recommend better content</p>
 </footer>
 
-<!-- Modal -->
 <div class="modal" id="modal">
   <div class="modal-content">
     <div class="video-wrapper">
@@ -491,17 +535,25 @@
 </div>
 
 <script>
-  // API Configuration
   const API_KEY = '2dca580c2a14b55200e784d157207b4d';
   const BASE_URL = 'https://api.themoviedb.org/3';
   const IMG_URL = 'https://image.tmdb.org/t/p/w342';
   const BACKDROP_URL = 'https://image.tmdb.org/t/p/original';
   const VIDKING_URL = 'https://www.vidking.net/embed';
 
+  let watchHistory = [];
   let currentMedia = null;
   let searchTimeout = null;
+  let allGenres = {};
 
-  // Fetch from TMDB
+  // Load genres
+  async function loadGenres() {
+    const movieGenres = await fetchAPI('/genre/movie/list');
+    const tvGenres = await fetchAPI('/genre/tv/list');
+    movieGenres.genres?.forEach(g => allGenres[g.id] = g.name);
+    tvGenres.genres?.forEach(g => allGenres[g.id] = g.name);
+  }
+
   async function fetchAPI(endpoint, params = {}) {
     try {
       const query = new URLSearchParams({ api_key: API_KEY, ...params });
@@ -514,8 +566,17 @@
     }
   }
 
-  // Create movie card
-  function createCard(item, type) {
+  function escapeHtml(text) {
+    if (!text) return '';
+    return text.replace(/[&<>]/g, function(m) {
+      if (m === '&') return '&amp;';
+      if (m === '<') return '&lt;';
+      if (m === '>') return '&gt;';
+      return m;
+    });
+  }
+
+  function createCard(item, type, showResume = false) {
     const card = document.createElement('div');
     card.className = 'movie-card';
     card.onclick = () => playMedia(item.id, type, item);
@@ -537,18 +598,9 @@
         <div class="movie-title">${escapeHtml(title)}</div>
         <div class="movie-year">${year || '2024'}</div>
       </div>
+      ${showResume ? `<div class="resume-badge">▶ Resume</div>` : ''}
     `;
     return card;
-  }
-
-  function escapeHtml(text) {
-    if (!text) return '';
-    return text.replace(/[&<>]/g, function(m) {
-      if (m === '&') return '&amp;';
-      if (m === '<') return '&lt;';
-      if (m === '>') return '&gt;';
-      return m;
-    });
   }
 
   function showSkeletons(gridId, count = 8) {
@@ -563,7 +615,255 @@
     }
   }
 
-  // Load home page
+  // Watch History Management
+  function addToWatchHistory(item, type) {
+    const historyItem = {
+      id: item.id,
+      type: type,
+      title: type === 'movie' ? item.title : item.name,
+      poster: item.poster_path,
+      year: type === 'movie' ? item.release_date : item.first_air_date,
+      rating: item.vote_average,
+      genres: item.genre_ids || [],
+      watchedAt: Date.now()
+    };
+    
+    watchHistory = watchHistory.filter(h => h.id !== item.id);
+    watchHistory.unshift(historyItem);
+    if (watchHistory.length > 20) watchHistory.pop();
+    localStorage.setItem('cineflix_history', JSON.stringify(watchHistory));
+    
+    // Refresh recommendations after adding to history
+    loadAllRecommendations();
+  }
+
+  function loadWatchHistory() {
+    const saved = localStorage.getItem('cineflix_history');
+    if (saved) {
+      watchHistory = JSON.parse(saved);
+    }
+  }
+
+  // ============ RECOMMENDATION SYSTEMS ============
+
+  // 1. Watch It Again - Recently watched content
+  async function loadWatchAgain() {
+    if (watchHistory.length === 0) {
+      document.getElementById('watchAgainSection').style.display = 'none';
+      return;
+    }
+    
+    document.getElementById('watchAgainSection').style.display = 'block';
+    showSkeletons('watchAgainGrid', Math.min(8, watchHistory.length));
+    
+    const recentWatched = watchHistory.slice(0, 8);
+    const grid = document.getElementById('watchAgainGrid');
+    grid.innerHTML = '';
+    
+    for (const item of recentWatched) {
+      const details = await fetchAPI(`/${item.type}/${item.id}`);
+      if (details && details.id) {
+        grid.appendChild(createCard(details, item.type, true));
+      }
+    }
+  }
+
+  // 2. Because You Watched - Based on last watched item
+  async function loadBecauseYouWatched() {
+    if (watchHistory.length === 0) {
+      document.getElementById('becauseYouWatchedSection').style.display = 'none';
+      return;
+    }
+    
+    const lastWatched = watchHistory[0];
+    document.getElementById('lastWatchedTitle').textContent = ` ${lastWatched.title}`;
+    document.getElementById('becauseYouWatchedSection').style.display = 'block';
+    showSkeletons('becauseYouWatchedGrid', 8);
+    
+    const recommendations = await fetchAPI(`/${lastWatched.type}/${lastWatched.id}/recommendations`);
+    const grid = document.getElementById('becauseYouWatchedGrid');
+    grid.innerHTML = '';
+    
+    if (recommendations.results && recommendations.results.length) {
+      recommendations.results.slice(0, 8).forEach(item => {
+        grid.appendChild(createCard(item, lastWatched.type));
+      });
+    } else {
+      grid.innerHTML = '<div style="grid-column:1/-1;text-align:center;color:#666;padding:40px;">No recommendations available yet. Watch more content!</div>';
+    }
+  }
+
+  // 3. More Like This - Similar to user's favorite genre
+  async function loadMoreLikeThis() {
+    if (watchHistory.length === 0) {
+      document.getElementById('moreLikeThisSection').style.display = 'none';
+      return;
+    }
+    
+    // Find most watched genre
+    const genreCount = {};
+    watchHistory.forEach(item => {
+      item.genres?.forEach(genreId => {
+        genreCount[genreId] = (genreCount[genreId] || 0) + 1;
+      });
+    });
+    
+    const topGenre = Object.keys(genreCount).sort((a,b) => genreCount[b] - genreCount[a])[0];
+    if (!topGenre) {
+      document.getElementById('moreLikeThisSection').style.display = 'none';
+      return;
+    }
+    
+    document.getElementById('moreLikeThisSection').style.display = 'block';
+    showSkeletons('moreLikeThisGrid', 8);
+    
+    // Get popular movies in that genre
+    const popularMovies = await fetchAPI('/discover/movie', { with_genres: topGenre, sort_by: 'popularity.desc' });
+    const popularTV = await fetchAPI('/discover/tv', { with_genres: topGenre, sort_by: 'popularity.desc' });
+    
+    const grid = document.getElementById('moreLikeThisGrid');
+    grid.innerHTML = '';
+    
+    const allResults = [...(popularMovies.results || []), ...(popularTV.results || [])];
+    const filtered = allResults.filter(item => !watchHistory.some(w => w.id === item.id)).slice(0, 8);
+    
+    if (filtered.length) {
+      filtered.forEach(item => {
+        const type = item.title ? 'movie' : 'tv';
+        grid.appendChild(createCard(item, type));
+      });
+    } else {
+      grid.innerHTML = '<div style="grid-column:1/-1;text-align:center;color:#666;padding:40px;">Discover more by watching different genres!</div>';
+    }
+  }
+
+  // 4. Top Picks For You - Based on combined watch history patterns
+  async function loadTopPicksForYou() {
+    if (watchHistory.length === 0) {
+      document.getElementById('topPicksSection').style.display = 'none';
+      return;
+    }
+    
+    document.getElementById('topPicksSection').style.display = 'block';
+    showSkeletons('topPicksGrid', 8);
+    
+    // Collect all genres from watch history
+    const allGenresWatched = [];
+    watchHistory.forEach(item => {
+      if (item.genres) allGenresWatched.push(...item.genres);
+    });
+    
+    // Get unique genres and find most common
+    const uniqueGenres = [...new Set(allGenresWatched)];
+    const genreParam = uniqueGenres.slice(0, 3).join(',');
+    
+    if (!genreParam) {
+      document.getElementById('topPicksSection').style.display = 'none';
+      return;
+    }
+    
+    // Fetch high-rated content in those genres
+    const highRatedMovies = await fetchAPI('/discover/movie', { 
+      with_genres: genreParam, 
+      'vote_average.gte': 7,
+      sort_by: 'vote_average.desc'
+    });
+    
+    const highRatedTV = await fetchAPI('/discover/tv', { 
+      with_genres: genreParam, 
+      'vote_average.gte': 7,
+      sort_by: 'vote_average.desc'
+    });
+    
+    const grid = document.getElementById('topPicksGrid');
+    grid.innerHTML = '';
+    
+    const allResults = [...(highRatedMovies.results || []), ...(highRatedTV.results || [])];
+    const filtered = allResults.filter(item => !watchHistory.some(w => w.id === item.id)).slice(0, 8);
+    
+    if (filtered.length) {
+      filtered.forEach(item => {
+        const type = item.title ? 'movie' : 'tv';
+        grid.appendChild(createCard(item, type));
+      });
+    } else {
+      grid.innerHTML = '<div style="grid-column:1/-1;text-align:center;color:#666;padding:40px;">More recommendations coming as you watch!</div>';
+    }
+  }
+
+  // 5. Trending In Your Genres
+  async function loadTrendingInYourGenres() {
+    if (watchHistory.length === 0) {
+      document.getElementById('trendingInGenresSection').style.display = 'none';
+      return;
+    }
+    
+    // Find favorite genre
+    const genreCount = {};
+    watchHistory.forEach(item => {
+      item.genres?.forEach(genreId => {
+        genreCount[genreId] = (genreCount[genreId] || 0) + 1;
+      });
+    });
+    
+    const topGenreId = Object.keys(genreCount).sort((a,b) => genreCount[b] - genreCount[a])[0];
+    const topGenreName = allGenres[topGenreId] || 'Your Genres';
+    document.getElementById('favGenreName').textContent = ` ${topGenreName}`;
+    document.getElementById('trendingInGenresSection').style.display = 'block';
+    showSkeletons('trendingInGenresGrid', 8);
+    
+    // Get trending content in that genre
+    const trendingMovies = await fetchAPI('/trending/movie/week');
+    const trendingTV = await fetchAPI('/trending/tv/week');
+    
+    const grid = document.getElementById('trendingInGenresGrid');
+    grid.innerHTML = '';
+    
+    const allTrending = [...(trendingMovies.results || []), ...(trendingTV.results || [])];
+    const filtered = allTrending
+      .filter(item => item.genre_ids?.includes(parseInt(topGenreId)))
+      .filter(item => !watchHistory.some(w => w.id === item.id))
+      .slice(0, 8);
+    
+    if (filtered.length) {
+      filtered.forEach(item => {
+        const type = item.title ? 'movie' : 'tv';
+        grid.appendChild(createCard(item, type));
+      });
+    } else {
+      grid.innerHTML = '<div style="grid-column:1/-1;text-align:center;color:#666;padding:40px;">Check back later for trending content in your genres!</div>';
+    }
+  }
+
+  async function loadAllRecommendations() {
+    await loadWatchAgain();
+    await loadBecauseYouWatched();
+    await loadMoreLikeThis();
+    await loadTopPicksForYou();
+    await loadTrendingInYourGenres();
+  }
+
+  // Regular content loading
+  async function loadHero() {
+    const data = await fetchAPI('/trending/movie/week');
+    if (!data.results || data.results.length === 0) return;
+    
+    const heroItem = data.results[Math.floor(Math.random() * 5)];
+    const backdrop = heroItem.backdrop_path ? BACKDROP_URL + heroItem.backdrop_path : null;
+    
+    if (backdrop) {
+      document.getElementById('hero').style.backgroundImage = `url(${backdrop})`;
+    }
+    
+    document.getElementById('heroTitle').textContent = heroItem.title;
+    document.getElementById('heroOverview').textContent = heroItem.overview || 'No description available.';
+    document.getElementById('heroYear').textContent = (heroItem.release_date || '').slice(0, 4) || '2024';
+    const ratingSpan = document.querySelector('#heroRating span');
+    if (ratingSpan) ratingSpan.textContent = heroItem.vote_average ? heroItem.vote_average.toFixed(1) : 'N/A';
+    
+    document.getElementById('heroPlayBtn').onclick = () => playMedia(heroItem.id, 'movie', heroItem);
+  }
+
   async function loadHome() {
     showSkeletons('trendingGrid', 8);
     showSkeletons('moviesGrid', 8);
@@ -594,44 +894,17 @@
       tvGrid.appendChild(createCard(item, 'tv'));
     });
 
-    // Load hero with random trending movie
-    if (trending.results && trending.results.length) {
-      const heroItem = trending.results[Math.floor(Math.random() * 5)];
-      updateHero(heroItem, heroItem.media_type === 'tv' ? 'tv' : 'movie');
-    }
+    await loadAllRecommendations();
+    await loadHero();
   }
 
-  async function updateHero(item, type) {
-    const title = type === 'movie' ? item.title : item.name;
-    const year = type === 'movie' 
-      ? (item.release_date || '').slice(0, 4) 
-      : (item.first_air_date || '').slice(0, 4);
-    
-    document.getElementById('heroTitle').textContent = title;
-    document.getElementById('heroOverview').textContent = item.overview || 'No description available.';
-    document.getElementById('heroYear').textContent = year || '2024';
-    const ratingSpan = document.querySelector('#heroRating span');
-    if (ratingSpan) ratingSpan.textContent = item.vote_average ? item.vote_average.toFixed(1) : 'N/A';
-    
-    if (item.backdrop_path) {
-      document.getElementById('hero').style.backgroundImage = `url(${BACKDROP_URL}${item.backdrop_path})`;
-    }
-    
-    document.getElementById('heroPlayBtn').onclick = () => playMedia(item.id, type, item);
-  }
-
-  // Load category
   async function loadCategory(type) {
     document.getElementById('homeView').style.display = 'none';
     document.getElementById('categoryView').style.display = 'block';
     document.getElementById('searchView').style.display = 'none';
     document.getElementById('heroSection').style.display = 'none';
     
-    const titles = {
-      movie: '🎬 Popular Movies',
-      tv: '📺 Popular TV Shows',
-      trending: '🔥 Trending Now'
-    };
+    const titles = { movie: '🎬 Popular Movies', tv: '📺 Popular TV Shows', trending: '🔥 Trending Now' };
     document.getElementById('categoryTitle').innerHTML = titles[type] || type;
     
     const grid = document.getElementById('categoryGrid');
@@ -648,7 +921,6 @@
       grid.appendChild(createCard(item, itemType));
     });
     
-    // Update active nav
     document.querySelectorAll('.nav a').forEach(a => a.classList.remove('active'));
     event.target.classList.add('active');
   }
@@ -665,8 +937,7 @@
     loadHome();
   }
 
-  // Search
-  function handleSearch(query) {
+  async function handleSearch(query) {
     clearTimeout(searchTimeout);
     if (!query.trim()) {
       showHome();
@@ -701,8 +972,7 @@
     });
   }
 
-  // Play media
-  function playMedia(id, type, item) {
+  async function playMedia(id, type, item) {
     currentMedia = { id, type, title: type === 'movie' ? item.title : item.name };
     
     document.getElementById('modalTitle').textContent = currentMedia.title;
@@ -724,6 +994,9 @@
     
     document.getElementById('modal').classList.add('active');
     document.body.style.overflow = 'hidden';
+    
+    // Add to watch history
+    addToWatchHistory(item, type);
   }
 
   function closeModal() {
@@ -732,26 +1005,17 @@
     document.body.style.overflow = '';
   }
 
-  // Close modal on escape
   document.addEventListener('keydown', (e) => {
     if (e.key === 'Escape') closeModal();
   });
 
-  // Close modal on background click
   document.getElementById('modal').addEventListener('click', (e) => {
     if (e.target === document.getElementById('modal')) closeModal();
   });
 
-  // Load watch history from localStorage
-  function saveToHistory(media) {
-    let history = JSON.parse(localStorage.getItem('watchHistory') || '[]');
-    history = history.filter(h => h.id !== media.id);
-    history.unshift({ ...media, watchedAt: Date.now() });
-    if (history.length > 20) history.pop();
-    localStorage.setItem('watchHistory', JSON.stringify(history));
-  }
-
   // Initialize
+  loadWatchHistory();
+  loadGenres();
   loadHome();
 </script>
 </body>
