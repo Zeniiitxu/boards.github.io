@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes"/>
-  <title>CineVault | Ad-Free Streaming with Watch History</title>
+  <title>StreamHub | Ad-Free Streaming</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700;14..32,800&family=Playfair+Display:wght@700;800;900&display=swap" rel="stylesheet">
   <style>
@@ -382,7 +382,7 @@
       backdrop-filter: blur(4px);
     }
 
-    /* Custom Player Modal */
+    /* Modal Player - Clean version */
     .modal {
       position: fixed;
       inset: 0;
@@ -425,18 +425,18 @@
       }
     }
 
-    .custom-player {
+    .player-wrapper {
       position: relative;
       background: #000;
     }
 
-    .video-wrapper {
+    .video-container {
       position: relative;
       width: 100%;
       padding-top: 56.25%;
     }
 
-    .video-wrapper iframe {
+    .video-container iframe {
       position: absolute;
       top: 0;
       left: 0;
@@ -477,109 +477,6 @@
 
     @keyframes spin {
       to { transform: rotate(360deg); }
-    }
-
-    .player-controls {
-      position: absolute;
-      bottom: 0;
-      left: 0;
-      right: 0;
-      background: linear-gradient(to top, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0.6) 50%, transparent 100%);
-      padding: 20px 24px 16px;
-      opacity: 0;
-      transition: opacity 0.3s ease;
-      z-index: 20;
-    }
-
-    .custom-player:hover .player-controls {
-      opacity: 1;
-    }
-
-    .progress-bar {
-      width: 100%;
-      height: 4px;
-      background: rgba(255,255,255,0.2);
-      border-radius: 2px;
-      cursor: pointer;
-      margin-bottom: 16px;
-      position: relative;
-    }
-
-    .progress-fill {
-      width: 0%;
-      height: 100%;
-      background: var(--primary);
-      border-radius: 2px;
-      position: relative;
-      transition: width 0.1s linear;
-    }
-
-    .control-buttons {
-      display: flex;
-      align-items: center;
-      gap: 20px;
-    }
-
-    .control-btn {
-      background: none;
-      border: none;
-      color: white;
-      cursor: pointer;
-      transition: all 0.2s;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 18px;
-      padding: 8px;
-      border-radius: 8px;
-    }
-
-    .control-btn:hover {
-      transform: scale(1.1);
-      color: var(--primary);
-    }
-
-    .play-pause {
-      width: 44px;
-      height: 44px;
-      background: var(--primary);
-      border-radius: 50%;
-      font-size: 20px;
-    }
-
-    .play-pause:hover {
-      background: var(--primary-dark);
-      transform: scale(1.05);
-      color: white;
-    }
-
-    .volume-control {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
-
-    .volume-slider {
-      width: 80px;
-      height: 4px;
-      background: rgba(255,255,255,0.2);
-      border-radius: 2px;
-      cursor: pointer;
-      position: relative;
-    }
-
-    .volume-fill {
-      width: 100%;
-      height: 100%;
-      background: var(--primary);
-      border-radius: 2px;
-    }
-
-    .time-display {
-      margin-left: auto;
-      font-size: 13px;
-      color: var(--text-secondary);
-      font-family: monospace;
     }
 
     .modal-info {
@@ -910,12 +807,12 @@
 
 <header class="header">
   <div class="header-content">
-    <a class="logo" href="#" onclick="showHome()">CINE<span style="color:var(--primary)">VAULT</span></a>
+    <a class="logo" href="#" onclick="showHome()">STREAM<span style="color:var(--primary)">HUB</span></a>
     <div class="nav-links">
       <a class="nav-link active" onclick="switchTab('movie')">Movies</a>
       <a class="nav-link" onclick="switchTab('tv')">TV Shows</a>
       <a class="nav-link" onclick="switchTab('trending')">Trending</a>
-      <a class="nav-link" onclick="switchTab('history')">📜 History</a>
+      <a class="nav-link" onclick="switchTab('history')">History</a>
     </div>
     <div class="search-container">
       <div class="search-box">
@@ -1005,7 +902,7 @@
 </main>
 
 <footer class="footer">
-  <p>CineVault | Premium Ad-Free Streaming with Watch History</p>
+  <p>StreamHub | Premium Ad-Free Streaming with Watch History</p>
   <p>Powered by VidKing API & TMDB</p>
 </footer>
 
@@ -1028,34 +925,16 @@
   </div>
 </div>
 
-<!-- Custom Player Modal -->
+<!-- Player Modal - Clean version without custom controls -->
 <div class="modal" id="playerModal">
   <div class="modal-container">
-    <div class="custom-player" id="customPlayer">
-      <div class="video-wrapper">
+    <div class="player-wrapper">
+      <div class="video-container">
         <iframe id="playerFrame" src="" allowfullscreen allow="autoplay; fullscreen"></iframe>
         <div class="player-loading" id="playerLoading">
           <div class="loading-spinner"></div>
         </div>
       </div>
-      
-      <div class="player-controls">
-        <div class="progress-bar" id="progressBar">
-          <div class="progress-fill" id="progressFill"></div>
-        </div>
-        <div class="control-buttons">
-          <button class="control-btn play-pause" id="playPauseBtn">⏸</button>
-          <button class="control-btn" id="volumeBtn">🔊</button>
-          <div class="volume-control" id="volumeControl">
-            <div class="volume-slider" id="volumeSlider">
-              <div class="volume-fill" id="volumeFill"></div>
-            </div>
-          </div>
-          <button class="control-btn" id="fullscreenBtn">⛶</button>
-          <div class="time-display" id="timeDisplay">0:00 / 0:00</div>
-        </div>
-      </div>
-      
       <button class="modal-close" onclick="closePlayer()">✕</button>
     </div>
     
@@ -1093,21 +972,18 @@
   let currentEpisode = 1;
   let currentCategory = 'movie';
   let searchTimeout = null;
-  let isPlaying = true;
-  let currentVolume = 100;
-  let watchStartTime = null;
   let watchInterval = null;
   
   // ============================================
   // WATCH HISTORY MANAGEMENT
   // ============================================
   function getWatchHistory() {
-    const history = localStorage.getItem('cinevault_watch_history');
+    const history = localStorage.getItem('streamhub_watch_history');
     return history ? JSON.parse(history) : [];
   }
   
   function saveWatchHistory(history) {
-    localStorage.setItem('cinevault_watch_history', JSON.stringify(history));
+    localStorage.setItem('streamhub_watch_history', JSON.stringify(history));
   }
   
   function addToWatchHistory(media, season = null, episode = null) {
@@ -1129,27 +1005,17 @@
       timestamp: now.getTime()
     };
     
-    // Remove existing entry if present
     const existingIndex = history.findIndex(item => item.id === media.id);
     if (existingIndex !== -1) {
       history.splice(existingIndex, 1);
     }
     
-    // Add to beginning
     history.unshift(historyItem);
     
-    // Keep only last 50 items
     if (history.length > 50) {
       history = history.slice(0, 50);
     }
     
-    saveWatchHistory(history);
-    updateHistoryUI();
-  }
-  
-  function removeFromHistory(id) {
-    let history = getWatchHistory();
-    history = history.filter(item => item.id !== id);
     saveWatchHistory(history);
     updateHistoryUI();
   }
@@ -1173,7 +1039,6 @@
       return;
     }
     
-    // Update sidebar
     if (historyList) {
       historyList.innerHTML = history.map(item => `
         <div class="history-item" onclick="resumeWatching(${item.id}, '${item.type}')">
@@ -1183,16 +1048,12 @@
             <div class="history-title">${escapeHtml(item.title)}</div>
             <div class="history-meta">${item.year || 'N/A'} • ${item.type.toUpperCase()}</div>
             ${item.season ? `<div class="history-meta">S${item.season} E${item.episode}</div>` : ''}
-            <div class="history-progress">
-              <div class="history-progress-fill" style="width: 0%"></div>
-            </div>
             <div class="history-meta">${formatRelativeTime(item.timestamp)}</div>
           </div>
         </div>
       `).join('');
     }
     
-    // Update full history view
     if (historyGrid && document.getElementById('historyView').style.display !== 'none') {
       historyGrid.innerHTML = history.map(item => {
         const card = document.createElement('div');
@@ -1228,11 +1089,9 @@
   }
   
   function resumeWatching(id, type) {
-    // Find the item in history and resume
     const history = getWatchHistory();
     const item = history.find(h => h.id === id);
     if (item) {
-      // Fetch full details and open player
       fetchTMDB(`/${type}/${id}`).then(data => {
         openPlayer(id, type, data, item.season, item.episode);
       });
@@ -1288,7 +1147,6 @@
     const poster = getImageUrl(item.poster_path);
     const rating = item.vote_average ? item.vote_average.toFixed(1) : null;
     
-    // Check if in watch history
     const history = getWatchHistory();
     const watched = history.some(h => h.id === item.id);
     
@@ -1306,7 +1164,7 @@
         <div class="movie-title">${escapeHtml(title)}</div>
         <div class="movie-year">${year || 'N/A'}</div>
       </div>
-      ${watched ? `<div class="resume-badge">⏵ Resume Watching</div>` : ''}
+      ${watched ? `<div class="resume-badge">▶ Resume Watching</div>` : ''}
     `;
     return card;
   }
@@ -1469,7 +1327,7 @@
   }
   
   // ============================================
-  // PLAYER CONTROLS
+  // PLAYER FUNCTIONS
   // ============================================
   function setPlayerLoading(show) {
     const loading = document.getElementById('playerLoading');
@@ -1479,28 +1337,19 @@
   
   function startWatchTimer() {
     if (watchInterval) clearInterval(watchInterval);
-    watchStartTime = Date.now();
     watchInterval = setInterval(() => {
       if (currentMedia && document.getElementById('playerModal').classList.contains('active')) {
-        // Auto-save after 2 minutes of watching
-        const watchDuration = (Date.now() - watchStartTime) / 1000;
-        if (watchDuration > 120) {
-          addToWatchHistory(currentMedia, currentSeason, currentEpisode);
-          clearInterval(watchInterval);
-          watchInterval = null;
-        }
+        addToWatchHistory(currentMedia, currentSeason, currentEpisode);
+        clearInterval(watchInterval);
+        watchInterval = null;
       }
-    }, 30000);
+    }, 120000);
   }
   
-  // ============================================
-  // PLAYER OPEN/CLOSE
-  // ============================================
   async function openPlayer(id, type, item, resumeSeason = null, resumeEpisode = null) {
     currentMedia = { id, type, title: type === 'movie' ? item.title : item.name, item };
     currentSeason = resumeSeason || 1;
     currentEpisode = resumeEpisode || 1;
-    isPlaying = true;
     
     document.getElementById('modalTitle').textContent = type === 'movie' ? item.title : item.name;
     document.getElementById('modalYear').textContent = (type === 'movie' ? item.release_date : item.first_air_date || '').slice(0, 4) || 'N/A';
@@ -1512,7 +1361,6 @@
     if (type === 'movie') {
       document.getElementById('episodePanel').classList.remove('show');
       document.getElementById('playerFrame').src = getVidKingUrl('movie', id);
-      // Add to history after opening
       setTimeout(() => addToWatchHistory(currentMedia), 5000);
     } else {
       document.getElementById('episodePanel').classList.add('show');
@@ -1608,69 +1456,8 @@
   // ============================================
   // EVENT LISTENERS
   // ============================================
-  document.getElementById('playPauseBtn').onclick = () => {
-    const iframe = document.getElementById('playerFrame');
-    if (iframe.contentWindow) {
-      try {
-        if (isPlaying) {
-          iframe.contentWindow.postMessage('{"event":"command","func":"pauseVideo","args":""}', '*');
-        } else {
-          iframe.contentWindow.postMessage('{"event":"command","func":"playVideo","args":""}', '*');
-        }
-        isPlaying = !isPlaying;
-        document.getElementById('playPauseBtn').textContent = isPlaying ? '⏸' : '▶';
-      } catch(e) {}
-    }
-  };
-  
-  document.getElementById('fullscreenBtn').onclick = () => {
-    const container = document.querySelector('.modal-container');
-    if (!document.fullscreenElement) {
-      container.requestFullscreen().catch(err => console.log(err));
-    } else {
-      document.exitFullscreen();
-    }
-  };
-  
-  document.getElementById('volumeBtn').onclick = () => {
-    currentVolume = currentVolume === 0 ? 100 : 0;
-    const volumeFill = document.getElementById('volumeFill');
-    volumeFill.style.width = `${currentVolume}%`;
-    const iframe = document.getElementById('playerFrame');
-    if (iframe.contentWindow) {
-      try {
-        iframe.contentWindow.postMessage(`{"event":"command","func":"setVolume","args":[${currentVolume}]}`, '*');
-      } catch(e) {}
-    }
-  };
-  
-  const volumeSlider = document.getElementById('volumeSlider');
-  volumeSlider.onclick = (e) => {
-    const rect = volumeSlider.getBoundingClientRect();
-    const percent = (e.clientX - rect.left) / rect.width;
-    currentVolume = percent * 100;
-    const volumeFill = document.getElementById('volumeFill');
-    volumeFill.style.width = `${currentVolume}%`;
-    const iframe = document.getElementById('playerFrame');
-    if (iframe.contentWindow) {
-      try {
-        iframe.contentWindow.postMessage(`{"event":"command","func":"setVolume","args":[${currentVolume}]}`, '*');
-      } catch(e) {}
-    }
-  };
-  
   document.addEventListener('keydown', (e) => {
     if (e.key === 'Escape') closePlayer();
-    if (document.getElementById('playerModal').classList.contains('active')) {
-      if (e.key === ' ' || e.key === 'Space') {
-        e.preventDefault();
-        document.getElementById('playPauseBtn').click();
-      }
-      if (e.key === 'f' || e.key === 'F') {
-        e.preventDefault();
-        document.getElementById('fullscreenBtn').click();
-      }
-    }
   });
   
   document.getElementById('playerModal').addEventListener('click', (e) => {
