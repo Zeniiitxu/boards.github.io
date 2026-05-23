@@ -3,9 +3,9 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes"/>
-  <title>CineVault | Ad-Free Movie Streaming</title>
+  <title>CineVault | Premium Ad-Free Streaming</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700&family=Playfair+Display:wght@700;800;900&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700;14..32,800&family=Playfair+Display:wght@700;800;900&display=swap" rel="stylesheet">
   <style>
     * {
       margin: 0;
@@ -16,6 +16,7 @@
     :root {
       --primary: #e50914;
       --primary-dark: #b20710;
+      --primary-light: #ff3b3b;
       --bg-dark: #0a0a0a;
       --bg-card: #141414;
       --bg-surface: #1a1a1a;
@@ -46,9 +47,6 @@
     ::-webkit-scrollbar-thumb {
       background: var(--primary);
       border-radius: 4px;
-    }
-    ::-webkit-scrollbar-thumb:hover {
-      background: var(--primary-dark);
     }
 
     /* Header */
@@ -369,82 +367,64 @@
       text-transform: uppercase;
     }
 
-    /* Modal Player */
+    /* ============================================
+       CUSTOM PLAYER MODAL - REDESIGNED
+    ============================================ */
     .modal {
       position: fixed;
       inset: 0;
-      background: rgba(0,0,0,0.96);
+      background: rgba(0,0,0,0.98);
       z-index: 2000;
       display: none;
       align-items: center;
       justify-content: center;
-      padding: 40px;
+      backdrop-filter: blur(20px);
     }
 
     .modal.active {
       display: flex;
+      animation: fadeIn 0.3s ease;
     }
 
-    .modal-content {
-      width: 100%;
-      max-width: 1200px;
-      background: var(--bg-card);
-      border-radius: 12px;
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+
+    .modal-container {
+      width: 90%;
+      max-width: 1400px;
+      background: var(--bg-dark);
+      border-radius: 20px;
       overflow: hidden;
-      animation: modalIn 0.3s ease;
+      box-shadow: 0 30px 60px rgba(0,0,0,0.5);
+      animation: slideUp 0.4s ease;
     }
 
-    @keyframes modalIn {
+    @keyframes slideUp {
       from {
         opacity: 0;
-        transform: scale(0.95);
+        transform: translateY(30px);
       }
       to {
         opacity: 1;
-        transform: scale(1);
+        transform: translateY(0);
       }
     }
 
-    .modal-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 16px 24px;
-      background: var(--bg-surface);
-      border-bottom: 1px solid var(--border);
-    }
-
-    .modal-title {
-      font-size: 18px;
-      font-weight: 600;
-    }
-
-    .modal-close {
-      width: 36px;
-      height: 36px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      background: rgba(255,255,255,0.1);
-      border: none;
-      border-radius: 8px;
-      color: white;
-      cursor: pointer;
-      font-size: 20px;
-      transition: all 0.2s;
-    }
-
-    .modal-close:hover {
-      background: var(--primary);
-    }
-
-    .player-container {
+    /* Custom Player */
+    .custom-player {
       position: relative;
-      padding-top: 56.25%;
-      background: black;
+      background: #000;
     }
 
-    .player-container iframe {
+    .video-wrapper {
+      position: relative;
+      width: 100%;
+      padding-top: 56.25%;
+    }
+
+    .video-wrapper iframe {
       position: absolute;
       top: 0;
       left: 0;
@@ -453,64 +433,287 @@
       border: none;
     }
 
-    .modal-footer {
-      padding: 16px 24px;
+    /* Loading Overlay */
+    .player-loading {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0,0,0,0.9);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 10;
+      opacity: 0;
+      visibility: hidden;
+      transition: all 0.3s ease;
+    }
+
+    .player-loading.active {
+      opacity: 1;
+      visibility: visible;
+    }
+
+    .loading-spinner {
+      width: 60px;
+      height: 60px;
+      border: 3px solid var(--border);
+      border-top-color: var(--primary);
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    /* Player Controls Bar */
+    .player-controls {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: linear-gradient(to top, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0.6) 50%, transparent 100%);
+      padding: 20px 24px 16px;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+      z-index: 20;
+    }
+
+    .custom-player:hover .player-controls {
+      opacity: 1;
+    }
+
+    .progress-bar {
+      width: 100%;
+      height: 4px;
+      background: rgba(255,255,255,0.2);
+      border-radius: 2px;
+      cursor: pointer;
+      margin-bottom: 16px;
+      position: relative;
+    }
+
+    .progress-fill {
+      width: 0%;
+      height: 100%;
+      background: var(--primary);
+      border-radius: 2px;
+      position: relative;
+      transition: width 0.1s linear;
+    }
+
+    .progress-fill::after {
+      content: '';
+      position: absolute;
+      right: -6px;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 12px;
+      height: 12px;
+      background: var(--primary);
+      border-radius: 50%;
+      opacity: 0;
+      transition: opacity 0.2s;
+    }
+
+    .progress-bar:hover .progress-fill::after {
+      opacity: 1;
+    }
+
+    .control-buttons {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+    }
+
+    .control-btn {
+      background: none;
+      border: none;
+      color: white;
+      cursor: pointer;
+      transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+      padding: 8px;
+      border-radius: 8px;
+    }
+
+    .control-btn:hover {
+      transform: scale(1.1);
+      color: var(--primary);
+    }
+
+    .play-pause {
+      width: 44px;
+      height: 44px;
+      background: var(--primary);
+      border-radius: 50%;
+      font-size: 20px;
+    }
+
+    .play-pause:hover {
+      background: var(--primary-dark);
+      transform: scale(1.05);
+      color: white;
+    }
+
+    .volume-control {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .volume-slider {
+      width: 80px;
+      height: 4px;
+      background: rgba(255,255,255,0.2);
+      border-radius: 2px;
+      cursor: pointer;
+      position: relative;
+    }
+
+    .volume-fill {
+      width: 100%;
+      height: 100%;
+      background: var(--primary);
+      border-radius: 2px;
+    }
+
+    .time-display {
+      margin-left: auto;
       font-size: 13px;
       color: var(--text-secondary);
+      font-family: monospace;
+    }
+
+    /* Modal Info Section */
+    .modal-info {
+      padding: 20px 24px;
+      background: var(--bg-surface);
       border-top: 1px solid var(--border);
+    }
+
+    .modal-info-title {
+      font-size: 18px;
+      font-weight: 600;
+      margin-bottom: 8px;
+    }
+
+    .modal-info-meta {
+      display: flex;
+      gap: 20px;
+      font-size: 13px;
+      color: var(--text-muted);
+      margin-bottom: 12px;
+    }
+
+    .modal-info-overview {
+      font-size: 13px;
+      color: var(--text-secondary);
+      line-height: 1.6;
     }
 
     /* TV Episode Controls */
-    .episode-controls {
-      display: none;
+    .episode-panel {
       padding: 16px 24px;
-      background: var(--bg-surface);
+      background: var(--bg-dark);
       border-top: 1px solid var(--border);
-      gap: 20px;
-      flex-wrap: wrap;
-      align-items: center;
+      display: none;
     }
 
-    .episode-controls.show {
+    .episode-panel.show {
+      display: block;
+    }
+
+    .episode-header {
       display: flex;
+      align-items: center;
+      gap: 16px;
+      margin-bottom: 16px;
+      flex-wrap: wrap;
+    }
+
+    .episode-label {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text-secondary);
     }
 
     .season-select {
-      background: var(--bg-dark);
+      background: var(--bg-surface);
       border: 1px solid var(--border);
       color: white;
       padding: 8px 16px;
-      border-radius: 6px;
+      border-radius: 8px;
       font-size: 13px;
       cursor: pointer;
       font-family: 'Inter', sans-serif;
     }
 
-    .episode-list {
+    .episode-grid {
       display: flex;
       gap: 10px;
       flex-wrap: wrap;
+      max-height: 120px;
+      overflow-y: auto;
+      padding: 8px 0;
     }
 
     .episode-btn {
-      background: var(--bg-dark);
+      background: var(--bg-surface);
       border: 1px solid var(--border);
       color: var(--text-secondary);
-      padding: 6px 14px;
-      border-radius: 6px;
+      padding: 8px 16px;
+      border-radius: 8px;
       font-size: 12px;
       cursor: pointer;
       transition: all 0.2s;
       font-family: 'Inter', sans-serif;
+      font-weight: 500;
     }
 
-    .episode-btn:hover, .episode-btn.active {
+    .episode-btn:hover {
       background: var(--primary);
       color: white;
       border-color: var(--primary);
     }
 
-    /* Loading Skeleton */
+    .episode-btn.active {
+      background: var(--primary);
+      color: white;
+      border-color: var(--primary);
+    }
+
+    /* Modal Close Button */
+    .modal-close {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      width: 44px;
+      height: 44px;
+      background: rgba(0,0,0,0.8);
+      border: 1px solid var(--border);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.2s;
+      z-index: 30;
+      font-size: 20px;
+      color: white;
+    }
+
+    .modal-close:hover {
+      background: var(--primary);
+      transform: rotate(90deg);
+    }
+
+    /* Skeleton Loading */
     .skeleton {
       background: linear-gradient(90deg, var(--bg-card) 25%, var(--bg-surface) 50%, var(--bg-card) 75%);
       background-size: 200% 100%;
@@ -526,20 +729,6 @@
     .skeleton-poster {
       width: 100%;
       aspect-ratio: 2/3;
-    }
-
-    /* Loading Spinner */
-    .spinner {
-      width: 40px;
-      height: 40px;
-      border: 3px solid var(--border);
-      border-top-color: var(--primary);
-      border-radius: 50%;
-      animation: spin 0.8s linear infinite;
-    }
-
-    @keyframes spin {
-      to { transform: rotate(360deg); }
     }
 
     /* Footer */
@@ -580,8 +769,23 @@
         grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
         gap: 12px;
       }
-      .modal {
-        padding: 20px;
+      .control-buttons {
+        gap: 10px;
+      }
+      .play-pause {
+        width: 36px;
+        height: 36px;
+        font-size: 16px;
+      }
+      .volume-control {
+        display: none;
+      }
+      .modal-close {
+        top: 10px;
+        right: 10px;
+        width: 36px;
+        height: 36px;
+        font-size: 16px;
       }
     }
   </style>
@@ -634,25 +838,19 @@
 
 <!-- Main Content -->
 <main id="mainContent">
-  <!-- Home View -->
   <div id="homeView">
-    <!-- Trending Section -->
     <div class="section">
       <div class="section-header">
         <h2 class="section-title">🔥 Trending <span>Now</span></h2>
       </div>
       <div class="movie-grid" id="trendingGrid"></div>
     </div>
-
-    <!-- Popular Movies -->
     <div class="section">
       <div class="section-header">
         <h2 class="section-title">🎬 Popular <span>Movies</span></h2>
       </div>
       <div class="movie-grid" id="popularMoviesGrid"></div>
     </div>
-
-    <!-- Popular TV Shows -->
     <div class="section">
       <div class="section-header">
         <h2 class="section-title">📺 Popular <span>TV Shows</span></h2>
@@ -661,7 +859,6 @@
     </div>
   </div>
 
-  <!-- Category View -->
   <div id="categoryView" style="display: none;">
     <div class="section">
       <div class="section-header">
@@ -671,7 +868,6 @@
     </div>
   </div>
 
-  <!-- Search View -->
   <div id="searchView" style="display: none;">
     <div class="section">
       <div class="section-header">
@@ -683,26 +879,58 @@
 </main>
 
 <footer class="footer">
-  <p>CineVault | Ad-Free Streaming Platform</p>
+  <p>CineVault | Premium Ad-Free Streaming Experience</p>
   <p>Powered by VidKing API & TMDB</p>
 </footer>
 
-<!-- Player Modal -->
+<!-- Custom Player Modal -->
 <div class="modal" id="playerModal">
-  <div class="modal-content">
-    <div class="modal-header">
-      <span class="modal-title" id="modalTitle">—</span>
+  <div class="modal-container">
+    <div class="custom-player" id="customPlayer">
+      <div class="video-wrapper">
+        <iframe id="playerFrame" src="" allowfullscreen allow="autoplay; fullscreen"></iframe>
+        <div class="player-loading" id="playerLoading">
+          <div class="loading-spinner"></div>
+        </div>
+      </div>
+      
+      <!-- Custom Controls -->
+      <div class="player-controls">
+        <div class="progress-bar" id="progressBar">
+          <div class="progress-fill" id="progressFill"></div>
+        </div>
+        <div class="control-buttons">
+          <button class="control-btn play-pause" id="playPauseBtn">⏸</button>
+          <button class="control-btn" id="volumeBtn">🔊</button>
+          <div class="volume-control" id="volumeControl">
+            <div class="volume-slider" id="volumeSlider">
+              <div class="volume-fill" id="volumeFill"></div>
+            </div>
+          </div>
+          <button class="control-btn" id="fullscreenBtn">⛶</button>
+          <div class="time-display" id="timeDisplay">0:00 / 0:00</div>
+        </div>
+      </div>
+      
       <button class="modal-close" onclick="closePlayer()">✕</button>
     </div>
-    <div class="player-container" id="playerContainer">
-      <iframe id="playerFrame" src="" allowfullscreen allow="autoplay; fullscreen"></iframe>
+    
+    <div class="modal-info">
+      <div class="modal-info-title" id="modalTitle">—</div>
+      <div class="modal-info-meta">
+        <span id="modalYear"></span>
+        <span id="modalRating"></span>
+      </div>
+      <div class="modal-info-overview" id="modalOverview"></div>
     </div>
-    <div class="modal-footer" id="modalFooter">
-      <span id="modalYear"></span> • <span id="modalRating"></span> • <span id="modalOverview"></span>
-    </div>
-    <div class="episode-controls" id="episodeControls">
-      <select class="season-select" id="seasonSelect" onchange="changeSeason()"></select>
-      <div class="episode-list" id="episodeList"></div>
+    
+    <div class="episode-panel" id="episodePanel">
+      <div class="episode-header">
+        <span class="episode-label">Season:</span>
+        <select class="season-select" id="seasonSelect" onchange="changeSeason()"></select>
+        <span class="episode-label">Episodes:</span>
+      </div>
+      <div class="episode-grid" id="episodeGrid"></div>
     </div>
   </div>
 </div>
@@ -714,26 +942,22 @@
   const TMDB_API_KEY = '2dca580c2a14b55200e784d157207b4d';
   const TMDB_BASE = 'https://api.themoviedb.org/3';
   const IMAGE_BASE = 'https://image.tmdb.org/t/p/';
-  
-  // VidKing API endpoints (ad-free, no popups)
   const VIDKING_EMBED = 'https://www.vidking.net/embed';
   
-  // State
   let currentMedia = null;
   let currentSeason = 1;
   let currentEpisode = 1;
   let currentCategory = 'movie';
   let searchTimeout = null;
+  let isPlaying = true;
+  let currentVolume = 100;
   
   // ============================================
   // API HELPERS
   // ============================================
   async function fetchTMDB(endpoint, params = {}) {
     try {
-      const queryParams = new URLSearchParams({
-        api_key: TMDB_API_KEY,
-        ...params
-      });
+      const queryParams = new URLSearchParams({ api_key: TMDB_API_KEY, ...params });
       const response = await fetch(`${TMDB_BASE}${endpoint}?${queryParams}`);
       if (!response.ok) throw new Error('API request failed');
       return await response.json();
@@ -747,9 +971,24 @@
     return path ? `${IMAGE_BASE}${size}${path}` : null;
   }
   
+  function getVidKingUrl(type, id, season = null, episode = null) {
+    if (type === 'movie') {
+      return `${VIDKING_EMBED}/movie/${id}`;
+    } else {
+      return `${VIDKING_EMBED}/tv/${id}/${season}/${episode}`;
+    }
+  }
+  
   // ============================================
   // UI COMPONENTS
   // ============================================
+  function escapeHtml(text) {
+    if (!text) return '';
+    const div = document.createElement('div');
+    div.textContent = text;
+    return div.innerHTML;
+  }
+  
   function createMovieCard(item, type) {
     const card = document.createElement('div');
     card.className = 'movie-card';
@@ -777,15 +1016,7 @@
         <div class="movie-year">${year || 'N/A'}</div>
       </div>
     `;
-    
     return card;
-  }
-  
-  function escapeHtml(text) {
-    if (!text) return '';
-    const div = document.createElement('div');
-    div.textContent = text;
-    return div.innerHTML;
   }
   
   function showSkeletons(gridId, count = 8) {
@@ -822,12 +1053,9 @@
     const ratingSpan = document.querySelector('#heroRating span');
     if (ratingSpan) ratingSpan.textContent = heroMovie.vote_average ? heroMovie.vote_average.toFixed(1) : 'N/A';
     
-    // Get runtime for movies
-    if (heroMovie.id) {
-      const details = await fetchTMDB(`/movie/${heroMovie.id}`);
-      const runtime = details.runtime ? `${details.runtime} min` : '';
-      document.getElementById('heroRuntime').textContent = runtime;
-    }
+    const details = await fetchTMDB(`/movie/${heroMovie.id}`);
+    const runtime = details.runtime ? `${details.runtime} min` : '';
+    document.getElementById('heroRuntime').textContent = runtime;
     
     document.getElementById('heroPlayBtn').onclick = () => openPlayer(heroMovie.id, 'movie', heroMovie);
     document.getElementById('heroInfoBtn').onclick = () => openPlayer(heroMovie.id, 'movie', heroMovie);
@@ -844,7 +1072,6 @@
       fetchTMDB('/tv/popular')
     ]);
     
-    // Render Trending
     const trendingGrid = document.getElementById('trendingGrid');
     trendingGrid.innerHTML = '';
     (trending.results || []).slice(0, 8).forEach(item => {
@@ -852,14 +1079,12 @@
       trendingGrid.appendChild(createMovieCard(item, type));
     });
     
-    // Render Popular Movies
     const moviesGrid = document.getElementById('popularMoviesGrid');
     moviesGrid.innerHTML = '';
     (popularMovies.results || []).slice(0, 8).forEach(item => {
       moviesGrid.appendChild(createMovieCard(item, 'movie'));
     });
     
-    // Render Popular TV
     const tvGrid = document.getElementById('popularTVGrid');
     tvGrid.innerHTML = '';
     (popularTV.results || []).slice(0, 8).forEach(item => {
@@ -869,26 +1094,17 @@
   
   async function switchTab(tab) {
     currentCategory = tab;
-    
-    // Update active nav
     document.querySelectorAll('.nav-link').forEach(link => link.classList.remove('active'));
     event.target.classList.add('active');
     
-    // Hide/show views
     document.getElementById('homeView').style.display = 'none';
     document.getElementById('categoryView').style.display = 'block';
     document.getElementById('searchView').style.display = 'none';
     document.getElementById('heroContainer').style.display = 'none';
     
-    // Set title
-    const titles = {
-      movie: '🎬 Popular Movies',
-      tv: '📺 Popular TV Shows',
-      trending: '🔥 Trending Now'
-    };
+    const titles = { movie: '🎬 Popular Movies', tv: '📺 Popular TV Shows', trending: '🔥 Trending Now' };
     document.getElementById('categoryTitle').innerHTML = titles[tab];
     
-    // Load content
     const grid = document.getElementById('categoryGrid');
     showSkeletons('categoryGrid', 16);
     
@@ -920,10 +1136,7 @@
   // ============================================
   function handleSearch(query) {
     clearTimeout(searchTimeout);
-    if (!query.trim()) {
-      showHome();
-      return;
-    }
+    if (!query.trim()) { showHome(); return; }
     searchTimeout = setTimeout(() => performSearch(query.trim()), 400);
   }
   
@@ -954,42 +1167,88 @@
   }
   
   // ============================================
-  // PLAYER - VidKing API (Ad-Free)
+  // PLAYER CONTROLS
   // ============================================
-  function getVidKingUrl(type, id, season = null, episode = null) {
-    if (type === 'movie') {
-      return `${VIDKING_EMBED}/movie/${id}`;
-    } else {
-      return `${VIDKING_EMBED}/tv/${id}/${season}/${episode}`;
+  function setPlayerLoading(show) {
+    const loading = document.getElementById('playerLoading');
+    if (show) loading.classList.add('active');
+    else loading.classList.remove('active');
+  }
+  
+  function updatePlayPauseButton() {
+    const btn = document.getElementById('playPauseBtn');
+    btn.textContent = isPlaying ? '⏸' : '▶';
+  }
+  
+  function togglePlayPause() {
+    const iframe = document.getElementById('playerFrame');
+    if (iframe.contentWindow) {
+      try {
+        if (isPlaying) {
+          iframe.contentWindow.postMessage('{"event":"command","func":"pauseVideo","args":""}', '*');
+        } else {
+          iframe.contentWindow.postMessage('{"event":"command","func":"playVideo","args":""}', '*');
+        }
+        isPlaying = !isPlaying;
+        updatePlayPauseButton();
+      } catch(e) {
+        console.log('Cannot control iframe directly');
+      }
     }
   }
   
+  function updateVolume(value) {
+    currentVolume = Math.min(100, Math.max(0, value));
+    const volumeFill = document.getElementById('volumeFill');
+    volumeFill.style.width = `${currentVolume}%`;
+    
+    const iframe = document.getElementById('playerFrame');
+    if (iframe.contentWindow) {
+      try {
+        iframe.contentWindow.postMessage(`{"event":"command","func":"setVolume","args":[${currentVolume}]}`, '*');
+      } catch(e) {}
+    }
+  }
+  
+  function toggleFullscreen() {
+    const container = document.querySelector('.modal-container');
+    if (!document.fullscreenElement) {
+      container.requestFullscreen().catch(err => console.log(err));
+    } else {
+      document.exitFullscreen();
+    }
+  }
+  
+  // ============================================
+  // PLAYER OPEN/CLOSE
+  // ============================================
   async function openPlayer(id, type, item) {
     currentMedia = { id, type, title: type === 'movie' ? item.title : item.name, item };
     currentSeason = 1;
     currentEpisode = 1;
+    isPlaying = true;
+    updatePlayPauseButton();
     
-    // Set modal info
     document.getElementById('modalTitle').textContent = type === 'movie' ? item.title : item.name;
     document.getElementById('modalYear').textContent = (type === 'movie' ? item.release_date : item.first_air_date || '').slice(0, 4) || 'N/A';
     document.getElementById('modalRating').textContent = item.vote_average ? `★ ${item.vote_average.toFixed(1)}` : '★ N/A';
-    document.getElementById('modalOverview').textContent = (item.overview || 'No description available.').slice(0, 200);
+    document.getElementById('modalOverview').textContent = item.overview || 'No description available.';
     
-    // Set iframe source
-    const playerFrame = document.getElementById('playerFrame');
+    setPlayerLoading(true);
     
     if (type === 'movie') {
-      document.getElementById('episodeControls').classList.remove('show');
-      playerFrame.src = getVidKingUrl('movie', id);
+      document.getElementById('episodePanel').classList.remove('show');
+      document.getElementById('playerFrame').src = getVidKingUrl('movie', id);
     } else {
-      document.getElementById('episodeControls').classList.add('show');
+      document.getElementById('episodePanel').classList.add('show');
       await loadTVSeasons(id);
-      playerFrame.src = getVidKingUrl('tv', id, currentSeason, currentEpisode);
+      document.getElementById('playerFrame').src = getVidKingUrl('tv', id, currentSeason, currentEpisode);
     }
     
-    // Show modal
     document.getElementById('playerModal').classList.add('active');
     document.body.style.overflow = 'hidden';
+    
+    setTimeout(() => setPlayerLoading(false), 2000);
   }
   
   async function loadTVSeasons(tvId) {
@@ -999,7 +1258,7 @@
       
       const seasonSelect = document.getElementById('seasonSelect');
       seasonSelect.innerHTML = seasons.map(s => 
-        `<option value="${s.season_number}">Season ${s.season_number} (${s.episode_count} episodes)</option>`
+        `<option value="${s.season_number}">Season ${s.season_number}</option>`
       ).join('');
       
       await loadEpisodes(tvId, 1);
@@ -1014,20 +1273,22 @@
       const seasonData = await fetchTMDB(`/tv/${tvId}/season/${season}`);
       const episodes = seasonData.episodes || [];
       
-      const episodeList = document.getElementById('episodeList');
-      episodeList.innerHTML = '';
+      const episodeGrid = document.getElementById('episodeGrid');
+      episodeGrid.innerHTML = '';
       
       episodes.slice(0, 30).forEach((ep, index) => {
         const btn = document.createElement('button');
         btn.className = 'episode-btn' + (index + 1 === currentEpisode ? ' active' : '');
-        btn.textContent = `E${ep.episode_number}`;
+        btn.textContent = `Episode ${ep.episode_number}`;
         btn.onclick = () => {
           document.querySelectorAll('.episode-btn').forEach(b => b.classList.remove('active'));
           btn.classList.add('active');
           currentEpisode = ep.episode_number;
+          setPlayerLoading(true);
           document.getElementById('playerFrame').src = getVidKingUrl('tv', tvId, currentSeason, currentEpisode);
+          setTimeout(() => setPlayerLoading(false), 1500);
         };
-        episodeList.appendChild(btn);
+        episodeGrid.appendChild(btn);
       });
     } catch (error) {
       console.error('Error loading episodes:', error);
@@ -1040,7 +1301,9 @@
     currentSeason = season;
     currentEpisode = 1;
     await loadEpisodes(currentMedia.id, season);
+    setPlayerLoading(true);
     document.getElementById('playerFrame').src = getVidKingUrl('tv', currentMedia.id, currentSeason, currentEpisode);
+    setTimeout(() => setPlayerLoading(false), 1500);
   }
   
   function closePlayer() {
@@ -1049,12 +1312,34 @@
     document.body.style.overflow = '';
   }
   
-  // Close on escape key
+  // ============================================
+  // EVENT LISTENERS
+  // ============================================
+  document.getElementById('playPauseBtn').onclick = togglePlayPause;
+  document.getElementById('fullscreenBtn').onclick = toggleFullscreen;
+  document.getElementById('volumeBtn').onclick = () => updateVolume(currentVolume === 0 ? 100 : 0);
+  
+  const volumeSlider = document.getElementById('volumeSlider');
+  volumeSlider.onclick = (e) => {
+    const rect = volumeSlider.getBoundingClientRect();
+    const percent = (e.clientX - rect.left) / rect.width;
+    updateVolume(percent * 100);
+  };
+  
   document.addEventListener('keydown', (e) => {
     if (e.key === 'Escape') closePlayer();
+    if (document.getElementById('playerModal').classList.contains('active')) {
+      if (e.key === ' ' || e.key === 'Space') {
+        e.preventDefault();
+        togglePlayPause();
+      }
+      if (e.key === 'f' || e.key === 'F') {
+        e.preventDefault();
+        toggleFullscreen();
+      }
+    }
   });
   
-  // Close modal when clicking background
   document.getElementById('playerModal').addEventListener('click', (e) => {
     if (e.target === document.getElementById('playerModal')) closePlayer();
   });
