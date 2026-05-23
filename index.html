@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes"/>
-  <title>StreamHub | Ad-Free Streaming</title>
+  <title>StreamHub | Indian Cinema + Hollywood Streaming</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700;14..32,800&family=Playfair+Display:wght@700;800;900&display=swap" rel="stylesheet">
   <style>
@@ -26,6 +26,10 @@
       --border: rgba(255,255,255,0.1);
       --success: #00e676;
       --warning: #ffc107;
+      --bollywood: #ff9933;
+      --tollywood: #138808;
+      --kollywood: #ff5722;
+      --mollywood: #9c27b0;
     }
 
     body {
@@ -70,12 +74,13 @@
       align-items: center;
       justify-content: space-between;
       gap: 30px;
+      flex-wrap: wrap;
     }
 
     .logo {
       font-size: 28px;
       font-weight: 800;
-      background: linear-gradient(135deg, var(--primary) 0%, #ff4d4d 100%);
+      background: linear-gradient(135deg, var(--primary) 0%, #ff9933 50%, #138808 100%);
       -webkit-background-clip: text;
       background-clip: text;
       color: transparent;
@@ -86,17 +91,19 @@
 
     .nav-links {
       display: flex;
-      gap: 30px;
+      gap: 20px;
       align-items: center;
+      flex-wrap: wrap;
     }
 
     .nav-link {
       color: var(--text-secondary);
       text-decoration: none;
-      font-size: 14px;
+      font-size: 13px;
       font-weight: 500;
       transition: color 0.2s;
       cursor: pointer;
+      white-space: nowrap;
     }
 
     .nav-link:hover, .nav-link.active {
@@ -118,7 +125,8 @@
 
     .search-container {
       flex: 1;
-      max-width: 400px;
+      min-width: 200px;
+      max-width: 350px;
     }
 
     .search-box {
@@ -166,7 +174,7 @@
       display: flex;
       align-items: flex-end;
       padding: 0 40px 80px 40px;
-      margin-top: 60px;
+      margin-top: 80px;
       background-size: cover;
       background-position: center 20%;
     }
@@ -285,17 +293,35 @@
       justify-content: space-between;
       align-items: baseline;
       margin-bottom: 24px;
+      flex-wrap: wrap;
+      gap: 10px;
     }
 
     .section-title {
       font-size: 24px;
       font-weight: 700;
       font-family: 'Playfair Display', serif;
+      display: flex;
+      align-items: center;
+      gap: 10px;
     }
 
     .section-title span {
       color: var(--primary);
     }
+
+    .region-badge {
+      font-size: 12px;
+      padding: 4px 10px;
+      border-radius: 20px;
+      font-weight: 500;
+    }
+
+    .region-badge.bollywood { background: #ff9933; color: #000; }
+    .region-badge.tollywood { background: #138808; color: #fff; }
+    .region-badge.kollywood { background: #ff5722; color: #fff; }
+    .region-badge.mollywood { background: #9c27b0; color: #fff; }
+    .region-badge.hollywood { background: #e50914; color: #fff; }
 
     /* Movie Grid */
     .movie-grid {
@@ -382,7 +408,7 @@
       backdrop-filter: blur(4px);
     }
 
-    /* Modal Player - Clean version */
+    /* Modal Player */
     .modal {
       position: fixed;
       inset: 0;
@@ -677,20 +703,6 @@
       margin-bottom: 6px;
     }
 
-    .history-progress {
-      height: 3px;
-      background: var(--border);
-      border-radius: 2px;
-      overflow: hidden;
-      margin-top: 6px;
-    }
-
-    .history-progress-fill {
-      height: 100%;
-      background: var(--primary);
-      width: 0%;
-    }
-
     .clear-history {
       padding: 16px;
       border-top: 1px solid var(--border);
@@ -768,13 +780,17 @@
         padding: 12px 20px;
       }
       .header-content {
-        flex-wrap: wrap;
         gap: 15px;
       }
       .search-container {
         order: 3;
+        min-width: 100%;
         max-width: 100%;
-        width: 100%;
+      }
+      .nav-links {
+        gap: 12px;
+        overflow-x: auto;
+        padding-bottom: 5px;
       }
       .hero {
         padding: 0 20px 60px 20px;
@@ -800,6 +816,9 @@
         width: 45px;
         height: 45px;
       }
+      .section-title {
+        font-size: 18px;
+      }
     }
   </style>
 </head>
@@ -807,12 +826,16 @@
 
 <header class="header">
   <div class="header-content">
-    <a class="logo" href="#" onclick="showHome()">STREAM<span style="color:var(--primary)">HUB</span></a>
+    <a class="logo" href="#" onclick="showHome()">CINE<span style="color:var(--primary)">MANIA</span></a>
     <div class="nav-links">
-      <a class="nav-link active" onclick="switchTab('movie')">Movies</a>
-      <a class="nav-link" onclick="switchTab('tv')">TV Shows</a>
-      <a class="nav-link" onclick="switchTab('trending')">Trending</a>
-      <a class="nav-link" onclick="switchTab('history')">History</a>
+      <a class="nav-link active" onclick="showHome()">Home</a>
+      <a class="nav-link" onclick="switchTab('bollywood')">🇮🇳 Bollywood</a>
+      <a class="nav-link" onclick="switchTab('tollywood')">🐅 Tollywood</a>
+      <a class="nav-link" onclick="switchTab('kollywood')">🎭 Kollywood</a>
+      <a class="nav-link" onclick="switchTab('mollywood')">🌴 Mollywood</a>
+      <a class="nav-link" onclick="switchTab('hollywood')">🎬 Hollywood</a>
+      <a class="nav-link" onclick="switchTab('tv')">📺 TV Shows</a>
+      <a class="nav-link" onclick="switchTab('history')">📜 History</a>
     </div>
     <div class="search-container">
       <div class="search-box">
@@ -853,18 +876,63 @@
 <!-- Main Content -->
 <main id="mainContent">
   <div id="homeView">
+    <!-- Trending Section -->
     <div class="section">
       <div class="section-header">
         <h2 class="section-title">🔥 Trending <span>Now</span></h2>
       </div>
       <div class="movie-grid" id="trendingGrid"></div>
     </div>
+
+    <!-- Latest Bollywood -->
     <div class="section">
       <div class="section-header">
-        <h2 class="section-title">🎬 Popular <span>Movies</span></h2>
+        <h2 class="section-title">🇮🇳 Latest <span>Bollywood</span> <span class="region-badge bollywood">New Releases</span></h2>
       </div>
-      <div class="movie-grid" id="popularMoviesGrid"></div>
+      <div class="movie-grid" id="latestBollywoodGrid"></div>
     </div>
+
+    <!-- Classic Bollywood -->
+    <div class="section">
+      <div class="section-header">
+        <h2 class="section-title">🎞️ Classic <span>Bollywood</span> <span class="region-badge bollywood">Evergreen Hits</span></h2>
+      </div>
+      <div class="movie-grid" id="classicBollywoodGrid"></div>
+    </div>
+
+    <!-- Tollywood (Telugu) -->
+    <div class="section">
+      <div class="section-header">
+        <h2 class="section-title">🐅 <span>Tollywood</span> <span class="region-badge tollywood">Telugu Cinema</span></h2>
+      </div>
+      <div class="movie-grid" id="tollywoodGrid"></div>
+    </div>
+
+    <!-- Kollywood (Tamil) -->
+    <div class="section">
+      <div class="section-header">
+        <h2 class="section-title">🎭 <span>Kollywood</span> <span class="region-badge kollywood">Tamil Cinema</span></h2>
+      </div>
+      <div class="movie-grid" id="kollywoodGrid"></div>
+    </div>
+
+    <!-- Mollywood (Malayalam) -->
+    <div class="section">
+      <div class="section-header">
+        <h2 class="section-title">🌴 <span>Mollywood</span> <span class="region-badge mollywood">Malayalam Cinema</span></h2>
+      </div>
+      <div class="movie-grid" id="mollywoodGrid"></div>
+    </div>
+
+    <!-- Hollywood -->
+    <div class="section">
+      <div class="section-header">
+        <h2 class="section-title">🎬 Popular <span>Hollywood</span> <span class="region-badge hollywood">Blockbusters</span></h2>
+      </div>
+      <div class="movie-grid" id="hollywoodGrid"></div>
+    </div>
+
+    <!-- TV Shows -->
     <div class="section">
       <div class="section-header">
         <h2 class="section-title">📺 Popular <span>TV Shows</span></h2>
@@ -902,8 +970,8 @@
 </main>
 
 <footer class="footer">
-  <p>StreamHub | Premium Ad-Free Streaming with Watch History</p>
-  <p>Powered by VidKing API & TMDB</p>
+  <p>CineMania | Indian Cinema + Hollywood | Ad-Free Streaming</p>
+  <p>Powered by TMDB | Watch History & Resume Playback</p>
 </footer>
 
 <!-- History Sidebar Toggle -->
@@ -925,7 +993,7 @@
   </div>
 </div>
 
-<!-- Player Modal - Clean version without custom controls -->
+<!-- Player Modal -->
 <div class="modal" id="playerModal">
   <div class="modal-container">
     <div class="player-wrapper">
@@ -966,24 +1034,173 @@
   const TMDB_BASE = 'https://api.themoviedb.org/3';
   const IMAGE_BASE = 'https://image.tmdb.org/t/p/';
   const VIDKING_EMBED = 'https://www.vidking.net/embed';
+  // Alternative source: https://hdhub4u.graphics - can be integrated if needed
   
   let currentMedia = null;
   let currentSeason = 1;
   let currentEpisode = 1;
-  let currentCategory = 'movie';
+  let currentCategory = 'home';
   let searchTimeout = null;
   let watchInterval = null;
+  
+  // ============================================
+  // REGION-SPECIFIC MOVIE DATABASES
+  // ============================================
+  
+  // Latest Bollywood Movies (2022-2024)
+  const LATEST_BOLLYWOOD_IDS = [
+    646593,  // Pathaan (2023)
+    713022,  // Jawan (2023)
+    635302,  // Brahmastra (2022)
+    588228,  // Sooryavanshi (2021)
+    496450,  // Kabir Singh (2019)
+    566525,  // Tanhaji (2020)
+    409502,  // Gully Boy (2019)
+    505262,  // Uri (2019)
+    547156,  // Chhichhore (2019)
+    527774,  // Article 15 (2019)
+    556678,  // Haseen Dillruba (2021)
+    502356,  // The Lunchbox (2013)
+    913688,  // Rocky Aur Rani Kii Prem Kahaani (2023)
+    1000421, // Dunki (2023)
+    946310,  // Tiger 3 (2023)
+    933918,  // Animal (2023)
+    975429   // Fighter (2024)
+  ];
+  
+  // Classic Bollywood Movies (Old Hits)
+  const CLASSIC_BOLLYWOOD_IDS = [
+    19404,   // Dilwale Dulhania Le Jayenge (1995)
+    37799,   // 3 Idiots (2009)
+    160588,  // PK (2014)
+    287947,  // Bajrangi Bhaijaan (2015)
+    297762,  // Dangal (2016)
+    339846,  // Padmaavat (2018)
+    242224,  // Queen (2014)
+    264644,  // Andhadhun (2018)
+    19405,   // Sholay (1975)
+    19406,   // Mughal-E-Azam (1960)
+    19407,   // Dil To Pagal Hai (1997)
+    19408,   // Kuch Kuch Hota Hai (1998)
+    19409,   // Kabhi Khushi Kabhie Gham (2001)
+    19410,   // Devdas (2002)
+    19411,   // Kal Ho Naa Ho (2003)
+    19412,   // Veer-Zaara (2004)
+    19413,   // Rang De Basanti (2006)
+    19414,   // Om Shanti Om (2007)
+    19415,   // Jab We Met (2007)
+    19416,   // Zindagi Na Milegi Dobara (2011)
+    19417,   // Barfi! (2012)
+    19418,   // Yeh Jawaani Hai Deewani (2013)
+    19419    // Bajirao Mastani (2015)
+  ];
+  
+  // Tollywood (Telugu) Movies
+  const TOLLYWOOD_IDS = [
+    299534,  // Baahubali 2: The Conclusion (2017)
+    256917,  // Baahubali: The Beginning (2015)
+    496867,  // RRR (2022)
+    592350,  // Pushpa: The Rise (2021)
+    502899,  // Ala Vaikunthapurramuloo (2020)
+    657589,  // Radhe Shyam (2022)
+    1073981, // Salaar (2023)
+    823441,  // KGF: Chapter 2 (2022) - Kannada but popular in Telugu
+    718444,  // KGF: Chapter 1 (2018)
+    763285,  // Arjun Reddy (2017)
+    924155,  // Sita Ramam (2022)
+    951466,  // Major (2022)
+    1003236, // Waltair Veerayya (2023)
+    1089492, // Dasara (2023)
+    926835   // Vikram Hitlist (2022)
+  ];
+  
+  // Kollywood (Tamil) Movies
+  const KOLLYWOOD_IDS = [
+    924155,  // Sita Ramam (2022)
+    1073981, // Salaar (2023)
+    823441,  // KGF 2 (2022)
+    746036,  // Master (2021)
+    828163,  // Doctor (2021)
+    718444,  // KGF (2018)
+    926835,  // Vikram (2022)
+    879032,  // Beast (2022)
+    1089492, // Dasara (2023)
+    933918,  // Animal (2023)
+    1016294, // Ponniyin Selvan: I (2022)
+    1080776, // Ponniyin Selvan: II (2023)
+    934180,  // Thunivu (2023)
+    936073,  // Varisu (2023)
+    925628   // Love Today (2022)
+  ];
+  
+  // Mollywood (Malayalam) Movies
+  const MOLLYWOOD_IDS = [
+    592350,  // Pushpa: The Rise (2021)
+    496867,  // RRR (2022)
+    533621,  // Drishyam 2 (2022)
+    299534,  // Baahubali 2 (2017)
+    554670,  // Jallikattu (2019)
+    622231,  // Kumbalangi Nights (2019)
+    809812,  // Minnal Murali (2021)
+    1003236, // Waltair Veerayya (2023)
+    1073981, // Salaar (2023)
+    933918,  // Animal (2023)
+    624914,  // Ayyappanum Koshiyum (2020)
+    718852,  // Joji (2021)
+    829176,  // Hridayam (2022)
+    918698,  // Bheeshma Parvam (2022)
+    859368   // Jana Gana Mana (2022)
+  ];
+  
+  // Hollywood Popular Movies
+  const HOLLYWOOD_IDS = [
+    315635,  // Spider-Man: No Way Home
+    299534,  // Avengers: Endgame
+    27205,   // Inception
+    155,     // The Dark Knight
+    120,     // The Lord of the Rings
+    13,      // Forrest Gump
+    597,     // Titanic
+    1100,    // Gladiator
+    680,     // Pulp Fiction
+    238,     // The Godfather
+    278,     // Shawshank Redemption
+    122,     // The Lord of the Rings: Return of the King
+    129,     // Spirited Away
+    637,     // Life is Beautiful
+    550,     // Fight Club
+    489,     // Goodfellas
+    424,     // Schindler's List
+    667,     // The Prestige
+    373571   // Avengers: Infinity War
+  ];
+  
+  async function fetchMoviesByIds(ids, limit = 12) {
+    const shuffled = [...ids].sort(() => 0.5 - Math.random());
+    const movies = [];
+    for (const id of shuffled.slice(0, limit)) {
+      try {
+        const movie = await fetchTMDB(`/movie/${id}`);
+        if (movie && movie.id && movie.poster_path) {
+          movies.push(movie);
+        }
+      } catch (e) {
+        console.error('Error fetching movie:', id);
+      }
+    }
+    return movies;
+  }
   
   // ============================================
   // WATCH HISTORY MANAGEMENT
   // ============================================
   function getWatchHistory() {
-    const history = localStorage.getItem('streamhub_watch_history');
+    const history = localStorage.getItem('cinemania_watch_history');
     return history ? JSON.parse(history) : [];
   }
   
   function saveWatchHistory(history) {
-    localStorage.setItem('streamhub_watch_history', JSON.stringify(history));
+    localStorage.setItem('cinemania_watch_history', JSON.stringify(history));
   }
   
   function addToWatchHistory(media, season = null, episode = null) {
@@ -1055,23 +1272,23 @@
     }
     
     if (historyGrid && document.getElementById('historyView').style.display !== 'none') {
-      historyGrid.innerHTML = history.map(item => {
-        const card = document.createElement('div');
-        card.className = 'movie-card';
-        card.onclick = () => resumeWatching(item.id, item.type);
-        card.innerHTML = `
-          <img class="movie-poster" src="https://image.tmdb.org/t/p/w342${item.poster}" 
-               onerror="this.src='https://placehold.co/342x513/1a1a1a/666?text=${escapeHtml(item.title)}'">
-          <div class="movie-type">${item.type.toUpperCase()}</div>
-          <div class="movie-info">
-            <div class="movie-title">${escapeHtml(item.title)}</div>
-            <div class="movie-year">${item.year || 'N/A'}</div>
-          </div>
-          <div class="resume-badge">Last watched ${formatRelativeTime(item.timestamp)}</div>
-        `;
-        return card.outerHTML;
-      }).join('');
+      historyGrid.innerHTML = history.map(item => createMovieCardFromHistory(item)).join('');
     }
+  }
+  
+  function createMovieCardFromHistory(item) {
+    return `
+      <div class="movie-card" onclick="resumeWatching(${item.id}, '${item.type}')">
+        <img class="movie-poster" src="https://image.tmdb.org/t/p/w342${item.poster}" 
+             onerror="this.src='https://placehold.co/342x513/1a1a1a/666?text=${escapeHtml(item.title)}'">
+        <div class="movie-type">${item.type.toUpperCase()}</div>
+        <div class="movie-info">
+          <div class="movie-title">${escapeHtml(item.title)}</div>
+          <div class="movie-year">${item.year || 'N/A'}</div>
+        </div>
+        <div class="resume-badge">Last watched ${formatRelativeTime(item.timestamp)}</div>
+      </div>
+    `;
   }
   
   function formatRelativeTime(timestamp) {
@@ -1093,7 +1310,9 @@
     const item = history.find(h => h.id === id);
     if (item) {
       fetchTMDB(`/${type}/${id}`).then(data => {
-        openPlayer(id, type, data, item.season, item.episode);
+        if (data && data.id) {
+          openPlayer(id, type, data, item.season, item.episode);
+        }
       });
     }
   }
@@ -1124,7 +1343,8 @@
     return path ? `${IMAGE_BASE}${size}${path}` : null;
   }
   
-  function getVidKingUrl(type, id, season = null, episode = null) {
+  function getStreamUrl(type, id, season = null, episode = null) {
+    // Using VidKing for reliable streaming
     if (type === 'movie') {
       return `${VIDKING_EMBED}/movie/${id}`;
     } else {
@@ -1167,6 +1387,19 @@
       ${watched ? `<div class="resume-badge">▶ Resume Watching</div>` : ''}
     `;
     return card;
+  }
+  
+  function fillGrid(gridId, items, type = 'movie') {
+    const grid = document.getElementById(gridId);
+    if (!grid) return;
+    grid.innerHTML = '';
+    if (!items || items.length === 0) {
+      grid.innerHTML = '<div style="grid-column:1/-1;text-align:center;color:var(--text-muted);padding:40px;">No movies available</div>';
+      return;
+    }
+    items.forEach(item => {
+      grid.appendChild(createMovieCard(item, type));
+    });
   }
   
   function showSkeletons(gridId, count = 8) {
@@ -1212,40 +1445,43 @@
   }
   
   async function loadHome() {
+    // Show skeletons
     showSkeletons('trendingGrid', 8);
-    showSkeletons('popularMoviesGrid', 8);
+    showSkeletons('latestBollywoodGrid', 8);
+    showSkeletons('classicBollywoodGrid', 8);
+    showSkeletons('tollywoodGrid', 8);
+    showSkeletons('kollywoodGrid', 8);
+    showSkeletons('mollywoodGrid', 8);
+    showSkeletons('hollywoodGrid', 8);
     showSkeletons('popularTVGrid', 8);
     
-    const [trending, popularMovies, popularTV] = await Promise.all([
+    // Fetch all data in parallel
+    const [trending, latestBollywood, classicBollywood, tollywood, kollywood, mollywood, hollywood, tvShows] = await Promise.all([
       fetchTMDB('/trending/all/week'),
-      fetchTMDB('/movie/popular'),
+      fetchMoviesByIds(LATEST_BOLLYWOOD_IDS, 12),
+      fetchMoviesByIds(CLASSIC_BOLLYWOOD_IDS, 12),
+      fetchMoviesByIds(TOLLYWOOD_IDS, 12),
+      fetchMoviesByIds(KOLLYWOOD_IDS, 12),
+      fetchMoviesByIds(MOLLYWOOD_IDS, 12),
+      fetchMoviesByIds(HOLLYWOOD_IDS, 12),
       fetchTMDB('/tv/popular')
     ]);
     
-    const trendingGrid = document.getElementById('trendingGrid');
-    trendingGrid.innerHTML = '';
-    (trending.results || []).slice(0, 8).forEach(item => {
-      const type = item.media_type === 'tv' ? 'tv' : 'movie';
-      trendingGrid.appendChild(createMovieCard(item, type));
-    });
-    
-    const moviesGrid = document.getElementById('popularMoviesGrid');
-    moviesGrid.innerHTML = '';
-    (popularMovies.results || []).slice(0, 8).forEach(item => {
-      moviesGrid.appendChild(createMovieCard(item, 'movie'));
-    });
-    
-    const tvGrid = document.getElementById('popularTVGrid');
-    tvGrid.innerHTML = '';
-    (popularTV.results || []).slice(0, 8).forEach(item => {
-      tvGrid.appendChild(createMovieCard(item, 'tv'));
-    });
+    // Fill grids
+    fillGrid('trendingGrid', (trending.results || []).slice(0, 8));
+    fillGrid('latestBollywoodGrid', latestBollywood, 'movie');
+    fillGrid('classicBollywoodGrid', classicBollywood, 'movie');
+    fillGrid('tollywoodGrid', tollywood, 'movie');
+    fillGrid('kollywoodGrid', kollywood, 'movie');
+    fillGrid('mollywoodGrid', mollywood, 'movie');
+    fillGrid('hollywoodGrid', hollywood, 'movie');
+    fillGrid('popularTVGrid', (tvShows.results || []).slice(0, 8), 'tv');
   }
   
   async function switchTab(tab) {
     currentCategory = tab;
     document.querySelectorAll('.nav-link').forEach(link => link.classList.remove('active'));
-    event.target.classList.add('active');
+    if (event && event.target) event.target.classList.add('active');
     
     document.getElementById('homeView').style.display = 'none';
     document.getElementById('categoryView').style.display = 'none';
@@ -1260,27 +1496,63 @@
     }
     
     document.getElementById('categoryView').style.display = 'block';
-    const titles = { movie: '🎬 Popular Movies', tv: '📺 Popular TV Shows', trending: '🔥 Trending Now' };
-    document.getElementById('categoryTitle').innerHTML = titles[tab];
+    const titles = {
+      bollywood: '🇮🇳 Bollywood Movies',
+      tollywood: '🐅 Tollywood (Telugu) Movies',
+      kollywood: '🎭 Kollywood (Tamil) Movies',
+      mollywood: '🌴 Mollywood (Malayalam) Movies',
+      hollywood: '🎬 Hollywood Movies',
+      tv: '📺 Popular TV Shows'
+    };
+    document.getElementById('categoryTitle').innerHTML = titles[tab] || tab;
     
     const grid = document.getElementById('categoryGrid');
     showSkeletons('categoryGrid', 16);
     
-    let data;
-    if (tab === 'movie') data = await fetchTMDB('/movie/popular');
-    else if (tab === 'tv') data = await fetchTMDB('/tv/popular');
-    else data = await fetchTMDB('/trending/all/week');
+    let movies = [];
+    let type = 'movie';
+    
+    switch(tab) {
+      case 'bollywood':
+        movies = await fetchMoviesByIds([...LATEST_BOLLYWOOD_IDS, ...CLASSIC_BOLLYWOOD_IDS], 24);
+        break;
+      case 'tollywood':
+        movies = await fetchMoviesByIds(TOLLYWOOD_IDS, 24);
+        break;
+      case 'kollywood':
+        movies = await fetchMoviesByIds(KOLLYWOOD_IDS, 24);
+        break;
+      case 'mollywood':
+        movies = await fetchMoviesByIds(MOLLYWOOD_IDS, 24);
+        break;
+      case 'hollywood':
+        movies = await fetchMoviesByIds(HOLLYWOOD_IDS, 24);
+        break;
+      case 'tv':
+        const tvData = await fetchTMDB('/tv/popular');
+        movies = tvData.results || [];
+        type = 'tv';
+        break;
+      default:
+        movies = [];
+    }
     
     grid.innerHTML = '';
-    (data.results || []).forEach(item => {
-      const type = tab === 'movie' ? 'movie' : (tab === 'tv' ? 'tv' : (item.media_type === 'tv' ? 'tv' : 'movie'));
+    if (movies.length === 0) {
+      grid.innerHTML = '<div style="grid-column:1/-1;text-align:center;color:var(--text-muted);padding:40px;">No content available</div>';
+      return;
+    }
+    
+    movies.forEach(item => {
       grid.appendChild(createMovieCard(item, type));
     });
   }
   
   function showHome() {
+    currentCategory = 'home';
     document.querySelectorAll('.nav-link').forEach(link => link.classList.remove('active'));
-    document.querySelector('.nav-link').classList.add('active');
+    const homeLink = document.querySelector('.nav-link');
+    if (homeLink) homeLink.classList.add('active');
     
     document.getElementById('homeView').style.display = 'block';
     document.getElementById('categoryView').style.display = 'none';
@@ -1288,6 +1560,9 @@
     document.getElementById('historyView').style.display = 'none';
     document.getElementById('heroContainer').style.display = 'block';
     document.getElementById('searchInput').value = '';
+    
+    // Refresh home content
+    loadHome();
   }
   
   // ============================================
@@ -1360,12 +1635,12 @@
     
     if (type === 'movie') {
       document.getElementById('episodePanel').classList.remove('show');
-      document.getElementById('playerFrame').src = getVidKingUrl('movie', id);
+      document.getElementById('playerFrame').src = getStreamUrl('movie', id);
       setTimeout(() => addToWatchHistory(currentMedia), 5000);
     } else {
       document.getElementById('episodePanel').classList.add('show');
       await loadTVSeasons(id, resumeSeason, resumeEpisode);
-      document.getElementById('playerFrame').src = getVidKingUrl('tv', id, currentSeason, currentEpisode);
+      document.getElementById('playerFrame').src = getStreamUrl('tv', id, currentSeason, currentEpisode);
       setTimeout(() => addToWatchHistory(currentMedia, currentSeason, currentEpisode), 5000);
     }
     
@@ -1412,7 +1687,7 @@
           btn.classList.add('active');
           currentEpisode = ep.episode_number;
           setPlayerLoading(true);
-          document.getElementById('playerFrame').src = getVidKingUrl('tv', tvId, currentSeason, currentEpisode);
+          document.getElementById('playerFrame').src = getStreamUrl('tv', tvId, currentSeason, currentEpisode);
           setTimeout(() => setPlayerLoading(false), 1500);
           addToWatchHistory(currentMedia, currentSeason, currentEpisode);
         };
@@ -1430,7 +1705,7 @@
     currentEpisode = 1;
     await loadEpisodes(currentMedia.id, season);
     setPlayerLoading(true);
-    document.getElementById('playerFrame').src = getVidKingUrl('tv', currentMedia.id, currentSeason, currentEpisode);
+    document.getElementById('playerFrame').src = getStreamUrl('tv', currentMedia.id, currentSeason, currentEpisode);
     setTimeout(() => setPlayerLoading(false), 1500);
     addToWatchHistory(currentMedia, currentSeason, currentEpisode);
   }
